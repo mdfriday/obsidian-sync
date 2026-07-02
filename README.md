@@ -181,4 +181,4 @@ Use it, fork it, self-host it — no restrictions.
 
 ## Acknowledgements
 
-感谢 — [LiveSync](https://github.com/vrtmrz/obsidian-livesync) – multi-device synchronization
+— [LiveSync](https://github.com/vrtmrz/obsidian-livesync) – multi-device synchronization
