@@ -1,0 +1,11 @@
+{
+	"id": "mdfriday-sync",
+	"name": "MDFriday Sync",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Sync your Obsidian vault across devices using CouchDB — with end-to-end encryption, selective sync, and live sync. Desktop & Mobile.",
+	"author": "sunwei",
+	"authorUrl": "https://mdfriday.com",
+	"isDesktopOnly": false
+}
+

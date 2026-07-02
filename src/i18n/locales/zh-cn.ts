@@ -1,0 +1,623 @@
+import type { TranslationNamespace } from "../types";
+
+/**
+ * Simplified Chinese translations
+ */
+export const zhCn: TranslationNamespace = {
+	settings: {
+		welcome_back: "欢迎回来！",
+		welcome: "欢迎！",
+		logged_in_as: "已登录用户：{{username}}",
+		please_enter_credentials: "请输入您的登录信息。",
+		email: "邮箱",
+		email_desc: "请输入您的邮箱地址",
+		email_placeholder: "your@email.com",
+		password: "密码",
+		password_desc: "请输入您的密码",
+		password_placeholder: "密码",
+		register: "注册",
+		login: "登录",
+		logout: "退出登录",
+
+		// License Settings
+		license: "许可证",
+		license_key: "许可证密钥",
+		license_key_placeholder: "MDF-XXXX-XXXX-XXXX",
+		activate: "激活",
+		activating: "激活中…",
+		license_active: "许可证已激活",
+		plan: "套餐",
+		valid_until: "有效期至",
+		devices: "设备",
+		devices_registered: "已注册设备数",
+		storage_usage: "存储用量",
+		storage_usage_desc: "总磁盘空间使用量",
+		sync: "同步设置",
+		publish: "发布",
+		enabled: "已启用",
+		disabled: "未启用",
+		details: "详情",
+		hide_details: "隐藏详情",
+		license_invalid_format: "许可证密钥格式无效。正确格式：MDF-XXXX-XXXX-XXXX",
+		license_activation_failed: "许可证激活失败，请检查您的许可证密钥。",
+		license_activated_success: "许可证激活成功！",
+		click_to_refresh_license_info: "点击刷新许可证信息",
+		refreshing: "正在刷新...",
+		license_info_refreshed: "许可证信息已更新",
+		refresh_failed: "刷新许可证信息失败",
+		
+		// Trial License
+		trial_license: "申请试用许可证",
+		trial_email: "接收试用码的邮箱",
+		trial_email_placeholder: "your@email.com",
+		trial_request: "申请试用",
+		trial_requesting: "申请中...",
+		trial_request_success: "试用许可证创建成功！许可证密钥已填入上方。",
+		trial_request_failed: "申请试用许可证失败，请重试。",
+		trial_invalid_email: "请输入有效的邮箱地址",
+		
+		// Pricing button
+		pricing_details: "套餐详情",
+
+		// Sync Settings (License-based)
+		sync_enabled: "同步已启用",
+		sync_enable: "启用同步", // Label for toggle switch
+		sync_enable_message: "请使用上方的开关来启用同步功能，以便开始同步您的 Vault。", // Message shown when sync is disabled
+		sync_enabled_success: "同步已成功启用",
+		sync_disabled_success: "同步已停用",
+		sync_enable_failed: "启用同步失败",
+		sync_description: "您的数据已安全同步至各设备。",
+		sync_first_time_title: "这是您首次使用同步功能。",
+		sync_first_time_desc: "请选择如何在此设备上设置同步。",
+		upload_local_to_cloud: "上传本地数据到云端",
+		download_from_cloud: "从云端下载数据",
+		sync_data_available: "云端已有数据可供下载。",
+		sync_uploading: "上传中...",
+		sync_downloading: "下载中...",
+		sync_resetting: "重置中...",
+		sync_upload_success: "本地数据已成功上传到云端！",
+		sync_download_success: "云端数据已成功下载！",
+		sync_operation_failed: "同步操作失败，请重试。",
+
+		// UI Display Settings
+		show_editor_status: "显示编辑器内状态",
+		show_editor_status_desc: "在编辑器右上角显示同步状态信息（移动端始终显示）",
+		hide_editor_status: "隐藏编辑器内状态",
+		reconnect_sync: "重新连接同步",
+		sync_settings: "同步设置",
+
+		// Security Settings
+		security: "安全",
+		encryption_enabled: "端到端加密已启用",
+		encryption_password: "加密密码",
+		encryption_password_desc: "输入首次激活时的加密密码以解密云端数据",
+		encryption_password_placeholder: "请输入加密密码",
+		encryption_password_required: "请先输入加密密码",
+		show_password: "显示",
+		hide_password: "隐藏",
+
+		// Selective Sync Settings
+		selective_sync: "选择性同步",
+		sync_images: "同步图片",
+		sync_images_desc: "同步以下类型的图片文件：bmp, png, jpg, jpeg, gif, svg, webp, avif。",
+		sync_audio: "同步音频",
+		sync_audio_desc: "同步以下类型的音频文件：mp3, wav, m4a, 3gp, flac, ogg, oga, opus。",
+		sync_video: "同步视频",
+		sync_video_desc: "同步以下类型的视频文件：mp4, webm, ogv, mov, mkv。",
+		sync_pdf: "同步 PDF",
+		sync_pdf_desc: "同步 PDF 文件。",
+		sync_themes: "同步主题",
+		sync_themes_desc: "同步 .obsidian/themes 文件夹中的 Obsidian 主题。",
+		sync_snippets: "同步代码片段",
+		sync_snippets_desc: "同步 .obsidian/snippets 文件夹中的 CSS 代码片段。",
+		sync_plugins: "同步插件",
+		sync_plugins_desc: "同步 .obsidian/plugins 文件夹中的 Obsidian 插件。",
+		ignore_patterns: "忽略规则",
+		ignore_patterns_desc: "匹配这些规则的文件和文件夹将不会被同步。使用 gitignore 格式。",
+		ignore_patterns_placeholder: "例如 images/, *.tmp",
+		ignore_patterns_add: "添加规则",
+		ignore_patterns_delete: "删除规则",
+		ignore_patterns_custom_rule: "自定义规则",
+
+		// Publish settings
+		publish_settings: "发布设置",
+	publish_method: "发布方式",
+	publish_method_desc: "选择您想要发布网站的方式",
+	publish_method_mdfriday_free: "MDFriday 免费版",
+	publish_method_mdfriday_share: "MDFriday 分享",
+	publish_method_mdfriday: "MDFriday 子域名",
+	publish_method_mdfriday_custom: "MDFriday 自定义域名",
+	publish_method_mdfriday_enterprise: "MDFriday 企业版",
+	publish_method_netlify: "Netlify",
+	publish_method_ftp: "FTP",
+		license_required: "请升级您的套餐以使用此功能",
+		upgrade_for_mdfshare: "请升级您的套餐以使用 MDFriday 分享功能",
+		upgrade_for_subdomain: "请升级您的套餐以使用 MDFriday 子域名功能",
+		upgrade_for_custom_domain: "请升级您的套餐以使用 MDFriday 自定义域名功能",
+		upgrade_for_enterprise: "请升级到企业版套餐并配置企业服务器地址",
+
+		// Netlify settings
+		netlify_settings: "Netlify 设置",
+		netlify_access_token: "个人访问令牌",
+		netlify_access_token_desc: "您的 Netlify 个人访问令牌，用于 API 认证",
+		netlify_access_token_placeholder: "请输入您的 Netlify 访问令牌",
+		netlify_project_id: "项目 ID",
+		netlify_project_id_desc: "您的 Netlify 项目/站点的 ID",
+		netlify_project_id_placeholder: "请输入您的项目 ID",
+
+		// FTP settings
+		ftp_settings: "FTP 设置",
+		ftp_server: "服务器地址",
+		ftp_server_desc: "FTP 服务器域名或 IP 地址",
+		ftp_server_placeholder: "例如：ftp.example.com",
+		ftp_username: "用户名",
+		ftp_username_desc: "FTP 登录用户名",
+		ftp_username_placeholder: "请输入用户名",
+		ftp_password: "密码",
+		ftp_password_desc: "FTP 登录密码",
+		ftp_password_placeholder: "请输入密码",
+		ftp_remote_dir: "远程目录",
+		ftp_remote_dir_desc: "上传的目标目录路径",
+		ftp_remote_dir_placeholder: "例如：/www/site",
+		ftp_ignore_cert: "忽略证书验证",
+		ftp_ignore_cert_desc: "适配自签名证书，建议开启",
+		ftp_test_connection: "测试 FTP 连接",
+		ftp_test_connection_desc: "测试当前 FTP 设置是否正确",
+		ftp_test_connection_testing: "测试中...",
+		ftp_test_connection_success: "连接成功",
+		ftp_test_connection_failed: "连接失败",
+
+	// MDFriday 子域名设置
+	mdfriday_app: "MDFriday 子域名",
+	mdfriday_app_desc: "配置您的个人子域名，用于发布站点",
+	
+	// MDFriday 免费版设置
+	mdfriday_free: "MDFriday 免费版",
+	mdfriday_free_desc: "免费发布您的站点。发布的站点内容有效期为 24 小时，过期后自动失效。适合临时分享和预览。",
+	
+	// MDFriday 分享设置
+	mdfriday_share: "MDFriday 分享",
+	mdfriday_share_desc: "快速分享您的站点。分享链接 24 小时内有效，过期后自动失效。适合临时分享和预览。",
+	
+	// MDFriday 自定义域名设置
+	mdfriday_custom_domain: "MDFriday 自定义域名",
+	custom_domain_desc: "您的自定义域名",
+	custom_domain_placeholder: "输入您的自定义域名（例如 example.com）",
+	
+	// MDFriday 企业版设置
+	mdfriday_enterprise: "MDFriday 企业版",
+	mdfriday_enterprise_desc: "直接发布到您的企业根域名。请确保已在通用设置中配置企业服务器地址。",
+	
+	domain_check: "检查 DNS",
+		domain_checking: "检查中...",
+		domain_check_success: "域名 DNS 配置正确",
+		domain_check_failed: "域名 DNS 检查失败",
+		domain_save: "保存",
+		domain_saving: "保存中...",
+		domain_saved: "自定义域名保存成功",
+		domain_save_failed: "保存自定义域名失败",
+		domain_https_check: "检查 HTTPS",
+		domain_https_checking: "检查中...",
+		domain_https_ready: "HTTPS 已完全就绪",
+		domain_https_pending: "HTTPS 证书正在签发中（1-2分钟）",
+		domain_https_error: "HTTPS 证书错误",
+		domain_https_check_failed: "HTTPS 状态检查失败",
+		
+		subdomain: "子域名",
+		subdomain_desc: "您的 MDFriday 子域名",
+		subdomain_placeholder: "输入子域名",
+		subdomain_check: "检查",
+		subdomain_checking: "检查中...",
+		subdomain_update: "更新",
+		subdomain_updating: "更新中...",
+		subdomain_available: "子域名可用",
+		subdomain_unavailable: "子域名已被占用",
+		subdomain_updated: "子域名更新成功！",
+		subdomain_update_failed: "子域名更新失败：{{error}}",
+		subdomain_check_failed: "检查子域名可用性失败",
+		subdomain_invalid: "子域名只能包含小写字母、数字和连字符",
+		subdomain_invalid_format: "子域名只能包含小写字母、数字和连字符，且不能以连字符开头或结尾",
+		subdomain_too_short: "子域名长度至少 4 个字符",
+		subdomain_too_long: "子域名长度最多 32 个字符",
+		subdomain_same: "子域名与当前相同",
+		subdomain_reserved: "该子域名为保留域名，无法使用",
+
+		// General settings
+		general_settings: "通用设置",
+		download_server: "下载服务器",
+		download_server_desc: "选择下载主题和资源的服务器",
+		download_server_global: "全球",
+		download_server_east: "东区",
+
+		// 企业设置
+		enterprise_settings: "企业设置",
+		enterprise_server_url: "企业服务器地址",
+		enterprise_server_url_desc: "企业用户自定义服务器地址。留空则使用默认服务器。",
+
+		// MDFriday Account
+		mdfriday_account: "MDFriday 账户（可选）",
+		mdfriday_account_desc: "登录以使用高级功能，如主题市场和云端发布。",
+
+		// Danger Zone - Reset
+		danger_zone: "危险区域",
+		reset_sync_title: "重置云端数据",
+		reset_sync_message: "此操作将永久删除您的所有云端同步数据和已发布的站点。本地文件不受影响。重置后将生成新的加密密码。",
+		reset_sync_button: "重置云端数据",
+		reset_input_placeholder: "输入 RESET 确认",
+		reset_sync_success: "云端数据重置成功！您现在可以上传本地数据。",
+		reset_sync_failed: "重置云端数据失败：{{error}}",
+
+		// AI 输出语言
+		ai_output_language: "AI 输出语言",
+		ai_output_language_desc: "对话和知识库功能中 AI 回复使用的语言。自动模式跟随 Obsidian 界面语言。",
+		ai_output_lang_auto: "自动（跟随 Obsidian 语言）",
+		ai_output_lang_en: "英语 / English",
+		ai_output_lang_zh: "中文（简体）",
+
+		// AI 模型配置
+		ai_provider_settings: "AI 模型配置",
+		ai_provider_type: "AI 模型提供商",
+		ai_provider_type_desc: "选择用于对话和知识库功能的 AI 语言模型提供商",
+		ai_provider_lmstudio: "LM Studio（本地）",
+		ai_provider_ollama: "Ollama（本地）",
+		ai_provider_openai: "OpenAI",
+		ai_provider_glm: "智谱 GLM",
+		ai_provider_deepseek: "DeepSeek",
+		ai_provider_moonshot: "Moonshot（Kimi）",
+		ai_provider_custom: "自定义（OpenAI 兼容）",
+		ai_provider_base_url: "Base URL",
+		ai_provider_base_url_desc: "模型服务的 API 接口地址",
+		ai_provider_api_key: "API Key",
+		ai_provider_api_key_desc: "该模型提供商的 API 密钥",
+		ai_provider_model: "模型名称",
+		ai_provider_model_desc: "使用的模型名称（留空使用默认模型）",
+		ai_embedding_settings: "文本 Embedding（可选）",
+		ai_embedding_enabled: "启用文本 Embedding",
+		ai_embedding_enabled_desc: "启用语义搜索以提升知识库检索效果（需要 Embedding 模型）",
+		ai_embedding_type: "Embedding 提供商",
+		ai_embedding_type_desc: "用于生成文本向量的提供商",
+		ai_embedding_base_url: "Embedding Base URL",
+		ai_embedding_base_url_desc: "Embedding 服务的 API 接口地址",
+		ai_embedding_model: "Embedding 模型",
+		ai_embedding_model_desc: "Embedding 模型名称",
+		ai_provider_not_configured: "未配置 AI 模型",
+		ai_provider_not_configured_desc: "请先在设置中配置 AI 模型提供商，然后再使用对话功能。",
+		ai_provider_go_to_settings: "打开设置",
+	},
+
+	chat: {
+		// 标题 / 操作
+		title: "Friday Chat",
+		new_conversation: "新建对话",
+		switch_to_manual: "切换到手动模式",
+
+		// 输入区
+		input_placeholder: "发送消息... （/ 输入命令，@ 选择文件夹）",
+		input_hint: "↵ 发送 · ⇧↵ 换行",
+		send: "发送",
+		sending: "发送中…",
+		thinking: "思考中…",
+		copied: "已复制",
+
+		// 欢迎界面
+		welcome_greeting: "你好，有什么可以帮你？",
+		welcome_hint: "你的 Obsidian AI 助手。",
+		cmd_wiki_desc: "将文件夹构建为知识库",
+		cmd_ask_desc: "跨笔记提问",
+		cmd_save_desc: "保存本次对话",
+		cmd_publish_desc: "发布你的站点",
+
+		// 运行时 — 摄入
+		ingest_starting: "🚀 开始构建知识库：`{{folder}}`...\n\n",
+		ingest_init_workspace: "初始化工作区...",
+		ingest_configure_llm: "配置 LLM（{{provider}}）...",
+		ingest_get_project: "获取知识库项目...",
+		ingest_processing: "处理文件并生成知识库...",
+		ingest_ready: "\n\n**知识库已就绪！** 你可以开始提问，输入 `/publish` 发布，或 `/save [标题]` 保存本次对话。\n",
+		ingest_no_folder: "❌ **错误**：请指定一个文件夹。\n\n**用法**：`/wiki @文件夹名`",
+
+		// 运行时 — 查询
+		query_no_wiki: "⚠️ **没有活跃的知识库**\n\n请先使用 `/wiki @文件夹名` 摄入一个文件夹",
+		query_searching: "搜索知识库...",
+		query_querying: "查询 LLM...",
+
+		// 运行时 — 保存
+		save_no_wiki: "⚠️ **没有活跃的知识库**",
+		save_saving: "💾 保存对话：「{{title}}」...\n",
+		save_complete: "✅ **对话已保存！**\n\n文件：`{{file}}`\n\n该对话已自动摄入到知识库中。\n\n继续提问或 `/publish` 分享你的知识库。\n",
+
+		// 运行时 — 发布
+		publish_no_wiki: "⚠️ **没有可发布的知识库**",
+		publish_starting: "📤 正在发布到 MDFriday...\n\n",
+		publish_live: "\n### 🎊 你的知识库已上线！\n\n继续对话完善内容，再次 `/publish` 即可更新。\n",
+
+		// 运行时 — 未知命令
+		unknown_cmd: "❌ **未知命令**：`{{cmd}}`\n\n可用命令：\n• `/wiki @文件夹` — 将文件夹构建为知识库\n• `/ask 问题` — 查询知识库（或直接输入）\n• `/save [标题]` — 保存对话\n• `/publish` — 发布知识库到 MDFriday\n",
+
+		// Wiki project picker
+		picker_no_project: "选择知识库…",
+		picker_empty: "暂无知识库项目。\n请先使用 /wiki @文件夹 摄入一个文件夹。",
+		picker_current: "当前知识库",
+		picker_recent: "最近使用",
+	},
+
+	ui: {
+		// Server view
+		desktop_only_title: "仅支持桌面版",
+		desktop_only_message: "抱歉，目前仅支持桌面版本。",
+		mobile_coming_soon:
+			"移动端和平板端即将推出。\n感谢您的耐心等待和理解！",
+
+		// Site builder
+		multilingual_content: "多语言内容",
+		content_path: "内容路径",
+		language: "语言",
+		default_language: "默认语言",
+		clear: "清空",
+		clear_all_content: "清空所有内容",
+		default: "默认",
+		no_content_selected: "未选择内容",
+		no_content_selected_hint: '右键点击文件夹或文件并选择"发布到网站"开始',
+		remove_language: "移除语言",
+		site_name: "站点名称",
+		site_name_placeholder: "请输入站点名称",
+		site_assets: "站点资源",
+		site_assets_placeholder: "未设置资源文件夹",
+		site_assets_hint: '右键点击文件夹并选择"设为站点资源"来设置',
+		clear_assets: "清除",
+		advanced_settings: "高级设置",
+		site_path: "站点路径",
+		site_path_placeholder: "/",
+		site_path_hint: '指定站点的基础路径。使用 "/" 表示根路径部署。',
+		site_password: "站点密码",
+		site_password_placeholder: "输入站点密码",
+		site_password_hint: "设置站点级别的访问密码（可选）",
+		google_analytics_id: "Google Analytics ID",
+		google_analytics_placeholder: "G-XXXXXXXXXX",
+		google_analytics_hint: "您的 Google Analytics 测量 ID（可选）",
+		disqus_shortname: "Disqus 短名称",
+		disqus_placeholder: "your-site-shortname",
+		disqus_hint: "您的 Disqus 短名称，用于评论功能（可选）",
+		theme: "主题",
+		change_theme: "更换主题",
+		download_sample: "下载样例",
+		downloading_sample: "下载中...",
+
+		// Quick publish panel
+		current_content: "当前内容",
+		open_in_browser: "在浏览器中打开",
+		open: "打开",
+		copy_url: "拷贝地址",
+		copy: "拷贝",
+		realtime_publishing: "实时发布中...",
+		auto_publish: "自动发布",
+		stop_publish: "停止发布",
+		stop: "停止",
+		settings: "设置",
+		publish_config: "发布配置",
+
+		// Preview section
+		preview: "预览",
+		preview_building: "正在构建预览...",
+		preview_success: "预览已就绪！",
+		preview_failed: "预览构建失败",
+		generate_preview: "生成预览",
+		regenerate_preview: "重新生成预览",
+		preview_link: "预览链接：",
+		export_site: "导出站点",
+		exporting: "导出中...",
+		export_site_dialog_title: "保存站点压缩包",
+
+		// Publish section
+		publish: "发布",
+		publish_method: "发布方式",
+		publish_option_mdfriday_free: "MDFriday 免费版",
+		publish_option_mdfriday_share: "MDFriday 分享",
+		publish_option_mdfriday_app: "MDFriday 子域名",
+		publish_option_mdfriday_custom: "MDFriday 自定义域名",
+		publish_option_mdfriday_enterprise: "MDFriday 企业版",
+		publish_option_netlify: "Netlify",
+		publish_option_ftp: "FTP 上传",
+		mdfriday_free_hint: "MDFriday 免费版允许您免费发布站点。发布的站点内容有效期为 24 小时，过期后自动失效。",
+		mdfriday_share_hint: "MDFriday 分享允许您即时分享站点。您的站点将发布到您的个人 MDFriday 空间。",
+		mdfriday_app_hint: "MDFriday 子域名将您的站点发布到个人子域名。您的站点将可通过 your-subdomain.mdfriday.com 访问。",
+		mdfriday_custom_hint: "MDFriday 自定义域名将您的站点发布到您的自定义域名。请确保 DNS 已正确配置。",
+		mdfriday_enterprise_hint: "MDFriday 企业版将您的站点发布到企业服务器。请确保已配置企业服务器地址。",
+		mdfriday_license_required: "此功能需要激活许可证。请在设置中激活您的许可证。",
+		publish_building: "正在发布...",
+		publish_success: "发布成功！",
+		publish_failed: "发布失败",
+		published_successfully: "发布成功！",
+
+		// Server section
+		server_start: "启动服务器",
+		server_stop: "停止服务器",
+		server_running: "服务器运行中",
+		server_stopped: "服务器已停止",
+	},
+
+	menu: {
+		publish_to_web: "发布到网络",
+		add_to_publish_list: "添加到发布列表",
+		set_as_site_assets: "设为站点资源",
+		quick_share: "快速分享",
+		publish_options: "发布选项",
+		publish_to_mdfriday_free: "发布到 MDFriday",
+		publish_to_mdfriday_share: "发布到 MDFriday 分享",
+		publish_to_mdfriday_app: "发布到 MDFriday 子域名",
+		publish_to_mdfriday_custom: "发布到自定义域名",
+		publish_to_mdfriday_enterprise: "发布到企业域名",
+		publish_to_netlify: "发布到 Netlify",
+		publish_to_ftp: "发布到 FTP",
+	},
+
+	commands: {},
+
+	theme: {
+		choose_theme: "选择主题",
+		search_themes: "搜索主题...",
+		filter_by_tags: "按标签筛选：",
+		clear_filters: "清除筛选",
+		loading_themes: "正在加载主题...",
+		loading_tags: "正在加载标签...",
+		loading_initial: "正在初始化主题库...",
+		loading_search: "正在搜索主题...",
+		loading_error: "加载失败，请重试",
+		no_themes_found: "未找到主题",
+		view_demo: "查看演示",
+		live_demo: "在线演示",
+		use_it: "使用",
+		current: "当前",
+		free: "免费",
+		starter: "入门版",
+		enjoy: "享受版",
+		creator: "创作者",
+		pro: "专业版",
+		enterprise: "企业版",
+		by_author: "作者：{{author}}",
+		retry: "重试",
+	},
+
+	projects: {
+		manage_projects: "管理项目",
+		project_list: "项目列表",
+		no_projects: "暂无已保存的项目",
+		select_project_to_view: "请选择一个项目以查看详情",
+		configuration: "配置信息",
+		build_history: "构建历史",
+		no_build_history: "暂无构建历史",
+		apply_to_panel: "应用到面板",
+		delete_project: "删除",
+		delete_project_permanent: "删除此项目",
+		danger_zone: "危险区域",
+		clear_history_title: "清空预览历史",
+		clear_history_message: "此操作将永久删除该项目的所有预览目录和构建历史记录，但不会影响已导出和已发布的站点。",
+		clear_preview_history: "清空所有预览",
+		confirm_clear_history: "确定要删除所有预览文件吗？此操作可释放磁盘空间，但无法撤销。",
+		preview_history_cleared: "预览历史已清空，共删除 {{count}} 个目录",
+		no_preview_files: "未找到需要删除的预览文件",
+		delete_warning_title: "删除项目",
+		delete_warning_message: "删除项目后，所有配置信息和构建历史将被永久移除，此操作无法撤销。",
+		confirm_delete: '确定要删除项目 "{{name}}" 吗？',
+		project_applied: "项目配置应用成功",
+		project_applied_no_content: "项目配置已应用，但内容路径未找到 - 请右键点击文件夹/文件添加内容",
+		project_deleted: "项目已成功删除",
+		view_site: "查看站点",
+		export_build: "导出",
+		preview_not_found: "预览目录未找到，可能已被删除",
+		just_now: "刚刚",
+		minutes_ago: "{{count}} 分钟前",
+		hours_ago: "{{count}} 小时前",
+		days_ago: "{{count}} 天前",
+	},
+
+	messages: {
+		desktop_only_notice: "目前仅支持桌面版本。",
+		sync_not_enabled: "同步未启用。请先在设置中启用同步。",
+		publishing_desktop_only: "发布功能仅在桌面版本可用",
+		site_assets_desktop_only: "设置站点资源仅在桌面版本可用",
+		theme_selection_desktop_only: "主题选择仅在桌面版本可用",
+		project_management_desktop_only: "项目管理仅在桌面版本可用",
+		quick_share_desktop_only: "快速分享仅在桌面版本可用",
+		preview_url_copied: "预览链接已复制到剪贴板",
+		publish_url_copied: "发布链接已复制到剪贴板",
+		url_copied_to_clipboard: "链接已复制到剪贴板！",
+		build_started: "开始构建",
+		build_completed: "构建成功完成",
+		build_failed: "构建失败",
+	publish_started: "开始发布",
+	publish_completed: "发布成功",
+	publish_failed: "发布失败",
+	publish_stopped: "发布已停止",
+
+		// Preview messages
+		no_folder_selected: "未选择文件夹",
+		no_folder_or_file_selected: "未选择文件夹或文件",
+		must_select_folder_type:
+			'内容类型不匹配：您之前选择了文件夹，现在选择了文件。要发布文件，请点击右上角的"清空"按钮移除之前的选择，然后只选择文件。',
+		must_select_file_type:
+			'内容类型不匹配：您之前选择了文件，现在选择了文件夹。要发布文件夹，请点击右上角的"清空"按钮移除之前的选择，然后只选择文件夹。',
+		all_content_cleared: "所有内容已成功清空",
+		language_added_successfully: "语言内容添加成功",
+		please_use_publish_first: '请先在文件夹或文件上使用"发布到网站"功能',
+		add_language_instruction:
+			'右键点击文件夹或文件并选择"发布到网站"以添加更多语言',
+		preview_generated_successfully: "预览生成成功！",
+		preview_failed: "预览失败：{{error}}",
+		please_generate_preview_first: "请先生成预览",
+		preview_data_missing: "预览数据缺失",
+		site_published_successfully: "站点发布成功！",
+		publishing_failed: "发布失败：{{error}}",
+		site_exported_successfully: "站点导出成功至：{{path}}",
+		export_failed: "导出失败：{{error}}",
+		incremental_upload_stats: "增量上传：已上传 {{uploaded}} 个，已删除 {{deleted}} 个，未变化 {{unchanged}} 个（节省约 {{saved}}% 时间）",
+
+		// Netlify messages
+		netlify_settings_missing: "请先配置 Netlify 设置",
+		netlify_deploy_failed: "Netlify 部署失败：{{error}}",
+		netlify_deploy_success: "站点已成功部署到 Netlify！",
+
+	// FTP messages
+	ftp_settings_missing: "请先配置 FTP 设置",
+	ftp_upload_failed: "FTP 上传失败：{{error}}",
+	ftp_upload_success: "站点已成功上传到 FTP 服务器！",
+	ftp_fallback_to_plain: "服务器不支持加密，已切换到普通 FTP",
+	ftp_fallback_to_full: "⚠️ 增量上传失败，正在尝试完整上传作为备选方案...",
+
+	// Quick share messages
+	no_markdown_file: "请先打开一个 Markdown 文件",
+	license_required_for_share: "请先激活许可证以使用快速分享功能",
+	quick_share_starting: "🚀 正在准备快速分享...",
+	adding_to_publish_panel: "正在添加到发布面板...",
+	content_added_to_publish_panel: "内容已添加到发布面板",
+	preview_failed_generic: "预览生成失败",
+	quick_share_ready: "✅ 准备就绪！点击「发布」即可分享您的笔记",
+	quick_share_failed: "快速分享失败：{{error}}",
+	quick_publish_success: "快速发布完成！",
+
+		// User messages
+		enter_email_password: "请输入您的邮箱和密码",
+		enter_valid_email: "请输入有效的邮箱地址",
+		login_failed: "登录失败",
+		register_failed: "注册用户失败",
+
+		// Site assets messages
+		invalid_assets_folder: "无效的资源文件夹",
+		site_assets_set_successfully: "站点资源设置成功",
+		site_assets_cleared: "站点资源已清除",
+
+		// Sample download messages
+		sample_downloaded_successfully:
+			'主题样例 "{{themeName}}" 下载成功！已保存到文件夹：{{folderName}}',
+		sample_download_failed: "样例下载失败：{{error}}",
+
+		// Structured folder messages
+		structured_folder_processed:
+			'检测到结构化文件夹 "{{folderName}}"，已自动添加 {{contentCount}} 个语言内容',
+		static_folder_detected: "并检测到静态资源文件夹",
+
+		// General messages
+		failed_to_create_post: "创建文章失败。",
+		failed_to_create_resource: "创建资源失败。",
+	},
+
+	info: {
+		service_description:
+			"你的数据，你掌控 —— 你的笔记、你的主题、你的云端。\n" +
+			"MDFriday 让你自由构建与发布，完全掌握全流程。",
+		tagline: "专注创作，一键发布，本地优先尽在掌控",
+		learn_more: "了解更多",
+	},
+
+	common: {
+		loading: "加载中...",
+		success: "成功",
+		error: "错误",
+		cancel: "取消",
+		confirm: "确认",
+		save: "保存",
+		close: "关闭",
+		copy: "复制",
+		copied: "已复制！",
+	},
+};

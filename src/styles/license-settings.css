@@ -1,0 +1,424 @@
+/* License Settings Styles - Obsidian Native Design */
+
+/* Section Title Styling - Make section headers more prominent */
+.friday-section-title {
+    margin-top: 40px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid var(--background-modifier-border) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: var(--text-normal) !important;
+    letter-spacing: 0.02em !important;
+}
+
+/* First section title should have no top margin */
+.friday-section-title:first-child {
+    margin-top: 0 !important;
+}
+
+/* Section Wrapper - Add spacing between sections */
+.friday-settings-section {
+    margin-bottom: 32px;
+}
+
+/* License Status Text (inline with setting) */
+.friday-license-status-text {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.friday-license-status-text.friday-license-error {
+    color: var(--text-error);
+}
+
+.friday-license-status-text.friday-license-success {
+    color: var(--color-green);
+}
+
+/* Plan Badge */
+.friday-plan-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+    min-height: 28px;
+    line-height: 1;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Clickable state */
+.friday-plan-badge.clickable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.friday-plan-badge.clickable:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.friday-plan-badge.clickable:active {
+    transform: scale(0.98);
+}
+
+/* Refreshing state */
+.friday-plan-badge.refreshing {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Free Plan - Gray (基础免费版) */
+.friday-plan-badge.free {
+    background: linear-gradient(135deg, #9CA3AF, #6B7280);
+    color: white;
+    padding-top: 6px !important;
+}
+
+/* Starter Plan - Blue (入门版) */
+.friday-plan-badge.starter {
+    background: linear-gradient(135deg, #3B82F6, #2563EB);
+    color: white;
+    padding-top: 6px !important;
+}
+
+/* Enjoy Plan - Cyan/Teal (享受版 - 轻松愉快) */
+.friday-plan-badge.enjoy {
+    background: linear-gradient(135deg, #06B6D4, #0891B2);
+    color: white;
+    padding-top: 6px !important;
+}
+
+/* Creator Plan - Purple/Pink (创作者版 - 创意艺术) */
+.friday-plan-badge.creator {
+    background: linear-gradient(135deg, #EC4899, #D946EF);
+    color: white;
+    padding-top: 6px !important;
+}
+
+/* Pro Plan - Gold (专业版 - 金色尊贵) */
+.friday-plan-badge.pro {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #1a1a1a;
+    padding-top: 6px !important;
+}
+
+/* Enterprise Plan - Black Gold (企业版 - 黑金高端) */
+.friday-plan-badge.enterprise {
+    background: linear-gradient(135deg, #1F2937, #374151);
+    color: #FFD700;
+    border: 1px solid #FFD700;
+    padding-top: 6px !important;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+/* Team Plan - Keep for backward compatibility */
+.friday-plan-badge.team {
+    background: linear-gradient(135deg, #9333EA, #7C3AED);
+    color: white;
+    padding-top: 6px !important;
+}
+
+/* Device Count */
+.friday-device-count {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-normal);
+}
+
+/* Storage Usage Progress Bar */
+.friday-storage-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+}
+
+.friday-storage-usage-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-normal);
+    text-align: right;
+}
+
+.friday-storage-progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--background-modifier-border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.friday-storage-progress-fill {
+    height: 100%;
+    background: var(--interactive-accent);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Security Container (Netlify-style) */
+.friday-security-container {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    background-color: var(--background-secondary);
+}
+
+.friday-security-container h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: var(--text-normal);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Collapsible Details/Summary */
+.friday-security-container summary {
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-normal);
+    padding: 8px 0;
+    list-style: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+.friday-security-container summary::-webkit-details-marker {
+    display: none;
+}
+
+.friday-security-container summary::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid var(--text-muted);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+}
+
+.friday-security-container details[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.friday-security-container summary:hover {
+    color: var(--text-accent);
+}
+
+.friday-collapsible-content {
+    padding-top: 8px;
+}
+
+/* Sync Test Status */
+.sync-test-status {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 12px;
+}
+
+.sync-test-success {
+    color: var(--color-green);
+}
+
+.sync-test-error {
+    color: var(--color-red);
+}
+
+/* Danger Zone Section */
+.friday-danger-zone {
+    margin-top: 32px;
+    padding: 20px;
+    border: 2px solid var(--text-error);
+    border-radius: 8px;
+    background: var(--background-secondary);
+}
+
+.friday-danger-zone-title {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-error);
+}
+
+/* Premium Pricing Button with Rainbow Gradient Border */
+.friday-premium-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    background: var(--background-primary);
+    color: var(--text-normal);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 32px;
+    margin-left: 8px;
+    z-index: 0;
+}
+
+.friday-premium-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    padding: 2px;
+    background: linear-gradient(
+        120deg,
+        #ff6a6a,
+        #ffb86c,
+        #f1fa8c,
+        #50fa7b,
+        #8be9fd,
+        #bd93f9
+    );
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    z-index: -1;
+}
+
+.friday-premium-btn:hover {
+    background: var(--background-modifier-hover);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    transform: translateY(-1px);
+}
+
+.friday-premium-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Sync Section Header with Toggle */
+.friday-sync-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--background-modifier-border);
+}
+
+.friday-sync-header-container h2 {
+    margin: 0 0 0 16px !important;
+    padding: 0 !important;
+    flex: 1;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: var(--text-normal) !important;
+    letter-spacing: 0.02em !important;
+    border: none !important;
+}
+
+.friday-sync-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.friday-sync-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.friday-sync-toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-normal);
+    user-select: none;
+}
+
+/* Toggle Switch Styles */
+.friday-sync-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+}
+
+.friday-sync-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.friday-sync-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background-modifier-border);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.friday-sync-slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.friday-sync-switch input:checked + .friday-sync-slider {
+    background-color: var(--interactive-accent);
+}
+
+.friday-sync-switch input:focus + .friday-sync-slider {
+    box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
+.friday-sync-switch input:checked + .friday-sync-slider::before {
+    transform: translateX(24px);
+}
+
+/* Sync Content Container */
+.friday-sync-content-container {
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+/* Sync Enable Message */
+.friday-sync-enable-message {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    background-color: var(--background-secondary);
+}
+
+.friday-sync-info-text {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
