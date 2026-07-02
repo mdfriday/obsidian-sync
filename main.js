@@ -47,214 +47,6 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
 
-// ../../node_modules/balanced-match/index.js
-var require_balanced_match = __commonJS({
-  "../../node_modules/balanced-match/index.js"(exports, module2) {
-    "use strict";
-    module2.exports = balanced;
-    function balanced(a, b, str) {
-      if (a instanceof RegExp) a = maybeMatch(a, str);
-      if (b instanceof RegExp) b = maybeMatch(b, str);
-      var r = range2(a, b, str);
-      return r && {
-        start: r[0],
-        end: r[1],
-        pre: str.slice(0, r[0]),
-        body: str.slice(r[0] + a.length, r[1]),
-        post: str.slice(r[1] + b.length)
-      };
-    }
-    function maybeMatch(reg, str) {
-      var m2 = str.match(reg);
-      return m2 ? m2[0] : null;
-    }
-    balanced.range = range2;
-    function range2(a, b, str) {
-      var begs, beg, left, right, result;
-      var ai = str.indexOf(a);
-      var bi = str.indexOf(b, ai + 1);
-      var i = ai;
-      if (ai >= 0 && bi > 0) {
-        if (a === b) {
-          return [ai, bi];
-        }
-        begs = [];
-        left = str.length;
-        while (i >= 0 && !result) {
-          if (i == ai) {
-            begs.push(i);
-            ai = str.indexOf(a, i + 1);
-          } else if (begs.length == 1) {
-            result = [begs.pop(), bi];
-          } else {
-            beg = begs.pop();
-            if (beg < left) {
-              left = beg;
-              right = bi;
-            }
-            bi = str.indexOf(b, i + 1);
-          }
-          i = ai < bi && ai >= 0 ? ai : bi;
-        }
-        if (begs.length) {
-          result = [left, right];
-        }
-      }
-      return result;
-    }
-  }
-});
-
-// ../../node_modules/brace-expansion/index.js
-var require_brace_expansion = __commonJS({
-  "../../node_modules/brace-expansion/index.js"(exports, module2) {
-    var balanced = require_balanced_match();
-    module2.exports = expandTop;
-    var escSlash = "\0SLASH" + Math.random() + "\0";
-    var escOpen = "\0OPEN" + Math.random() + "\0";
-    var escClose = "\0CLOSE" + Math.random() + "\0";
-    var escComma = "\0COMMA" + Math.random() + "\0";
-    var escPeriod = "\0PERIOD" + Math.random() + "\0";
-    function numeric(str) {
-      return parseInt(str, 10) == str ? parseInt(str, 10) : str.charCodeAt(0);
-    }
-    function escapeBraces(str) {
-      return str.split("\\\\").join(escSlash).split("\\{").join(escOpen).split("\\}").join(escClose).split("\\,").join(escComma).split("\\.").join(escPeriod);
-    }
-    function unescapeBraces(str) {
-      return str.split(escSlash).join("\\").split(escOpen).join("{").split(escClose).join("}").split(escComma).join(",").split(escPeriod).join(".");
-    }
-    function parseCommaParts(str) {
-      if (!str)
-        return [""];
-      var parts = [];
-      var m2 = balanced("{", "}", str);
-      if (!m2)
-        return str.split(",");
-      var pre = m2.pre;
-      var body = m2.body;
-      var post = m2.post;
-      var p = pre.split(",");
-      p[p.length - 1] += "{" + body + "}";
-      var postParts = parseCommaParts(post);
-      if (post.length) {
-        p[p.length - 1] += postParts.shift();
-        p.push.apply(p, postParts);
-      }
-      parts.push.apply(parts, p);
-      return parts;
-    }
-    function expandTop(str) {
-      if (!str)
-        return [];
-      if (str.substr(0, 2) === "{}") {
-        str = "\\{\\}" + str.substr(2);
-      }
-      return expand2(escapeBraces(str), true).map(unescapeBraces);
-    }
-    function embrace(str) {
-      return "{" + str + "}";
-    }
-    function isPadded(el) {
-      return /^-?0\d/.test(el);
-    }
-    function lte(i, y) {
-      return i <= y;
-    }
-    function gte(i, y) {
-      return i >= y;
-    }
-    function expand2(str, isTop) {
-      var expansions = [];
-      var m2 = balanced("{", "}", str);
-      if (!m2) return [str];
-      var pre = m2.pre;
-      var post = m2.post.length ? expand2(m2.post, false) : [""];
-      if (/\$$/.test(m2.pre)) {
-        for (var k = 0; k < post.length; k++) {
-          var expansion = pre + "{" + m2.body + "}" + post[k];
-          expansions.push(expansion);
-        }
-      } else {
-        var isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m2.body);
-        var isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m2.body);
-        var isSequence = isNumericSequence || isAlphaSequence;
-        var isOptions = m2.body.indexOf(",") >= 0;
-        if (!isSequence && !isOptions) {
-          if (m2.post.match(/,(?!,).*\}/)) {
-            str = m2.pre + "{" + m2.body + escClose + m2.post;
-            return expand2(str);
-          }
-          return [str];
-        }
-        var n2;
-        if (isSequence) {
-          n2 = m2.body.split(/\.\./);
-        } else {
-          n2 = parseCommaParts(m2.body);
-          if (n2.length === 1) {
-            n2 = expand2(n2[0], false).map(embrace);
-            if (n2.length === 1) {
-              return post.map(function(p) {
-                return m2.pre + n2[0] + p;
-              });
-            }
-          }
-        }
-        var N;
-        if (isSequence) {
-          var x = numeric(n2[0]);
-          var y = numeric(n2[1]);
-          var width = Math.max(n2[0].length, n2[1].length);
-          var incr = n2.length == 3 ? Math.abs(numeric(n2[2])) : 1;
-          var test = lte;
-          var reverse = y < x;
-          if (reverse) {
-            incr *= -1;
-            test = gte;
-          }
-          var pad2 = n2.some(isPadded);
-          N = [];
-          for (var i = x; test(i, y); i += incr) {
-            var c;
-            if (isAlphaSequence) {
-              c = String.fromCharCode(i);
-              if (c === "\\")
-                c = "";
-            } else {
-              c = String(i);
-              if (pad2) {
-                var need = width - c.length;
-                if (need > 0) {
-                  var z = new Array(need + 1).join("0");
-                  if (i < 0)
-                    c = "-" + z + c.slice(1);
-                  else
-                    c = z + c;
-                }
-              }
-            }
-            N.push(c);
-          }
-        } else {
-          N = [];
-          for (var j = 0; j < n2.length; j++) {
-            N.push.apply(N, expand2(n2[j], false));
-          }
-        }
-        for (var j = 0; j < N.length; j++) {
-          for (var k = 0; k < post.length; k++) {
-            var expansion = pre + N[j] + post[k];
-            if (!isTop || isSequence || expansion)
-              expansions.push(expansion);
-          }
-        }
-      }
-      return expansions;
-    }
-  }
-});
-
 // node_modules/diff-match-patch/index.js
 var require_diff_match_patch = __commonJS({
   "node_modules/diff-match-patch/index.js"(exports, module2) {
@@ -3006,8 +2798,8 @@ async function saveUserData(workspacePath, patch) {
   await writeJsonFile(userDataPath(workspacePath), merged);
 }
 function getApiUrl(userData) {
-  var _a4;
-  return ((_a4 = userData == null ? void 0 : userData.serverConfig) == null ? void 0 : _a4.apiUrl) || DEFAULT_API_URL;
+  var _a5;
+  return ((_a5 = userData == null ? void 0 : userData.serverConfig) == null ? void 0 : _a5.apiUrl) || DEFAULT_API_URL;
 }
 async function getDeviceId() {
   try {
@@ -3038,7 +2830,7 @@ function getDeviceInfo() {
   return { deviceName, deviceType };
 }
 function buildLicenseInfoFromActivation(data, userDir) {
-  var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
   const f3 = data.features || {};
   const expiresAt = data.expires_at || 0;
   const msRemaining = expiresAt - Date.now();
@@ -3054,7 +2846,7 @@ function buildLicenseInfoFromActivation(data, userDir) {
     daysRemaining,
     isTrial: (data.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a4 = f3.max_devices) != null ? _a4 : 1,
+      maxDevices: (_a5 = f3.max_devices) != null ? _a5 : 1,
       maxIps: (_b2 = f3.max_ips) != null ? _b2 : 1,
       syncEnabled: (_c = f3.sync_enabled) != null ? _c : false,
       syncQuota: (_d = f3.sync_quota) != null ? _d : 0,
@@ -3082,7 +2874,7 @@ function buildLicenseInfoFromActivation(data, userDir) {
   return info3;
 }
 function buildLicenseInfoFromStored(stored) {
-  var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
   const expiresAt = stored.expiresAt || 0;
   const msRemaining = expiresAt - Date.now();
   const daysRemaining = Math.max(0, Math.ceil(msRemaining / 864e5));
@@ -3098,7 +2890,7 @@ function buildLicenseInfoFromStored(stored) {
     daysRemaining,
     isTrial: (stored.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a4 = f3.maxDevices) != null ? _a4 : 1,
+      maxDevices: (_a5 = f3.maxDevices) != null ? _a5 : 1,
       maxIps: (_b2 = f3.maxIps) != null ? _b2 : 1,
       syncEnabled: (_c = f3.syncEnabled) != null ? _c : false,
       syncQuota: (_d = f3.syncQuota) != null ? _d : 0,
@@ -3157,14 +2949,14 @@ var init_foundry = __esm({
         this.http = http;
       }
       async getStatus(workspacePath) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData(workspacePath);
           const isAuthenticated = !!((ud == null ? void 0 : ud.token) && (ud == null ? void 0 : ud.email));
           const sc = ud == null ? void 0 : ud.syncConfig;
           const status = {
             isAuthenticated,
-            serverUrl: (_a4 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a4.apiUrl,
+            serverUrl: (_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl,
             hasSyncConfig: !!sc,
             email: ud == null ? void 0 : ud.email,
             token: ud == null ? void 0 : ud.token,
@@ -3185,10 +2977,10 @@ var init_foundry = __esm({
         }
       }
       async getConfig(workspacePath) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData(workspacePath);
-          return { success: true, data: { apiUrl: (_a4 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a4.apiUrl, websiteUrl: (_b2 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _b2.websiteUrl } };
+          return { success: true, data: { apiUrl: (_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl, websiteUrl: (_b2 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _b2.websiteUrl } };
         } catch (e2) {
           return { success: false, error: e2.message };
         }
@@ -3209,13 +3001,13 @@ var init_foundry = __esm({
         this.http = http;
       }
       async requestTrial(workspacePath, email) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData(workspacePath);
           const url = `${getApiUrl(ud)}/api/license/trial`;
           const res2 = await this.http.postMultipart(url, { email });
           if (res2.status !== 200 && res2.status !== 201) throw new Error("Trial request failed");
-          const d = (_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0];
+          const d = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
           if (!(d == null ? void 0 : d.license_key)) throw new Error("Invalid trial response");
           return { success: true, data: { email: d.email, licenseKey: d.license_key, password: d.password, validityDays: d.validity_days } };
         } catch (e2) {
@@ -3223,7 +3015,7 @@ var init_foundry = __esm({
         }
       }
       async loginWithLicense(workspacePath, licenseKey) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData(workspacePath);
           const apiUrl = getApiUrl(ud);
@@ -3231,7 +3023,7 @@ var init_foundry = __esm({
           const password = licenseToPassword(licenseKey);
           const res2 = await this.http.postForm(`${apiUrl}/api/login`, { email, password });
           if (res2.status !== 201) throw new Error(`Login failed: ${res2.status}`);
-          const token = (_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0];
+          const token = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
           if (!token) throw new Error("No token in login response");
           await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
           return { success: true, data: {} };
@@ -3240,7 +3032,7 @@ var init_foundry = __esm({
         }
       }
       async activateLicense(workspacePath, licenseKey) {
-        var _a4, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d, _e;
         try {
           const ud = await loadUserData(workspacePath);
           const token = ud == null ? void 0 : ud.token;
@@ -3254,7 +3046,7 @@ var init_foundry = __esm({
             { "Authorization": `Bearer ${token}` }
           );
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Activation failed: ${res2.status}`);
-          const raw = ((_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0]) || res2.data;
+          const raw = ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) || res2.data;
           if (!(raw == null ? void 0 : raw.success)) throw new Error("License activation unsuccessful");
           const userDir = ((_c = raw.user) == null ? void 0 : _c.user_dir) || "";
           const info3 = buildLicenseInfoFromActivation(raw, userDir);
@@ -3285,7 +3077,7 @@ var init_foundry = __esm({
         }
       }
       async getLicenseInfo(workspacePath, options) {
-        var _a4, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d, _e;
         try {
           const ud = await loadUserData(workspacePath);
           if (!(ud == null ? void 0 : ud.license)) return { success: true, message: "No active license" };
@@ -3298,7 +3090,7 @@ var init_foundry = __esm({
               `${apiUrl}/api/license/info?key=${licenseKey}&_t=${ts}`,
               { "Authorization": `Bearer ${token}`, "Cache-Control": "no-cache" }
             );
-            if (res2.status === 200 && ((_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0])) {
+            if (res2.status === 200 && ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0])) {
               const raw = res2.data.data[0];
               const userDir = ((_c = ud.syncConfig) == null ? void 0 : _c.userDir) || ((_e = (_d = ud.license) == null ? void 0 : _d.user) == null ? void 0 : _e.userDir) || "";
               const info3 = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || "", user_dir: userDir } }, userDir);
@@ -3313,12 +3105,12 @@ var init_foundry = __esm({
         }
       }
       async getLicenseUsage(workspacePath) {
-        var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
         try {
           const ud = await loadUserData(workspacePath);
           const token = ud == null ? void 0 : ud.token;
           if (!token) throw new Error("Not authenticated");
-          const licenseKey = (_a4 = ud == null ? void 0 : ud.license) == null ? void 0 : _a4.key;
+          const licenseKey = (_a5 = ud == null ? void 0 : ud.license) == null ? void 0 : _a5.key;
           if (!licenseKey) throw new Error("No license");
           const apiUrl = getApiUrl(ud);
           const ts = Date.now();
@@ -3348,13 +3140,13 @@ var init_foundry = __esm({
         }
       }
       async resetUsage(workspacePath, force) {
-        var _a4;
+        var _a5;
         if (!force) return { success: false, error: "Set force=true to confirm reset" };
         try {
           const ud = await loadUserData(workspacePath);
           const token = ud == null ? void 0 : ud.token;
           if (!token) throw new Error("Not authenticated");
-          const licenseKey = (_a4 = ud == null ? void 0 : ud.license) == null ? void 0 : _a4.key;
+          const licenseKey = (_a5 = ud == null ? void 0 : ud.license) == null ? void 0 : _a5.key;
           if (!licenseKey) throw new Error("No license");
           const apiUrl = getApiUrl(ud);
           const res2 = await this.http.post(
@@ -3976,8 +3768,8 @@ async function saveUserData2(vault, pluginDir, patch) {
   await vaultWriteJson(vault, makeUserDataPath(pluginDir), merged);
 }
 function getApiUrl2(ud) {
-  var _a4;
-  return ((_a4 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a4.apiUrl) || DEFAULT_API_URL2;
+  var _a5;
+  return ((_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl) || DEFAULT_API_URL2;
 }
 function licenseToEmail2(key2) {
   return `${key2.replace(/^MDF-/i, "").toLowerCase()}@mdfriday.com`;
@@ -4009,7 +3801,7 @@ function getDeviceInfo2() {
   return { deviceName: name, deviceType: isMobile ? "mobile" : "desktop" };
 }
 function buildLicenseInfoFromActivation2(data, userDir) {
-  var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
   const f3 = data.features || {};
   const expiresAt = data.expires_at || 0;
   const daysRemaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 864e5));
@@ -4023,7 +3815,7 @@ function buildLicenseInfoFromActivation2(data, userDir) {
     daysRemaining,
     isTrial: (data.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a4 = f3.max_devices) != null ? _a4 : 1,
+      maxDevices: (_a5 = f3.max_devices) != null ? _a5 : 1,
       maxIps: (_b2 = f3.max_ips) != null ? _b2 : 1,
       syncEnabled: (_c = f3.sync_enabled) != null ? _c : false,
       syncQuota: (_d = f3.sync_quota) != null ? _d : 0,
@@ -4051,7 +3843,7 @@ function buildLicenseInfoFromActivation2(data, userDir) {
   return info3;
 }
 function buildLicenseInfoFromStored2(stored) {
-  var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
   const expiresAt = stored.expiresAt || 0;
   const daysRemaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 864e5));
   const expires = new Date(expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -4065,7 +3857,7 @@ function buildLicenseInfoFromStored2(stored) {
     daysRemaining,
     isTrial: (stored.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a4 = f3.maxDevices) != null ? _a4 : 1,
+      maxDevices: (_a5 = f3.maxDevices) != null ? _a5 : 1,
       maxIps: (_b2 = f3.maxIps) != null ? _b2 : 1,
       syncEnabled: (_c = f3.syncEnabled) != null ? _c : false,
       syncQuota: (_d = f3.syncQuota) != null ? _d : 0,
@@ -4094,8 +3886,8 @@ function getNested2(obj, key2) {
   return key2.split(".").reduce((cur, p) => cur == null ? void 0 : cur[p], obj);
 }
 function extractVaultAndDir(config) {
-  var _a4;
-  const repo = (_a4 = config == null ? void 0 : config.persistence) == null ? void 0 : _a4.workspace;
+  var _a5;
+  const repo = (_a5 = config == null ? void 0 : config.persistence) == null ? void 0 : _a5.workspace;
   if ((repo == null ? void 0 : repo.getVault) && (repo == null ? void 0 : repo.getPluginDir)) {
     return { vault: repo.getVault(), pluginDir: repo.getPluginDir() };
   }
@@ -4133,14 +3925,14 @@ var init_mobile = __esm({
         this.pluginDir = pluginDir;
       }
       async getStatus(workspacePath) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const isAuthenticated = !!((ud == null ? void 0 : ud.token) && (ud == null ? void 0 : ud.email));
           const sc = ud == null ? void 0 : ud.syncConfig;
           const status = {
             isAuthenticated,
-            serverUrl: (_a4 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a4.apiUrl,
+            serverUrl: (_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl,
             hasSyncConfig: !!sc,
             email: ud == null ? void 0 : ud.email,
             token: ud == null ? void 0 : ud.token,
@@ -4161,10 +3953,10 @@ var init_mobile = __esm({
         }
       }
       async getConfig(workspacePath) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
-          return { success: true, data: { apiUrl: (_a4 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a4.apiUrl, websiteUrl: (_b2 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _b2.websiteUrl } };
+          return { success: true, data: { apiUrl: (_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl, websiteUrl: (_b2 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _b2.websiteUrl } };
         } catch (e2) {
           return { success: false, error: e2.message };
         }
@@ -4187,12 +3979,12 @@ var init_mobile = __esm({
         this.pluginDir = pluginDir;
       }
       async requestTrial(workspacePath, email) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const res2 = await this.http.postMultipart(`${getApiUrl2(ud)}/api/license/trial`, { email });
           if (res2.status !== 200 && res2.status !== 201) throw new Error("Trial request failed");
-          const d = (_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0];
+          const d = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
           if (!(d == null ? void 0 : d.license_key)) throw new Error("Invalid trial response");
           return { success: true, data: { email: d.email, licenseKey: d.license_key, password: d.password, validityDays: d.validity_days } };
         } catch (e2) {
@@ -4200,7 +3992,7 @@ var init_mobile = __esm({
         }
       }
       async loginWithLicense(workspacePath, licenseKey) {
-        var _a4, _b2;
+        var _a5, _b2;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const apiUrl = getApiUrl2(ud);
@@ -4208,7 +4000,7 @@ var init_mobile = __esm({
           const pass = licenseToPassword2(licenseKey);
           const res2 = await this.http.postForm(`${apiUrl}/api/login`, { email, password: pass });
           if (res2.status !== 201) throw new Error(`Login failed: ${res2.status}`);
-          const token = (_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0];
+          const token = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
           if (!token) throw new Error("No token in login response");
           await saveUserData2(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
           return { success: true, data: {} };
@@ -4217,7 +4009,7 @@ var init_mobile = __esm({
         }
       }
       async activateLicense(workspacePath, licenseKey) {
-        var _a4, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d, _e;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const token = ud == null ? void 0 : ud.token;
@@ -4231,7 +4023,7 @@ var init_mobile = __esm({
             { "Authorization": `Bearer ${token}` }
           );
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Activation failed: ${res2.status}`);
-          const raw = ((_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0]) || res2.data;
+          const raw = ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) || res2.data;
           if (!(raw == null ? void 0 : raw.success)) throw new Error("License activation unsuccessful");
           const userDir = ((_c = raw.user) == null ? void 0 : _c.user_dir) || "";
           const info3 = buildLicenseInfoFromActivation2(raw, userDir);
@@ -4244,7 +4036,7 @@ var init_mobile = __esm({
         }
       }
       async getLicenseInfo(workspacePath, options) {
-        var _a4, _b2, _c, _d;
+        var _a5, _b2, _c, _d;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           if (!(ud == null ? void 0 : ud.license)) return { success: true, message: "No active license" };
@@ -4253,7 +4045,7 @@ var init_mobile = __esm({
               `${getApiUrl2(ud)}/api/license/info?key=${ud.license.key}&_t=${Date.now()}`,
               { "Authorization": `Bearer ${ud.token}`, "Cache-Control": "no-cache" }
             );
-            if (res2.status === 200 && ((_b2 = (_a4 = res2.data) == null ? void 0 : _a4.data) == null ? void 0 : _b2[0])) {
+            if (res2.status === 200 && ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0])) {
               const raw = res2.data.data[0];
               const info3 = buildLicenseInfoFromActivation2({ ...raw, user: { email: ud.email || "", user_dir: ((_c = ud.syncConfig) == null ? void 0 : _c.userDir) || "" } }, ((_d = ud.syncConfig) == null ? void 0 : _d.userDir) || "");
               await saveUserData2(this.vault, this.pluginDir, { license: { ...ud.license, plan: info3.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info3.features } });
@@ -4266,10 +4058,10 @@ var init_mobile = __esm({
         }
       }
       async getLicenseUsage(workspacePath) {
-        var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
-          if (!(ud == null ? void 0 : ud.token) || !((_a4 = ud == null ? void 0 : ud.license) == null ? void 0 : _a4.key)) throw new Error("Not authenticated");
+          if (!(ud == null ? void 0 : ud.token) || !((_a5 = ud == null ? void 0 : ud.license) == null ? void 0 : _a5.key)) throw new Error("Not authenticated");
           const res2 = await this.http.get(
             `${getApiUrl2(ud)}/api/license/usage?key=${ud.license.key}&_t=${Date.now()}`,
             { "Authorization": `Bearer ${ud.token}`, "Cache-Control": "no-cache" }
@@ -4289,11 +4081,11 @@ var init_mobile = __esm({
         }
       }
       async resetUsage(workspacePath, force) {
-        var _a4;
+        var _a5;
         if (!force) return { success: false, error: "Set force=true to confirm" };
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
-          if (!(ud == null ? void 0 : ud.token) || !((_a4 = ud == null ? void 0 : ud.license) == null ? void 0 : _a4.key)) throw new Error("Not authenticated");
+          if (!(ud == null ? void 0 : ud.token) || !((_a5 = ud == null ? void 0 : ud.license) == null ? void 0 : _a5.key)) throw new Error("Not authenticated");
           const res2 = await this.http.post(`${getApiUrl2(ud)}/api/license/usage/reset?key=${ud.license.key}`, {}, { "Authorization": `Bearer ${ud.token}` });
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Reset failed: ${res2.status}`);
           return { success: true };
@@ -4433,9 +4225,9 @@ var AVAILABLE_LANGUAGES = [
 ];
 var DEFAULT_LANGUAGE = "en";
 function detectLanguage(app) {
-  var _a4, _b2, _c, _d, _e;
+  var _a5, _b2, _c, _d, _e;
   try {
-    let obsidianLang = (_b2 = (_a4 = app.vault) == null ? void 0 : _a4.config) == null ? void 0 : _b2.lang;
+    let obsidianLang = (_b2 = (_a5 = app.vault) == null ? void 0 : _a5.config) == null ? void 0 : _b2.lang;
     if (!obsidianLang) {
       obsidianLang = (_d = (_c = app.vault) == null ? void 0 : _c.config) == null ? void 0 : _d.language;
     }
@@ -7996,8 +7788,8 @@ function expandKeywords(message, lang, recurseLimit = 10) {
       // [`%{${key}.lower}`, [value[0].toLocaleLowerCase(langCode) + value.substring(1)]],
     ]
   ).flat().sort((a, b) => {
-    var _a4, _b2, _c, _d;
-    return ((_b2 = (_a4 = a[1]) == null ? void 0 : _a4.length) != null ? _b2 : 0) - ((_d = (_c = b[1]) == null ? void 0 : _c.length) != null ? _d : 0);
+    var _a5, _b2, _c, _d;
+    return ((_b2 = (_a5 = a[1]) == null ? void 0 : _a5.length) != null ? _b2 : 0) - ((_d = (_c = b[1]) == null ? void 0 : _c.length) != null ? _d : 0);
   });
   const ret = {
     ...message
@@ -8028,9 +7820,9 @@ function setLang(lang) {
   msgCache.clear();
 }
 function _getMessage(key2, lang) {
-  var _a4;
+  var _a5;
   if (key2.trim() == "") return key2;
-  const msgs = (_a4 = allMessages[key2]) != null ? _a4 : void 0;
+  const msgs = (_a5 = allMessages[key2]) != null ? _a5 : void 0;
   if (lang == "") {
     lang = "def";
   }
@@ -8882,8 +8674,8 @@ function arrayBufferToBase64internalBrowser(buffer) {
     const blob = new Blob([buffer], { type: "application/octet-binary" });
     const reader = new FileReader();
     reader.onload = function(evt) {
-      var _a4, _b2;
-      const dataURI = ((_b2 = (_a4 = evt.target) == null ? void 0 : _a4.result) == null ? void 0 : _b2.toString()) || "";
+      var _a5, _b2;
+      const dataURI = ((_b2 = (_a5 = evt.target) == null ? void 0 : _a5.result) == null ? void 0 : _b2.toString()) || "";
       if (buffer.byteLength != 0 && (dataURI == "" || dataURI == "data:"))
         return rej(new TypeError("Could not parse the encoded string"));
       const result = dataURI.substring(dataURI.indexOf(",") + 1);
@@ -9497,14 +9289,14 @@ var ChunkManager = class {
     return false;
   }
   cacheChunk(chunk) {
-    var _a4;
+    var _a5;
     if (this.getCachedChunk(chunk._id)) {
       this.reorderChunk(chunk._id);
       return;
     }
     this.caches.set(chunk._id, new FallbackWeakRef(chunk));
     this.allocCount++;
-    const maxCacheSize = (_a4 = this.maxCacheSize) != null ? _a4 : DEFAULT_MAX_CACHE_SIZE;
+    const maxCacheSize = (_a5 = this.maxCacheSize) != null ? _a5 : DEFAULT_MAX_CACHE_SIZE;
     if (this.caches.size > maxCacheSize) {
       do {
         const firstKey = this.caches.keys().next().value;
@@ -9583,7 +9375,7 @@ var ChunkManager = class {
     this.waitingMap.clear();
   }
   async readSingle(id, options) {
-    var _a4;
+    var _a5;
     if (!options.skipCache) {
       const cachedChunk = this.getCachedChunk(id);
       if (cachedChunk) {
@@ -9602,7 +9394,7 @@ var ChunkManager = class {
         throw new LiveSyncError(`Failed to read chunk ${id}`, { status: 404, cause: error });
       }
     }
-    const timeout = (_a4 = options.timeout) != null ? _a4 : DEFAULT_TIMEOUT;
+    const timeout = (_a5 = options.timeout) != null ? _a5 : DEFAULT_TIMEOUT;
     if (timeout > 0) {
       const ret = this._enqueueWaiting(id, timeout);
       if (!options.preventRemoteRequest) {
@@ -9634,8 +9426,8 @@ var ChunkManager = class {
     }
   }
   async _waitForArrival(options, readIds, resultMap) {
-    var _a4;
-    const timeout = (_a4 = options.timeout) != null ? _a4 : DEFAULT_TIMEOUT;
+    var _a5;
+    const timeout = (_a5 = options.timeout) != null ? _a5 : DEFAULT_TIMEOUT;
     if (timeout > 0) {
       const tasks3 = [...readIds].map((id) => {
         return this._enqueueWaiting(id, timeout);
@@ -9802,7 +9594,7 @@ var EventHub = class {
     this._emitter = emitter != null ? emitter : new EventTarget();
   }
   _issueSignal(key2, callback) {
-    var _a4;
+    var _a5;
     let assigned = this._assigned.get(key2);
     if (assigned === void 0) {
       assigned = /* @__PURE__ */ new WeakMap();
@@ -9813,13 +9605,13 @@ var EventHub = class {
       controller = new AbortController();
       const refController = new FallbackWeakRef(controller);
       controller.signal.addEventListener("abort", () => {
-        var _a5, _b2;
-        (_a5 = this._assigned.get(key2)) == null ? void 0 : _a5.delete(callback);
+        var _a6, _b2;
+        (_a6 = this._assigned.get(key2)) == null ? void 0 : _a6.delete(callback);
         (_b2 = this._allAssigned.get(key2)) == null ? void 0 : _b2.delete(refController);
       }, { once: true });
       assigned.set(callback, refController);
       this._assigned.set(key2, assigned);
-      const allAssigned = (_a4 = this._allAssigned.get(key2)) != null ? _a4 : /* @__PURE__ */ new Set();
+      const allAssigned = (_a5 = this._allAssigned.get(key2)) != null ? _a5 : /* @__PURE__ */ new Set();
       allAssigned.add(refController);
       this._allAssigned.set(key2, allAssigned);
       return controller;
@@ -9842,10 +9634,10 @@ var EventHub = class {
    * @param callback
    */
   off(event, callback) {
-    var _a4, _b2;
+    var _a5, _b2;
     const key2 = event;
     if (callback) {
-      const w2 = (_a4 = this._assigned.get(key2)) == null ? void 0 : _a4.get(callback);
+      const w2 = (_a5 = this._assigned.get(key2)) == null ? void 0 : _a5.get(callback);
       const controller = w2 == null ? void 0 : w2.deref();
       controller == null ? void 0 : controller.abort();
     } else {
@@ -9913,8 +9705,8 @@ var LiveSyncLocalDB = class {
     this.managers.clearCaches();
   }
   async _prepareHashFunctions() {
-    var _a4;
-    await ((_a4 = this.managers) == null ? void 0 : _a4.prepareHashFunction());
+    var _a5;
+    await ((_a5 = this.managers) == null ? void 0 : _a5.prepareHashFunction());
   }
   onunload() {
     void this.env.services.databaseEvents.onUnloadDatabase(this);
@@ -9926,18 +9718,18 @@ var LiveSyncLocalDB = class {
     void this._prepareHashFunctions();
   }
   async close() {
-    var _a4;
+    var _a5;
     Logger("Database closed (by close)");
     this.isReady = false;
-    (_a4 = this.offRemoteChunkFetchedHandler) == null ? void 0 : _a4.call(this);
+    (_a5 = this.offRemoteChunkFetchedHandler) == null ? void 0 : _a5.call(this);
     if (this.localDatabase != null) {
       await this.localDatabase.close();
     }
     await this.env.services.databaseEvents.onUnloadDatabase(this);
   }
   onNewLeaf(chunk) {
-    var _a4;
-    (_a4 = this.managers.chunkManager) == null ? void 0 : _a4.emitEvent(EVENT_CHUNK_FETCHED, chunk);
+    var _a5;
+    (_a5 = this.managers.chunkManager) == null ? void 0 : _a5.emitEvent(EVENT_CHUNK_FETCHED, chunk);
   }
   async initializeDatabase() {
     await this._prepareHashFunctions();
@@ -9959,20 +9751,20 @@ var LiveSyncLocalDB = class {
     Logger(await this.localDatabase.info(), LOG_LEVEL_VERBOSE);
     await this.managers.initManagers();
     this.localDatabase.on("close", () => {
-      var _a4;
+      var _a5;
       Logger("Database closed.");
       this.isReady = false;
       this.localDatabase.removeAllListeners();
-      (_a4 = this.env.services.replicator.getActiveReplicator()) == null ? void 0 : _a4.closeReplication();
+      (_a5 = this.env.services.replicator.getActiveReplicator()) == null ? void 0 : _a5.closeReplication();
       void this.managers.teardownManagers();
     });
     const _instance = new FallbackWeakRef(this);
     const unload = eventHub.onEvent(REMOTE_CHUNK_FETCHED, (chunk) => {
-      var _a4;
+      var _a5;
       if (_instance.deref() == null) {
         unload();
       }
-      (_a4 = _instance.deref()) == null ? void 0 : _a4.onNewLeaf(chunk);
+      (_a5 = _instance.deref()) == null ? void 0 : _a5.onNewLeaf(chunk);
     });
     this.offRemoteChunkFetchedHandler = unload;
     this.isReady = true;
@@ -10065,9 +9857,9 @@ var LiveSyncLocalDB = class {
     return { used, existing };
   }
   async resetDatabase() {
-    var _a4;
+    var _a5;
     await this.managers.teardownManagers();
-    (_a4 = this.env.services.replicator.getActiveReplicator()) == null ? void 0 : _a4.closeReplication();
+    (_a5 = this.env.services.replicator.getActiveReplicator()) == null ? void 0 : _a5.closeReplication();
     if (!await this.env.services.databaseEvents.onResetDatabase(this)) {
       Logger("Database reset has been prevented or failed on some modules.", LOG_LEVEL_INFO);
       return false;
@@ -10351,10 +10143,224 @@ var LRUCache = class {
   }
 };
 
-// ../../node_modules/minimatch/dist/mjs/index.js
-var import_brace_expansion = __toESM(require_brace_expansion(), 1);
+// node_modules/balanced-match/dist/esm/index.js
+var balanced = (a, b, str) => {
+  const ma = a instanceof RegExp ? maybeMatch(a, str) : a;
+  const mb = b instanceof RegExp ? maybeMatch(b, str) : b;
+  const r = ma !== null && mb != null && range2(ma, mb, str);
+  return r && {
+    start: r[0],
+    end: r[1],
+    pre: str.slice(0, r[0]),
+    body: str.slice(r[0] + ma.length, r[1]),
+    post: str.slice(r[1] + mb.length)
+  };
+};
+var maybeMatch = (reg, str) => {
+  const m2 = str.match(reg);
+  return m2 ? m2[0] : null;
+};
+var range2 = (a, b, str) => {
+  let begs, beg, left, right = void 0, result;
+  let ai = str.indexOf(a);
+  let bi = str.indexOf(b, ai + 1);
+  let i = ai;
+  if (ai >= 0 && bi > 0) {
+    if (a === b) {
+      return [ai, bi];
+    }
+    begs = [];
+    left = str.length;
+    while (i >= 0 && !result) {
+      if (i === ai) {
+        begs.push(i);
+        ai = str.indexOf(a, i + 1);
+      } else if (begs.length === 1) {
+        const r = begs.pop();
+        if (r !== void 0)
+          result = [r, bi];
+      } else {
+        beg = begs.pop();
+        if (beg !== void 0 && beg < left) {
+          left = beg;
+          right = bi;
+        }
+        bi = str.indexOf(b, i + 1);
+      }
+      i = ai < bi && ai >= 0 ? ai : bi;
+    }
+    if (begs.length && right !== void 0) {
+      result = [left, right];
+    }
+  }
+  return result;
+};
 
-// ../../node_modules/minimatch/dist/mjs/assert-valid-pattern.js
+// node_modules/brace-expansion/dist/esm/index.js
+var escSlash = "\0SLASH" + Math.random() + "\0";
+var escOpen = "\0OPEN" + Math.random() + "\0";
+var escClose = "\0CLOSE" + Math.random() + "\0";
+var escComma = "\0COMMA" + Math.random() + "\0";
+var escPeriod = "\0PERIOD" + Math.random() + "\0";
+var escSlashPattern = new RegExp(escSlash, "g");
+var escOpenPattern = new RegExp(escOpen, "g");
+var escClosePattern = new RegExp(escClose, "g");
+var escCommaPattern = new RegExp(escComma, "g");
+var escPeriodPattern = new RegExp(escPeriod, "g");
+var slashPattern = /\\\\/g;
+var openPattern = /\\{/g;
+var closePattern = /\\}/g;
+var commaPattern = /\\,/g;
+var periodPattern = /\\\./g;
+var EXPANSION_MAX = 1e5;
+function numeric(str) {
+  return !isNaN(str) ? parseInt(str, 10) : str.charCodeAt(0);
+}
+function escapeBraces(str) {
+  return str.replace(slashPattern, escSlash).replace(openPattern, escOpen).replace(closePattern, escClose).replace(commaPattern, escComma).replace(periodPattern, escPeriod);
+}
+function unescapeBraces(str) {
+  return str.replace(escSlashPattern, "\\").replace(escOpenPattern, "{").replace(escClosePattern, "}").replace(escCommaPattern, ",").replace(escPeriodPattern, ".");
+}
+function parseCommaParts(str) {
+  if (!str) {
+    return [""];
+  }
+  const parts = [];
+  const m2 = balanced("{", "}", str);
+  if (!m2) {
+    return str.split(",");
+  }
+  const { pre, body, post } = m2;
+  const p = pre.split(",");
+  p[p.length - 1] += "{" + body + "}";
+  const postParts = parseCommaParts(post);
+  if (post.length) {
+    ;
+    p[p.length - 1] += postParts.shift();
+    p.push.apply(p, postParts);
+  }
+  parts.push.apply(parts, p);
+  return parts;
+}
+function expand(str, options = {}) {
+  if (!str) {
+    return [];
+  }
+  const { max: max3 = EXPANSION_MAX } = options;
+  if (str.slice(0, 2) === "{}") {
+    str = "\\{\\}" + str.slice(2);
+  }
+  return expand_(escapeBraces(str), max3, true).map(unescapeBraces);
+}
+function embrace(str) {
+  return "{" + str + "}";
+}
+function isPadded(el) {
+  return /^-?0\d/.test(el);
+}
+function lte(i, y) {
+  return i <= y;
+}
+function gte(i, y) {
+  return i >= y;
+}
+function expand_(str, max3, isTop) {
+  const expansions = [];
+  for (; ; ) {
+    const m2 = balanced("{", "}", str);
+    if (!m2)
+      return [str];
+    const pre = m2.pre;
+    if (/\$$/.test(m2.pre)) {
+      const post2 = m2.post.length ? expand_(m2.post, max3, false) : [""];
+      for (let k = 0; k < post2.length && k < max3; k++) {
+        const expansion = pre + "{" + m2.body + "}" + post2[k];
+        expansions.push(expansion);
+      }
+      return expansions;
+    }
+    const isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m2.body);
+    const isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m2.body);
+    const isSequence = isNumericSequence || isAlphaSequence;
+    const isOptions = m2.body.indexOf(",") >= 0;
+    if (!isSequence && !isOptions) {
+      if (m2.post.match(/,(?!,).*\}/)) {
+        str = m2.pre + "{" + m2.body + escClose + m2.post;
+        isTop = true;
+        continue;
+      }
+      return [str];
+    }
+    const post = m2.post.length ? expand_(m2.post, max3, false) : [""];
+    let n2;
+    if (isSequence) {
+      n2 = m2.body.split(/\.\./);
+    } else {
+      n2 = parseCommaParts(m2.body);
+      if (n2.length === 1 && n2[0] !== void 0) {
+        n2 = expand_(n2[0], max3, false).map(embrace);
+        if (n2.length === 1) {
+          return post.map((p) => m2.pre + n2[0] + p);
+        }
+      }
+    }
+    let N;
+    if (isSequence && n2[0] !== void 0 && n2[1] !== void 0) {
+      const x = numeric(n2[0]);
+      const y = numeric(n2[1]);
+      const width = Math.max(n2[0].length, n2[1].length);
+      let incr = n2.length === 3 && n2[2] !== void 0 ? Math.max(Math.abs(numeric(n2[2])), 1) : 1;
+      let test = lte;
+      const reverse = y < x;
+      if (reverse) {
+        incr *= -1;
+        test = gte;
+      }
+      const pad2 = n2.some(isPadded);
+      N = [];
+      for (let i = x; test(i, y) && N.length < max3; i += incr) {
+        let c;
+        if (isAlphaSequence) {
+          c = String.fromCharCode(i);
+          if (c === "\\") {
+            c = "";
+          }
+        } else {
+          c = String(i);
+          if (pad2) {
+            const need = width - c.length;
+            if (need > 0) {
+              const z = new Array(need + 1).join("0");
+              if (i < 0) {
+                c = "-" + z + c.slice(1);
+              } else {
+                c = z + c;
+              }
+            }
+          }
+        }
+        N.push(c);
+      }
+    } else {
+      N = [];
+      for (let j = 0; j < n2.length; j++) {
+        N.push.apply(N, expand_(n2[j], max3, false));
+      }
+    }
+    for (let j = 0; j < N.length; j++) {
+      for (let k = 0; k < post.length && expansions.length < max3; k++) {
+        const expansion = pre + N[j] + post[k];
+        if (!isTop || isSequence || expansion) {
+          expansions.push(expansion);
+        }
+      }
+    }
+    return expansions;
+  }
+}
+
+// node_modules/minimatch/dist/esm/assert-valid-pattern.js
 var MAX_PATTERN_LENGTH = 1024 * 64;
 var assertValidPattern = (pattern) => {
   if (typeof pattern !== "string") {
@@ -10365,7 +10371,7 @@ var assertValidPattern = (pattern) => {
   }
 };
 
-// ../../node_modules/minimatch/dist/mjs/brace-expressions.js
+// node_modules/minimatch/dist/esm/brace-expressions.js
 var posixClasses = {
   "[:alnum:]": ["\\p{L}\\p{Nl}\\p{Nd}", true],
   "[:alpha:]": ["\\p{L}\\p{Nl}", true],
@@ -10474,14 +10480,65 @@ var parseClass = (glob, position) => {
   return [comb, uflag, endPos - pos, true];
 };
 
-// ../../node_modules/minimatch/dist/mjs/unescape.js
-var unescape2 = (s, { windowsPathsNoEscape = false } = {}) => {
-  return windowsPathsNoEscape ? s.replace(/\[([^\/\\])\]/g, "$1") : s.replace(/((?!\\).|^)\[([^\/\\])\]/g, "$1$2").replace(/\\([^\/])/g, "$1");
+// node_modules/minimatch/dist/esm/unescape.js
+var unescape2 = (s, { windowsPathsNoEscape = false, magicalBraces = true } = {}) => {
+  if (magicalBraces) {
+    return windowsPathsNoEscape ? s.replace(/\[([^/\\])\]/g, "$1") : s.replace(/((?!\\).|^)\[([^/\\])\]/g, "$1$2").replace(/\\([^/])/g, "$1");
+  }
+  return windowsPathsNoEscape ? s.replace(/\[([^/\\{}])\]/g, "$1") : s.replace(/((?!\\).|^)\[([^/\\{}])\]/g, "$1$2").replace(/\\([^/{}])/g, "$1");
 };
 
-// ../../node_modules/minimatch/dist/mjs/ast.js
+// node_modules/minimatch/dist/esm/ast.js
+var _a2;
 var types = /* @__PURE__ */ new Set(["!", "?", "+", "*", "@"]);
 var isExtglobType = (c) => types.has(c);
+var isExtglobAST = (c) => isExtglobType(c.type);
+var adoptionMap = /* @__PURE__ */ new Map([
+  ["!", ["@"]],
+  ["?", ["?", "@"]],
+  ["@", ["@"]],
+  ["*", ["*", "+", "?", "@"]],
+  ["+", ["+", "@"]]
+]);
+var adoptionWithSpaceMap = /* @__PURE__ */ new Map([
+  ["!", ["?"]],
+  ["@", ["?"]],
+  ["+", ["?", "*"]]
+]);
+var adoptionAnyMap = /* @__PURE__ */ new Map([
+  ["!", ["?", "@"]],
+  ["?", ["?", "@"]],
+  ["@", ["?", "@"]],
+  ["*", ["*", "+", "?", "@"]],
+  ["+", ["+", "@", "?", "*"]]
+]);
+var usurpMap = /* @__PURE__ */ new Map([
+  ["!", /* @__PURE__ */ new Map([["!", "@"]])],
+  [
+    "?",
+    /* @__PURE__ */ new Map([
+      ["*", "*"],
+      ["+", "*"]
+    ])
+  ],
+  [
+    "@",
+    /* @__PURE__ */ new Map([
+      ["!", "!"],
+      ["?", "?"],
+      ["@", "@"],
+      ["*", "*"],
+      ["+", "+"]
+    ])
+  ],
+  [
+    "+",
+    /* @__PURE__ */ new Map([
+      ["?", "*"],
+      ["*", "*"]
+    ])
+  ]
+]);
 var startNoTraversal = "(?!(?:^|/)\\.\\.?(?:$|/))";
 var startNoDot = "(?!\\.)";
 var addPatternStart = /* @__PURE__ */ new Set(["[", "."]);
@@ -10491,8 +10548,9 @@ var regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 var qmark = "[^/]";
 var star = qmark + "*?";
 var starNoEmpty = qmark + "+?";
-var _root, _hasMagic, _uflag, _parts, _parent, _parentIndex, _negs, _filledNegs, _options, _toString, _emptyExt, _AST_instances, fillNegs_fn, _AST_static, parseAST_fn, partsToRegExp_fn, parseGlob_fn;
-var _AST = class _AST {
+var ID = 0;
+var _root, _hasMagic, _uflag, _parts, _parent, _parentIndex, _negs, _filledNegs, _options, _toString, _emptyExt, _AST_instances, fillNegs_fn, _AST_static, parseAST_fn, canAdoptWithSpace_fn, canAdopt_fn, canAdoptType_fn, adoptWithSpace_fn, adopt_fn, canUsurpType_fn, canUsurp_fn, usurp_fn, flatten_fn, partsToRegExp_fn, parseGlob_fn;
+var AST = class {
   constructor(type, parent, options = {}) {
     __privateAdd(this, _AST_instances);
     __publicField(this, "type");
@@ -10509,6 +10567,7 @@ var _AST = class _AST {
     // set to true if it's an extglob with no children
     // (which really means one child of '')
     __privateAdd(this, _emptyExt, false);
+    __publicField(this, "id", ++ID);
     this.type = type;
     if (type)
       __privateSet(this, _hasMagic, true);
@@ -10519,6 +10578,23 @@ var _AST = class _AST {
     if (type === "!" && !__privateGet(__privateGet(this, _root), _filledNegs))
       __privateGet(this, _negs).push(this);
     __privateSet(this, _parentIndex, __privateGet(this, _parent) ? __privateGet(__privateGet(this, _parent), _parts).length : 0);
+  }
+  get depth() {
+    var _a5, _b2;
+    return ((_b2 = (_a5 = __privateGet(this, _parent)) == null ? void 0 : _a5.depth) != null ? _b2 : -1) + 1;
+  }
+  [Symbol.for("nodejs.util.inspect.custom")]() {
+    var _a5;
+    return {
+      "@@type": "AST",
+      id: this.id,
+      type: this.type,
+      root: __privateGet(this, _root).id,
+      parent: (_a5 = __privateGet(this, _parent)) == null ? void 0 : _a5.id,
+      depth: this.depth,
+      partsLength: __privateGet(this, _parts).length,
+      parts: __privateGet(this, _parts)
+    };
   }
   get hasMagic() {
     if (__privateGet(this, _hasMagic) !== void 0)
@@ -10533,56 +10609,50 @@ var _AST = class _AST {
   }
   // reconstructs the pattern
   toString() {
-    if (__privateGet(this, _toString) !== void 0)
-      return __privateGet(this, _toString);
-    if (!this.type) {
-      return __privateSet(this, _toString, __privateGet(this, _parts).map((p) => String(p)).join(""));
-    } else {
-      return __privateSet(this, _toString, this.type + "(" + __privateGet(this, _parts).map((p) => String(p)).join("|") + ")");
-    }
+    return __privateGet(this, _toString) !== void 0 ? __privateGet(this, _toString) : !this.type ? __privateSet(this, _toString, __privateGet(this, _parts).map((p) => String(p)).join("")) : __privateSet(this, _toString, this.type + "(" + __privateGet(this, _parts).map((p) => String(p)).join("|") + ")");
   }
   push(...parts) {
     for (const p of parts) {
       if (p === "")
         continue;
-      if (typeof p !== "string" && !(p instanceof _AST && __privateGet(p, _parent) === this)) {
+      if (typeof p !== "string" && !(p instanceof _a2 && __privateGet(p, _parent) === this)) {
         throw new Error("invalid part: " + p);
       }
       __privateGet(this, _parts).push(p);
     }
   }
   toJSON() {
-    var _a4;
+    var _a5;
     const ret = this.type === null ? __privateGet(this, _parts).slice().map((p) => typeof p === "string" ? p : p.toJSON()) : [this.type, ...__privateGet(this, _parts).map((p) => p.toJSON())];
     if (this.isStart() && !this.type)
       ret.unshift([]);
-    if (this.isEnd() && (this === __privateGet(this, _root) || __privateGet(__privateGet(this, _root), _filledNegs) && ((_a4 = __privateGet(this, _parent)) == null ? void 0 : _a4.type) === "!")) {
+    if (this.isEnd() && (this === __privateGet(this, _root) || __privateGet(__privateGet(this, _root), _filledNegs) && ((_a5 = __privateGet(this, _parent)) == null ? void 0 : _a5.type) === "!")) {
       ret.push({});
     }
     return ret;
   }
   isStart() {
-    var _a4;
+    var _a5;
     if (__privateGet(this, _root) === this)
       return true;
-    if (!((_a4 = __privateGet(this, _parent)) == null ? void 0 : _a4.isStart()))
+    if (!((_a5 = __privateGet(this, _parent)) == null ? void 0 : _a5.isStart()))
       return false;
     if (__privateGet(this, _parentIndex) === 0)
       return true;
     const p = __privateGet(this, _parent);
     for (let i = 0; i < __privateGet(this, _parentIndex); i++) {
       const pp = __privateGet(p, _parts)[i];
-      if (!(pp instanceof _AST && pp.type === "!")) {
+      if (!(pp instanceof _a2 && pp.type === "!")) {
         return false;
       }
     }
     return true;
   }
   isEnd() {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     if (__privateGet(this, _root) === this)
       return true;
-    if (((_a4 = __privateGet(this, _parent)) == null ? void 0 : _a4.type) === "!")
+    if (((_a5 = __privateGet(this, _parent)) == null ? void 0 : _a5.type) === "!")
       return true;
     if (!((_b2 = __privateGet(this, _parent)) == null ? void 0 : _b2.isEnd()))
       return false;
@@ -10598,16 +10668,16 @@ var _AST = class _AST {
       this.push(part.clone(this));
   }
   clone(parent) {
-    const c = new _AST(this.type, parent);
+    const c = new _a2(this.type, parent);
     for (const p of __privateGet(this, _parts)) {
       c.copyIn(p);
     }
     return c;
   }
   static fromGlob(pattern, options = {}) {
-    var _a4;
-    const ast = new _AST(null, void 0, options);
-    __privateMethod(_a4 = _AST, _AST_static, parseAST_fn).call(_a4, pattern, ast, 0, options);
+    var _a5;
+    const ast = new _a2(null, void 0, options);
+    __privateMethod(_a5 = _a2, _AST_static, parseAST_fn).call(_a5, pattern, ast, 0, options, 0);
     return ast;
   }
   // returns the regular expression if there's magic, or the unescaped
@@ -10626,6 +10696,9 @@ var _AST = class _AST {
       _src: re,
       _glob: glob
     });
+  }
+  get options() {
+    return __privateGet(this, _options);
   }
   // returns the string match, the regexp source, whether there's magic
   // in the regexp (so a regular expression is required) and whether or
@@ -10697,15 +10770,17 @@ var _AST = class _AST {
   // is ^(?!\.), we can just prepend (?!\.) to the pattern (either root
   // or start or whatever) and prepend ^ or / at the Regexp construction.
   toRegExpSource(allowDot) {
-    var _a4;
+    var _a5;
     const dot = allowDot != null ? allowDot : !!__privateGet(this, _options).dot;
-    if (__privateGet(this, _root) === this)
+    if (__privateGet(this, _root) === this) {
+      __privateMethod(this, _AST_instances, flatten_fn).call(this);
       __privateMethod(this, _AST_instances, fillNegs_fn).call(this);
-    if (!this.type) {
-      const noEmpty = this.isStart() && this.isEnd();
+    }
+    if (!isExtglobAST(this)) {
+      const noEmpty = this.isStart() && this.isEnd() && !__privateGet(this, _parts).some((s) => typeof s !== "string");
       const src = __privateGet(this, _parts).map((p) => {
-        var _a5;
-        const [re, _, hasMagic, uflag] = typeof p === "string" ? __privateMethod(_a5 = _AST, _AST_static, parseGlob_fn).call(_a5, p, __privateGet(this, _hasMagic), noEmpty) : p.toRegExpSource(allowDot);
+        var _a6;
+        const [re, _, hasMagic, uflag] = typeof p === "string" ? __privateMethod(_a6 = _a2, _AST_static, parseGlob_fn).call(_a6, p, __privateGet(this, _hasMagic), noEmpty) : p.toRegExpSource(allowDot);
         __privateSet(this, _hasMagic, __privateGet(this, _hasMagic) || hasMagic);
         __privateSet(this, _uflag, __privateGet(this, _uflag) || uflag);
         return re;
@@ -10728,7 +10803,7 @@ var _AST = class _AST {
         }
       }
       let end = "";
-      if (this.isEnd() && __privateGet(__privateGet(this, _root), _filledNegs) && ((_a4 = __privateGet(this, _parent)) == null ? void 0 : _a4.type) === "!") {
+      if (this.isEnd() && __privateGet(__privateGet(this, _root), _filledNegs) && ((_a5 = __privateGet(this, _parent)) == null ? void 0 : _a5.type) === "!") {
         end = "(?:$|\\/)";
       }
       const final2 = start2 + src + end;
@@ -10744,9 +10819,10 @@ var _AST = class _AST {
     let body = __privateMethod(this, _AST_instances, partsToRegExp_fn).call(this, dot);
     if (this.isStart() && this.isEnd() && !body && this.type !== "!") {
       const s = this.toString();
-      __privateSet(this, _parts, [s]);
-      this.type = null;
-      __privateSet(this, _hasMagic, void 0);
+      const me = this;
+      __privateSet(me, _parts, [s]);
+      me.type = null;
+      __privateSet(me, _hasMagic, void 0);
       return [s, unescape2(this.toString()), false, false];
     }
     let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot ? "" : __privateMethod(this, _AST_instances, partsToRegExp_fn).call(this, true);
@@ -10815,8 +10891,9 @@ fillNegs_fn = function() {
   return this;
 };
 _AST_static = new WeakSet();
-parseAST_fn = function(str, ast, pos, opt) {
-  var _a4, _b2;
+parseAST_fn = function(str, ast, pos, opt, extDepth) {
+  var _a5, _b2, _c, _d, _e;
+  const maxDepth = (_a5 = opt.maxExtglobRecursion) != null ? _a5 : 2;
   let escaping = false;
   let inBrace = false;
   let braceStart = -1;
@@ -10848,11 +10925,12 @@ parseAST_fn = function(str, ast, pos, opt) {
         acc2 += c;
         continue;
       }
-      if (!opt.noext && isExtglobType(c) && str.charAt(i2) === "(") {
+      const doRecurse = !opt.noext && isExtglobType(c) && str.charAt(i2) === "(" && extDepth <= maxDepth;
+      if (doRecurse) {
         ast.push(acc2);
         acc2 = "";
-        const ext2 = new _AST(c, ast);
-        i2 = __privateMethod(_a4 = _AST, _AST_static, parseAST_fn).call(_a4, str, ext2, i2, opt);
+        const ext2 = new _a2(c, ast);
+        i2 = __privateMethod(_b2 = _a2, _AST_static, parseAST_fn).call(_b2, str, ext2, i2, opt, extDepth + 1);
         ast.push(ext2);
         continue;
       }
@@ -10862,7 +10940,7 @@ parseAST_fn = function(str, ast, pos, opt) {
     return i2;
   }
   let i = pos + 1;
-  let part = new _AST(null, ast);
+  let part = new _a2(null, ast);
   const parts = [];
   let acc = "";
   while (i < str.length) {
@@ -10889,19 +10967,22 @@ parseAST_fn = function(str, ast, pos, opt) {
       acc += c;
       continue;
     }
-    if (isExtglobType(c) && str.charAt(i) === "(") {
+    const doRecurse = !opt.noext && isExtglobType(c) && str.charAt(i) === "(" && /* c8 ignore start - the maxDepth is sufficient here */
+    (extDepth <= maxDepth || ast && __privateMethod(_c = ast, _AST_instances, canAdoptType_fn).call(_c, c));
+    if (doRecurse) {
+      const depthAdd = ast && __privateMethod(_d = ast, _AST_instances, canAdoptType_fn).call(_d, c) ? 0 : 1;
       part.push(acc);
       acc = "";
-      const ext2 = new _AST(c, part);
+      const ext2 = new _a2(c, part);
       part.push(ext2);
-      i = __privateMethod(_b2 = _AST, _AST_static, parseAST_fn).call(_b2, str, ext2, i, opt);
+      i = __privateMethod(_e = _a2, _AST_static, parseAST_fn).call(_e, str, ext2, i, opt, extDepth + depthAdd);
       continue;
     }
     if (c === "|") {
       part.push(acc);
       acc = "";
       parts.push(part);
-      part = new _AST(null, ast);
+      part = new _a2(null, ast);
       continue;
     }
     if (c === ")") {
@@ -10920,6 +11001,102 @@ parseAST_fn = function(str, ast, pos, opt) {
   __privateSet(ast, _parts, [str.substring(pos - 1)]);
   return i;
 };
+canAdoptWithSpace_fn = function(child) {
+  return __privateMethod(this, _AST_instances, canAdopt_fn).call(this, child, adoptionWithSpaceMap);
+};
+canAdopt_fn = function(child, map = adoptionMap) {
+  if (!child || typeof child !== "object" || child.type !== null || __privateGet(child, _parts).length !== 1 || this.type === null) {
+    return false;
+  }
+  const gc = __privateGet(child, _parts)[0];
+  if (!gc || typeof gc !== "object" || gc.type === null) {
+    return false;
+  }
+  return __privateMethod(this, _AST_instances, canAdoptType_fn).call(this, gc.type, map);
+};
+canAdoptType_fn = function(c, map = adoptionAnyMap) {
+  var _a5;
+  return !!((_a5 = map.get(this.type)) == null ? void 0 : _a5.includes(c));
+};
+adoptWithSpace_fn = function(child, index5) {
+  const gc = __privateGet(child, _parts)[0];
+  const blank = new _a2(null, gc, this.options);
+  __privateGet(blank, _parts).push("");
+  gc.push(blank);
+  __privateMethod(this, _AST_instances, adopt_fn).call(this, child, index5);
+};
+adopt_fn = function(child, index5) {
+  const gc = __privateGet(child, _parts)[0];
+  __privateGet(this, _parts).splice(index5, 1, ...__privateGet(gc, _parts));
+  for (const p of __privateGet(gc, _parts)) {
+    if (typeof p === "object")
+      __privateSet(p, _parent, this);
+  }
+  __privateSet(this, _toString, void 0);
+};
+canUsurpType_fn = function(c) {
+  const m2 = usurpMap.get(this.type);
+  return !!(m2 == null ? void 0 : m2.has(c));
+};
+canUsurp_fn = function(child) {
+  if (!child || typeof child !== "object" || child.type !== null || __privateGet(child, _parts).length !== 1 || this.type === null || __privateGet(this, _parts).length !== 1) {
+    return false;
+  }
+  const gc = __privateGet(child, _parts)[0];
+  if (!gc || typeof gc !== "object" || gc.type === null) {
+    return false;
+  }
+  return __privateMethod(this, _AST_instances, canUsurpType_fn).call(this, gc.type);
+};
+usurp_fn = function(child) {
+  const m2 = usurpMap.get(this.type);
+  const gc = __privateGet(child, _parts)[0];
+  const nt = m2 == null ? void 0 : m2.get(gc.type);
+  if (!nt)
+    return false;
+  __privateSet(this, _parts, __privateGet(gc, _parts));
+  for (const p of __privateGet(this, _parts)) {
+    if (typeof p === "object") {
+      __privateSet(p, _parent, this);
+    }
+  }
+  this.type = nt;
+  __privateSet(this, _toString, void 0);
+  __privateSet(this, _emptyExt, false);
+};
+flatten_fn = function() {
+  var _a5, _b2;
+  if (!isExtglobAST(this)) {
+    for (const p of __privateGet(this, _parts)) {
+      if (typeof p === "object") {
+        __privateMethod(_a5 = p, _AST_instances, flatten_fn).call(_a5);
+      }
+    }
+  } else {
+    let iterations = 0;
+    let done = false;
+    do {
+      done = true;
+      for (let i = 0; i < __privateGet(this, _parts).length; i++) {
+        const c = __privateGet(this, _parts)[i];
+        if (typeof c === "object") {
+          __privateMethod(_b2 = c, _AST_instances, flatten_fn).call(_b2);
+          if (__privateMethod(this, _AST_instances, canAdopt_fn).call(this, c)) {
+            done = false;
+            __privateMethod(this, _AST_instances, adopt_fn).call(this, c, i);
+          } else if (__privateMethod(this, _AST_instances, canAdoptWithSpace_fn).call(this, c)) {
+            done = false;
+            __privateMethod(this, _AST_instances, adoptWithSpace_fn).call(this, c, i);
+          } else if (__privateMethod(this, _AST_instances, canUsurp_fn).call(this, c)) {
+            done = false;
+            __privateMethod(this, _AST_instances, usurp_fn).call(this, c);
+          }
+        }
+      }
+    } while (!done && ++iterations < 10);
+  }
+  __privateSet(this, _toString, void 0);
+};
 partsToRegExp_fn = function(dot) {
   return __privateGet(this, _parts).map((p) => {
     if (typeof p === "string") {
@@ -10934,12 +11111,23 @@ parseGlob_fn = function(glob, hasMagic, noEmpty = false) {
   let escaping = false;
   let re = "";
   let uflag = false;
+  let inStar = false;
   for (let i = 0; i < glob.length; i++) {
     const c = glob.charAt(i);
     if (escaping) {
       escaping = false;
       re += (reSpecials.has(c) ? "\\" : "") + c;
       continue;
+    }
+    if (c === "*") {
+      if (inStar)
+        continue;
+      inStar = true;
+      re += noEmpty && /^[*]+$/.test(glob) ? starNoEmpty : star;
+      hasMagic = true;
+      continue;
+    } else {
+      inStar = false;
     }
     if (c === "\\") {
       if (i === glob.length - 1) {
@@ -10959,14 +11147,6 @@ parseGlob_fn = function(glob, hasMagic, noEmpty = false) {
         continue;
       }
     }
-    if (c === "*") {
-      if (noEmpty && glob === "*")
-        re += starNoEmpty;
-      else
-        re += star;
-      hasMagic = true;
-      continue;
-    }
     if (c === "?") {
       re += qmark;
       hasMagic = true;
@@ -10976,15 +11156,18 @@ parseGlob_fn = function(glob, hasMagic, noEmpty = false) {
   }
   return [re, unescape2(glob), !!hasMagic, uflag];
 };
-__privateAdd(_AST, _AST_static);
-var AST = _AST;
+__privateAdd(AST, _AST_static);
+_a2 = AST;
 
-// ../../node_modules/minimatch/dist/mjs/escape.js
-var escape = (s, { windowsPathsNoEscape = false } = {}) => {
+// node_modules/minimatch/dist/esm/escape.js
+var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) => {
+  if (magicalBraces) {
+    return windowsPathsNoEscape ? s.replace(/[?*()[\]{}]/g, "[$&]") : s.replace(/[?*()[\]\\{}]/g, "\\$&");
+  }
   return windowsPathsNoEscape ? s.replace(/[?*()[\]]/g, "[$&]") : s.replace(/[?*()[\]\\]/g, "\\$&");
 };
 
-// ../../node_modules/minimatch/dist/mjs/index.js
+// node_modules/minimatch/dist/esm/index.js
 var minimatch = (p, pattern, options = {}) => {
   assertValidPattern(pattern);
   if (!options.nocomment && pattern.charAt(0) === "#") {
@@ -10992,7 +11175,7 @@ var minimatch = (p, pattern, options = {}) => {
   }
   return new Minimatch(pattern, options).match(p);
 };
-var starDotExtRE = /^\*+([^+@!?\*\[\(]*)$/;
+var starDotExtRE = /^\*+([^+@!?*[(]*)$/;
 var starDotExtTest = (ext2) => (f3) => !f3.startsWith(".") && f3.endsWith(ext2);
 var starDotExtTestDot = (ext2) => (f3) => f3.endsWith(ext2);
 var starDotExtTestNocase = (ext2) => {
@@ -11011,7 +11194,7 @@ var dotStarTest = (f3) => f3 !== "." && f3 !== ".." && f3.startsWith(".");
 var starRE = /^\*+$/;
 var starTest = (f3) => f3.length !== 0 && !f3.startsWith(".");
 var starTestDot = (f3) => f3.length !== 0 && f3 !== "." && f3 !== "..";
-var qmarksRE = /^\?+([^+@!?\*\[\(]*)?$/;
+var qmarksRE = /^\?+([^+@!?*[(]*)?$/;
 var qmarksTestNocase = ([$0, ext2 = ""]) => {
   const noext = qmarksTestNoExt([$0]);
   if (!ext2)
@@ -11100,7 +11283,7 @@ var braceExpand = (pattern, options = {}) => {
   if (options.nobrace || !/\{(?:(?!\{).)*\}/.test(pattern)) {
     return [pattern];
   }
-  return (0, import_brace_expansion.default)(pattern);
+  return expand(pattern, { max: options.braceExpandMax });
 };
 minimatch.braceExpand = braceExpand;
 var makeRe = (pattern, options = {}) => new Minimatch(pattern, options).makeRe();
@@ -11116,8 +11299,10 @@ var match = (list, pattern, options = {}) => {
 minimatch.match = match;
 var globMagic = /[?*]|[+@!]\(.*?\)|\[|\]/;
 var regExpEscape2 = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+var _Minimatch_instances, matchGlobstar_fn, matchGlobStarBodySections_fn, matchOne_fn;
 var Minimatch = class {
   constructor(pattern, options = {}) {
+    __privateAdd(this, _Minimatch_instances);
     __publicField(this, "options");
     __publicField(this, "set");
     __publicField(this, "pattern");
@@ -11134,14 +11319,18 @@ var Minimatch = class {
     __publicField(this, "isWindows");
     __publicField(this, "platform");
     __publicField(this, "windowsNoMagicRoot");
+    __publicField(this, "maxGlobstarRecursion");
     __publicField(this, "regexp");
+    var _a5;
     assertValidPattern(pattern);
     options = options || {};
     this.options = options;
+    this.maxGlobstarRecursion = (_a5 = options.maxGlobstarRecursion) != null ? _a5 : 200;
     this.pattern = pattern;
     this.platform = options.platform || defaultPlatform;
     this.isWindows = this.platform === "win32";
-    this.windowsPathsNoEscape = !!options.windowsPathsNoEscape || options.allowWindowsEscape === false;
+    const awe = "allowWindowsEscape";
+    this.windowsPathsNoEscape = !!options.windowsPathsNoEscape || options[awe] === false;
     if (this.windowsPathsNoEscape) {
       this.pattern = this.pattern.replace(/\\/g, "/");
     }
@@ -11198,7 +11387,10 @@ var Minimatch = class {
         const isUNC = s[0] === "" && s[1] === "" && (s[2] === "?" || !globMagic.test(s[2])) && !globMagic.test(s[3]);
         const isDrive = /^[a-z]:/i.test(s[0]);
         if (isUNC) {
-          return [...s.slice(0, 4), ...s.slice(4).map((ss) => this.parse(ss))];
+          return [
+            ...s.slice(0, 4),
+            ...s.slice(4).map((ss) => this.parse(ss))
+          ];
         } else if (isDrive) {
           return [s[0], ...s.slice(1).map((ss) => this.parse(ss))];
         }
@@ -11224,10 +11416,10 @@ var Minimatch = class {
   // of patterns that we have to process.
   preprocess(globParts) {
     if (this.options.noglobstar) {
-      for (let i = 0; i < globParts.length; i++) {
-        for (let j = 0; j < globParts[i].length; j++) {
-          if (globParts[i][j] === "**") {
-            globParts[i][j] = "*";
+      for (const partset of globParts) {
+        for (let j = 0; j < partset.length; j++) {
+          if (partset[j] === "**") {
+            partset[j] = "*";
           }
         }
       }
@@ -11305,7 +11497,7 @@ var Minimatch = class {
       let dd = 0;
       while (-1 !== (dd = parts.indexOf("..", dd + 1))) {
         const p = parts[dd - 1];
-        if (p && p !== "." && p !== ".." && p !== "**") {
+        if (p && p !== "." && p !== ".." && p !== "**" && !(this.isWindows && /^[a-z]:$/i.test(p))) {
           didSomething = true;
           parts.splice(dd - 1, 2);
           dd -= 2;
@@ -11405,10 +11597,11 @@ var Minimatch = class {
     for (let i = 0; i < globParts.length - 1; i++) {
       for (let j = i + 1; j < globParts.length; j++) {
         const matched = this.partsMatch(globParts[i], globParts[j], !this.preserveMultipleSlashes);
-        if (!matched)
-          continue;
-        globParts[i] = matched;
-        globParts[j] = [];
+        if (matched) {
+          globParts[i] = [];
+          globParts[j] = matched;
+          break;
+        }
       }
     }
     return globParts.filter((gs) => gs.length);
@@ -11469,7 +11662,8 @@ var Minimatch = class {
   // out of pattern, then that's fine, as long as all
   // the parts match.
   matchOne(file, pattern, partial = false) {
-    const options = this.options;
+    let fileStartIndex = 0;
+    let patternStartIndex = 0;
     if (this.isWindows) {
       const fileDrive = typeof file[0] === "string" && /^[a-z]:$/i.test(file[0]);
       const fileUNC = !fileDrive && file[0] === "" && file[1] === "" && file[2] === "?" && /^[a-z]:$/i.test(file[3]);
@@ -11478,14 +11672,14 @@ var Minimatch = class {
       const fdi = fileUNC ? 3 : fileDrive ? 0 : void 0;
       const pdi = patternUNC ? 3 : patternDrive ? 0 : void 0;
       if (typeof fdi === "number" && typeof pdi === "number") {
-        const [fd2, pd] = [file[fdi], pattern[pdi]];
+        const [fd2, pd] = [
+          file[fdi],
+          pattern[pdi]
+        ];
         if (fd2.toLowerCase() === pd.toLowerCase()) {
           pattern[pdi] = fd2;
-          if (pdi > fdi) {
-            pattern = pattern.slice(pdi);
-          } else if (fdi > pdi) {
-            file = file.slice(fdi);
-          }
+          patternStartIndex = pdi;
+          fileStartIndex = fdi;
         }
       }
     }
@@ -11493,71 +11687,10 @@ var Minimatch = class {
     if (optimizationLevel >= 2) {
       file = this.levelTwoFileOptimize(file);
     }
-    this.debug("matchOne", this, { file, pattern });
-    this.debug("matchOne", file.length, pattern.length);
-    for (var fi = 0, pi = 0, fl2 = file.length, pl = pattern.length; fi < fl2 && pi < pl; fi++, pi++) {
-      this.debug("matchOne loop");
-      var p = pattern[pi];
-      var f3 = file[fi];
-      this.debug(pattern, p, f3);
-      if (p === false) {
-        return false;
-      }
-      if (p === GLOBSTAR) {
-        this.debug("GLOBSTAR", [pattern, p, f3]);
-        var fr = fi;
-        var pr = pi + 1;
-        if (pr === pl) {
-          this.debug("** at the end");
-          for (; fi < fl2; fi++) {
-            if (file[fi] === "." || file[fi] === ".." || !options.dot && file[fi].charAt(0) === ".")
-              return false;
-          }
-          return true;
-        }
-        while (fr < fl2) {
-          var swallowee = file[fr];
-          this.debug("\nglobstar while", file, fr, pattern, pr, swallowee);
-          if (this.matchOne(file.slice(fr), pattern.slice(pr), partial)) {
-            this.debug("globstar found match!", fr, fl2, swallowee);
-            return true;
-          } else {
-            if (swallowee === "." || swallowee === ".." || !options.dot && swallowee.charAt(0) === ".") {
-              this.debug("dot detected!", file, fr, pattern, pr);
-              break;
-            }
-            this.debug("globstar swallow a segment, and continue");
-            fr++;
-          }
-        }
-        if (partial) {
-          this.debug("\n>>> no match, partial?", file, fr, pattern, pr);
-          if (fr === fl2) {
-            return true;
-          }
-        }
-        return false;
-      }
-      let hit;
-      if (typeof p === "string") {
-        hit = f3 === p;
-        this.debug("string match", p, f3, hit);
-      } else {
-        hit = p.test(f3);
-        this.debug("pattern match", p, f3, hit);
-      }
-      if (!hit)
-        return false;
+    if (pattern.includes(GLOBSTAR)) {
+      return __privateMethod(this, _Minimatch_instances, matchGlobstar_fn).call(this, file, pattern, partial, fileStartIndex, patternStartIndex);
     }
-    if (fi === fl2 && pi === pl) {
-      return true;
-    } else if (fi === fl2) {
-      return partial;
-    } else if (pi === pl) {
-      return fi === fl2 - 1 && file[fi] === "";
-    } else {
-      throw new Error("wtf?");
-    }
+    return __privateMethod(this, _Minimatch_instances, matchOne_fn).call(this, file, pattern, partial, fileStartIndex, patternStartIndex);
   }
   braceExpand() {
     return braceExpand(this.pattern, this.options);
@@ -11583,7 +11716,10 @@ var Minimatch = class {
       fastTest = dotStarTest;
     }
     const re = AST.fromGlob(pattern, this.options).toMMPattern();
-    return fastTest ? Object.assign(re, { test: fastTest }) : re;
+    if (fastTest && typeof re === "object") {
+      Reflect.defineProperty(re, "test", { value: fastTest });
+    }
+    return re;
   }
   makeRe() {
     if (this.regexp || this.regexp === false)
@@ -11617,21 +11753,32 @@ var Minimatch = class {
             pp[i] = twoStar;
           }
         } else if (next === void 0) {
-          pp[i - 1] = prev + "(?:\\/|" + twoStar + ")?";
+          pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + ")?";
         } else if (next !== GLOBSTAR) {
           pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + "\\/)" + next;
           pp[i + 1] = GLOBSTAR;
         }
       });
-      return pp.filter((p) => p !== GLOBSTAR).join("/");
+      const filtered = pp.filter((p) => p !== GLOBSTAR);
+      if (this.partial && filtered.length >= 1) {
+        const prefixes = [];
+        for (let i = 1; i <= filtered.length; i++) {
+          prefixes.push(filtered.slice(0, i).join("/"));
+        }
+        return "(?:" + prefixes.join("|") + ")";
+      }
+      return filtered.join("/");
     }).join("|");
     const [open, close] = set.length > 1 ? ["(?:", ")"] : ["", ""];
     re = "^" + open + re + close + "$";
+    if (this.partial) {
+      re = "^(?:\\/|" + open + re.slice(1, -1) + close + ")$";
+    }
     if (this.negate)
       re = "^(?!" + re + ").+$";
     try {
       this.regexp = new RegExp(re, [...flags].join(""));
-    } catch (ex) {
+    } catch (e2) {
       this.regexp = false;
     }
     return this.regexp;
@@ -11639,7 +11786,7 @@ var Minimatch = class {
   slashSplit(p) {
     if (this.preserveMultipleSlashes) {
       return p.split("/");
-    } else if (this.isWindows && /^\/\/[^\/]+/.test(p)) {
+    } else if (this.isWindows && /^\/\/[^/]+/.test(p)) {
       return ["", ...p.split(/\/+/)];
     } else {
       return p.split(/\/+/);
@@ -11670,8 +11817,7 @@ var Minimatch = class {
         filename = ff[i];
       }
     }
-    for (let i = 0; i < set.length; i++) {
-      const pattern = set[i];
+    for (const pattern of set) {
       let file = ff;
       if (options.matchBase && pattern.length === 1) {
         file = [filename];
@@ -11691,6 +11837,142 @@ var Minimatch = class {
   }
   static defaults(def) {
     return minimatch.defaults(def).Minimatch;
+  }
+};
+_Minimatch_instances = new WeakSet();
+matchGlobstar_fn = function(file, pattern, partial, fileIndex, patternIndex) {
+  const firstgs = pattern.indexOf(GLOBSTAR, patternIndex);
+  const lastgs = pattern.lastIndexOf(GLOBSTAR);
+  const [head, body, tail] = partial ? [
+    pattern.slice(patternIndex, firstgs),
+    pattern.slice(firstgs + 1),
+    []
+  ] : [
+    pattern.slice(patternIndex, firstgs),
+    pattern.slice(firstgs + 1, lastgs),
+    pattern.slice(lastgs + 1)
+  ];
+  if (head.length) {
+    const fileHead = file.slice(fileIndex, fileIndex + head.length);
+    if (!__privateMethod(this, _Minimatch_instances, matchOne_fn).call(this, fileHead, head, partial, 0, 0)) {
+      return false;
+    }
+    fileIndex += head.length;
+    patternIndex += head.length;
+  }
+  let fileTailMatch = 0;
+  if (tail.length) {
+    if (tail.length + fileIndex > file.length)
+      return false;
+    let tailStart = file.length - tail.length;
+    if (__privateMethod(this, _Minimatch_instances, matchOne_fn).call(this, file, tail, partial, tailStart, 0)) {
+      fileTailMatch = tail.length;
+    } else {
+      if (file[file.length - 1] !== "" || fileIndex + tail.length === file.length) {
+        return false;
+      }
+      tailStart--;
+      if (!__privateMethod(this, _Minimatch_instances, matchOne_fn).call(this, file, tail, partial, tailStart, 0)) {
+        return false;
+      }
+      fileTailMatch = tail.length + 1;
+    }
+  }
+  if (!body.length) {
+    let sawSome = !!fileTailMatch;
+    for (let i2 = fileIndex; i2 < file.length - fileTailMatch; i2++) {
+      const f3 = String(file[i2]);
+      sawSome = true;
+      if (f3 === "." || f3 === ".." || !this.options.dot && f3.startsWith(".")) {
+        return false;
+      }
+    }
+    return partial || sawSome;
+  }
+  const bodySegments = [[[], 0]];
+  let currentBody = bodySegments[0];
+  let nonGsParts = 0;
+  const nonGsPartsSums = [0];
+  for (const b of body) {
+    if (b === GLOBSTAR) {
+      nonGsPartsSums.push(nonGsParts);
+      currentBody = [[], 0];
+      bodySegments.push(currentBody);
+    } else {
+      currentBody[0].push(b);
+      nonGsParts++;
+    }
+  }
+  let i = bodySegments.length - 1;
+  const fileLength = file.length - fileTailMatch;
+  for (const b of bodySegments) {
+    b[1] = fileLength - (nonGsPartsSums[i--] + b[0].length);
+  }
+  return !!__privateMethod(this, _Minimatch_instances, matchGlobStarBodySections_fn).call(this, file, bodySegments, fileIndex, 0, partial, 0, !!fileTailMatch);
+};
+// return false for "nope, not matching"
+// return null for "not matching, cannot keep trying"
+matchGlobStarBodySections_fn = function(file, bodySegments, fileIndex, bodyIndex, partial, globStarDepth, sawTail) {
+  const bs = bodySegments[bodyIndex];
+  if (!bs) {
+    for (let i = fileIndex; i < file.length; i++) {
+      sawTail = true;
+      const f3 = file[i];
+      if (f3 === "." || f3 === ".." || !this.options.dot && f3.startsWith(".")) {
+        return false;
+      }
+    }
+    return sawTail;
+  }
+  const [body, after] = bs;
+  while (fileIndex <= after) {
+    const m2 = __privateMethod(this, _Minimatch_instances, matchOne_fn).call(this, file.slice(0, fileIndex + body.length), body, partial, fileIndex, 0);
+    if (m2 && globStarDepth < this.maxGlobstarRecursion) {
+      const sub = __privateMethod(this, _Minimatch_instances, matchGlobStarBodySections_fn).call(this, file, bodySegments, fileIndex + body.length, bodyIndex + 1, partial, globStarDepth + 1, sawTail);
+      if (sub !== false) {
+        return sub;
+      }
+    }
+    const f3 = file[fileIndex];
+    if (f3 === "." || f3 === ".." || !this.options.dot && f3.startsWith(".")) {
+      return false;
+    }
+    fileIndex++;
+  }
+  return partial || null;
+};
+matchOne_fn = function(file, pattern, partial, fileIndex, patternIndex) {
+  let fi;
+  let pi;
+  let pl;
+  let fl2;
+  for (fi = fileIndex, pi = patternIndex, fl2 = file.length, pl = pattern.length; fi < fl2 && pi < pl; fi++, pi++) {
+    this.debug("matchOne loop");
+    let p = pattern[pi];
+    let f3 = file[fi];
+    this.debug(pattern, p, f3);
+    if (p === false || p === GLOBSTAR) {
+      return false;
+    }
+    let hit;
+    if (typeof p === "string") {
+      hit = f3 === p;
+      this.debug("string match", p, f3, hit);
+    } else {
+      hit = p.test(f3);
+      this.debug("pattern match", p, f3, hit);
+    }
+    if (!hit)
+      return false;
+  }
+  if (fi === fl2 && pi === pl) {
+    return true;
+  } else if (fi === fl2) {
+    return partial;
+  } else if (pi === pl) {
+    return fi === fl2 - 1 && file[fi] === "";
+  } else {
+    throw new Error("wtf?");
   }
 };
 minimatch.AST = AST;
@@ -12146,8 +12428,8 @@ function readContent(doc) {
     return decodeBinary(doc.data);
   }
 }
-var _a2;
-var isIndexDBCmpExist = typeof ((_a2 = globalThis == null ? void 0 : globalThis.indexedDB) == null ? void 0 : _a2.cmp) !== "undefined";
+var _a3;
+var isIndexDBCmpExist = typeof ((_a3 = globalThis == null ? void 0 : globalThis.indexedDB) == null ? void 0 : _a3.cmp) !== "undefined";
 async function isDocContentSame(docA, docB) {
   const blob1 = createBlob(docA);
   const blob2 = createBlob(docB);
@@ -12234,8 +12516,8 @@ function unorderedArrayToObject(obj) {
 function objectToUnorderedArray(obj) {
   const entries = Object.entries(obj);
   if (entries.some((e2) => {
-    var _a4;
-    return e2[0] != ((_a4 = e2[1]) == null ? void 0 : _a4.id);
+    var _a5;
+    return e2[0] != ((_a5 = e2[1]) == null ? void 0 : _a5.id);
   })) throw new Error("Item looks like not unordered array");
   return entries.map((e2) => e2[1]);
 }
@@ -13122,7 +13404,7 @@ async function incomingEncryptV1(doc, passphrase, useDynamicIterationCount) {
   return saveDoc;
 }
 async function outgoingDecryptV1(doc, migrationDecrypt, decrypted, passphrase, useDynamicIterationCount) {
-  var _a4, _b2;
+  var _a5, _b2;
   const loadDoc = {
     ...doc
   };
@@ -13185,7 +13467,7 @@ async function outgoingDecryptV1(doc, migrationDecrypt, decrypted, passphrase, u
           }
           reportDecryptionError("Decryption failed.");
           Logger(ex2, LOG_LEVEL_VERBOSE);
-          Logger(`id:${loadDoc._id}-${(_a4 = loadDoc._rev) == null ? void 0 : _a4.substring(0, 10)}`, LOG_LEVEL_VERBOSE);
+          Logger(`id:${loadDoc._id}-${(_a5 = loadDoc._rev) == null ? void 0 : _a5.substring(0, 10)}`, LOG_LEVEL_VERBOSE);
           throw ex2;
         }
       } else {
@@ -13259,7 +13541,7 @@ function shouldDecryptEdenHKDF(doc) {
 
 // src/sync/core/pouchdb/LiveSyncDBFunctions.ts
 async function ensureRemoteIsCompatible(infoSrc, setting, deviceNodeID, currentVersionRange2, nodeDeviceInfo, updateCallback) {
-  var _a4, _b2, _c, _d;
+  var _a5, _b2, _c, _d;
   const now = Date.now();
   const baseMilestone = {
     _id: MILESTONE_DOCID,
@@ -13281,7 +13563,7 @@ async function ensureRemoteIsCompatible(infoSrc, setting, deviceNodeID, currentV
   if (!remoteMilestone) remoteMilestone = baseMilestone;
   const currentTweakValues = extractObject(TweakValuesTemplate, setting);
   remoteMilestone.node_chunk_info = { ...baseMilestone.node_chunk_info, ...remoteMilestone.node_chunk_info };
-  let writeMilestone = remoteMilestone.node_chunk_info[deviceNodeID].min != currentVersionRange2.min || remoteMilestone.node_chunk_info[deviceNodeID].max != currentVersionRange2.max || isObjectDifferent((_a4 = remoteMilestone.tweak_values) == null ? void 0 : _a4[deviceNodeID], currentTweakValues) || typeof remoteMilestone._rev == "undefined" || !(DEVICE_ID_PREFERRED in remoteMilestone.tweak_values);
+  let writeMilestone = remoteMilestone.node_chunk_info[deviceNodeID].min != currentVersionRange2.min || remoteMilestone.node_chunk_info[deviceNodeID].max != currentVersionRange2.max || isObjectDifferent((_a5 = remoteMilestone.tweak_values) == null ? void 0 : _a5[deviceNodeID], currentTweakValues) || typeof remoteMilestone._rev == "undefined" || !(DEVICE_ID_PREFERRED in remoteMilestone.tweak_values);
   if (!remoteMilestone.node_info) {
     remoteMilestone.node_info = {};
   }
@@ -13406,7 +13688,7 @@ var LiveSyncAbstractReplicator = class {
     this.env = env;
   }
   async ensurePBKDF2Salt(setting, showMessage = false, useCache = true) {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     try {
       const hash = await this.getReplicationPBKDF2Salt(setting, !useCache);
       if (hash.length == 0) {
@@ -13415,7 +13697,7 @@ var LiveSyncAbstractReplicator = class {
       Logger(`PBKDF2 salt (Security Seed) verified`, LOG_LEVEL_VERBOSE);
       return true;
     } catch (ex) {
-      const serverReachable = (_c = (_b2 = (_a4 = this.env).isServerReachable) == null ? void 0 : _b2.call(_a4)) != null ? _c : true;
+      const serverReachable = (_c = (_b2 = (_a5 = this.env).isServerReachable) == null ? void 0 : _b2.call(_a5)) != null ? _c : true;
       if (!serverReachable) {
         Logger("PBKDF2 salt fetch skipped - server unreachable", LOG_LEVEL_VERBOSE);
         return false;
@@ -13531,10 +13813,10 @@ var queueCount = /* @__PURE__ */ new Map();
 var shareSerializedMap = /* @__PURE__ */ new Map();
 var skipDuplicatedMap = /* @__PURE__ */ new Map();
 function serialized(key2, proc) {
-  var _a4;
+  var _a5;
   const prev = serializedMap.get(key2);
   const p = promiseWithResolvers();
-  queueCount.set(key2, ((_a4 = queueCount.get(key2)) != null ? _a4 : 0) + 1);
+  queueCount.set(key2, ((_a5 = queueCount.get(key2)) != null ? _a5 : 0) + 1);
   const nextTask = async () => {
     try {
       p.resolve(await proc());
@@ -13760,24 +14042,24 @@ var Trench = class {
     return this._evacuate(storeTask, key2);
   }
   async _queue(type, key2, obj, index5) {
-    var _a4;
+    var _a5;
     if (index5 === void 0) {
-      index5 = (_a4 = indexes.get(key2)) != null ? _a4 : 0;
+      index5 = (_a5 = indexes.get(key2)) != null ? _a5 : 0;
       indexes.set(key2, index5 + 1);
     }
     const storeKey = createId(type, key2, index5);
     await this._db.set(storeKey, obj);
   }
   async _dequeue(type, key2) {
-    const range2 = createRange(type, key2);
-    const keys2 = (await this._db.keys(range2[0], range2[1])).filter((e2) => !inProgress.has(e2));
+    const range3 = createRange(type, key2);
+    const keys2 = (await this._db.keys(range3[0], range3[1])).filter((e2) => !inProgress.has(e2));
     if (keys2.length === 0)
       return void 0;
     return await this.expose(keys2[0]);
   }
   async _dequeueWithCommit(type, key2) {
-    const range2 = createRange(type, key2);
-    const keysAll = await this._db.keys(range2[0], range2[1]);
+    const range3 = createRange(type, key2);
+    const keysAll = await this._db.keys(range3[0], range3[1]);
     const keys2 = keysAll.filter((e2) => !inProgress.has(e2));
     if (keys2.length === 0)
       return void 0;
@@ -14076,8 +14358,8 @@ var Inbox = class extends SyncInbox {
     return READY_POST_SIGNAL;
   }
   _notifyFree() {
-    var _a4;
-    (_a4 = this._lockFull) == null ? void 0 : _a4.resolve(READY_POST_SIGNAL);
+    var _a5;
+    (_a5 = this._lockFull) == null ? void 0 : _a5.resolve(READY_POST_SIGNAL);
     this._lockFull = void 0;
   }
   async _waitForReady() {
@@ -14090,8 +14372,8 @@ var Inbox = class extends SyncInbox {
     return READY_PICK_SIGNAL;
   }
   _notifyReady() {
-    var _a4;
-    (_a4 = this._lockReady) == null ? void 0 : _a4.resolve(READY_PICK_SIGNAL);
+    var _a5;
+    (_a5 = this._lockReady) == null ? void 0 : _a5.resolve(READY_PICK_SIGNAL);
     this._lockReady = void 0;
   }
   __onPosted() {
@@ -14414,12 +14696,12 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
     }
   }
   async getReplicationPBKDF2Salt(setting, refresh = false) {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     if (this._saltCache && !refresh) {
       Logger("Using session salt cache", LOG_LEVEL_VERBOSE);
       return this._saltCache;
     }
-    const serverReachable = (_c = (_b2 = (_a4 = this.env).isServerReachable) == null ? void 0 : _b2.call(_a4)) != null ? _c : true;
+    const serverReachable = (_c = (_b2 = (_a5 = this.env).isServerReachable) == null ? void 0 : _b2.call(_a5)) != null ? _c : true;
     if (!serverReachable) {
       Logger("Server unreachable, trying local salt cache", LOG_LEVEL_VERBOSE);
       const cachedSalt = await this.getLocalCachedSalt(setting.couchDB_DBNAME);
@@ -14898,9 +15180,9 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
     return true;
   }
   async openOneShotReplication(setting, showResult, retrying, syncMode, ignoreCleanLock = false) {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     if (await this.ensurePBKDF2Salt(setting, showResult, !retrying) === false) {
-      const serverReachable = (_c = (_b2 = (_a4 = this.env).isServerReachable) == null ? void 0 : _b2.call(_a4)) != null ? _c : true;
+      const serverReachable = (_c = (_b2 = (_a5 = this.env).isServerReachable) == null ? void 0 : _b2.call(_a5)) != null ? _c : true;
       if (serverReachable) {
         this.syncStatus = "ERRORED";
         this.updateInfo();
@@ -15479,7 +15761,7 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
     }
   }
   async getRemotePreferredTweakValues(setting) {
-    var _a4;
+    var _a5;
     const uri = setting.couchDB_URI + (setting.couchDB_DBNAME == "" ? "" : "/" + setting.couchDB_DBNAME);
     const dbRet = await this.connectRemoteCouchDBWithSetting(setting, this.isMobile(), true);
     if (typeof dbRet === "string") {
@@ -15493,7 +15775,7 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
     try {
       const remoteMilestone = await dbRet.db.get(MILESTONE_DOCID);
       if (!remoteMilestone) throw new Error("Remote milestone not found");
-      return ((_a4 = remoteMilestone == null ? void 0 : remoteMilestone.tweak_values) == null ? void 0 : _a4[DEVICE_ID_PREFERRED]) || false;
+      return ((_a5 = remoteMilestone == null ? void 0 : remoteMilestone.tweak_values) == null ? void 0 : _a5[DEVICE_ID_PREFERRED]) || false;
     } catch (ex) {
       Logger(
         $msg("liveSyncReplicator.couldNotRetrieveMilestone") || `Could not retrieve remote milestone`,
@@ -15514,7 +15796,7 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
     return ret.ok;
   }
   async getRemoteStatus(setting) {
-    var _a4;
+    var _a5;
     const dbRet = await this.connectRemoteCouchDBWithSetting(setting, this.isMobile(), true);
     if (typeof dbRet === "string") {
       const uri = setting.couchDB_URI + (setting.couchDB_DBNAME == "" ? "" : "/" + setting.couchDB_DBNAME);
@@ -15524,7 +15806,7 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
     const info3 = await dbRet.db.info();
     return {
       ...info3,
-      estimatedSize: ((_a4 = info3 == null ? void 0 : info3.sizes) == null ? void 0 : _a4.file) || 0
+      estimatedSize: ((_a5 = info3 == null ? void 0 : info3.sizes) == null ? void 0 : _a5.file) || 0
     };
   }
   async countCompromisedChunks(setting = this.env.getSettings()) {
@@ -16221,9 +16503,9 @@ var ChangeManager = class {
    * Sets up the PouchDB changes feed listener to monitor for database changes.
    */
   setupListener() {
-    var _a4, _b2;
+    var _a5, _b2;
     if (this._changes) {
-      void ((_a4 = this._changes) == null ? void 0 : _a4.removeAllListeners());
+      void ((_a5 = this._changes) == null ? void 0 : _a5.removeAllListeners());
       (_b2 = this._changes) == null ? void 0 : _b2.cancel();
       this._changes = void 0;
     }
@@ -16245,8 +16527,8 @@ var ChangeManager = class {
    * Tears down the PouchDB changes feed listener and cleans up resources.
    */
   teardown() {
-    var _a4, _b2;
-    void ((_a4 = this._changes) == null ? void 0 : _a4.removeAllListeners());
+    var _a5, _b2;
+    void ((_a5 = this._changes) == null ? void 0 : _a5.removeAllListeners());
     (_b2 = this._changes) == null ? void 0 : _b2.cancel();
     this._changes = void 0;
   }
@@ -16292,7 +16574,7 @@ var ConflictManager = class {
     return false;
   }
   async mergeSensibly(path2, baseRev, currentRev, conflictedRev) {
-    var _a4, _b2, _c, _d;
+    var _a5, _b2, _c, _d;
     const baseLeaf = await this.getConflictedDoc(path2, baseRev);
     const leftLeaf = await this.getConflictedDoc(path2, currentRev);
     const rightLeaf = await this.getConflictedDoc(path2, conflictedRev);
@@ -16356,7 +16638,7 @@ var ConflictManager = class {
       if (leftIdx >= diffLeft.length && rightIdx >= diffRight.length) {
         break LOOP_MERGE;
       }
-      const leftItem = (_a4 = diffLeft[leftIdx]) != null ? _a4 : [0, ""];
+      const leftItem = (_a5 = diffLeft[leftIdx]) != null ? _a5 : [0, ""];
       const rightItem = (_b2 = diffRight[rightIdx]) != null ? _b2 : [0, ""];
       leftIdx++;
       rightIdx++;
@@ -16498,15 +16780,15 @@ var ConflictManager = class {
     }
   }
   async tryAutoMergeSensibly(path2, test, conflicts) {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     const conflictedRev = conflicts[0];
     const conflictedRevNo = Number(conflictedRev.split("-")[0]);
     const revFrom = await this.database.get(await this.options.entryManager.path2id(path2), {
       revs_info: true
     });
-    const commonBase = (_c = (_b2 = (_a4 = (revFrom._revs_info || []).filter(
+    const commonBase = (_c = (_b2 = (_a5 = (revFrom._revs_info || []).filter(
       (e2) => e2.status == "available" && Number(e2.rev.split("-")[0]) < conflictedRevNo
-    )) == null ? void 0 : _a4[0]) == null ? void 0 : _b2.rev) != null ? _c : "";
+    )) == null ? void 0 : _a5[0]) == null ? void 0 : _b2.rev) != null ? _c : "";
     let p = void 0;
     if (commonBase) {
       if (isSensibleMargeApplicable(path2)) {
@@ -16621,7 +16903,7 @@ var EntryManager = class {
     return { isNew: true, id: `${IDPrefixes.Chunk}${chunkId}`, piece };
   }
   async getDBEntryMeta(path2, opt, includeDeleted = false) {
-    var _a4, _b2;
+    var _a5, _b2;
     if (!this.isTargetFile(path2)) {
       return false;
     }
@@ -16633,7 +16915,7 @@ var EntryManager = class {
       } else {
         obj = await this.localDatabase.get(id);
       }
-      const deleted = (_b2 = (_a4 = obj == null ? void 0 : obj.deleted) != null ? _a4 : obj._deleted) != null ? _b2 : void 0;
+      const deleted = (_b2 = (_a5 = obj == null ? void 0 : obj.deleted) != null ? _a5 : obj._deleted) != null ? _b2 : void 0;
       if (!includeDeleted && deleted) return false;
       if (obj.type && obj.type == "leaf") {
         return false;
@@ -16681,13 +16963,13 @@ var EntryManager = class {
     }
   }
   async getDBEntryFromMeta(meta, dump = false, waitForReady = true) {
-    var _a4, _b2, _c, _d, _e;
+    var _a5, _b2, _c, _d, _e;
     const filename = this.id2path(meta._id, meta);
     if (!this.isTargetFile(filename)) {
       return false;
     }
     const dispFilename = stripAllPrefixes(filename);
-    const deleted = (_b2 = (_a4 = meta.deleted) != null ? _a4 : meta._deleted) != null ? _b2 : void 0;
+    const deleted = (_b2 = (_a5 = meta.deleted) != null ? _a5 : meta._deleted) != null ? _b2 : void 0;
     if (!meta.type || meta.type && meta.type == "notes") {
       const note = meta;
       const doc = {
@@ -16812,13 +17094,13 @@ var EntryManager = class {
     return false;
   }
   async deleteDBEntry(path2, opt) {
-    var _a4;
+    var _a5;
     if (!this.isTargetFile(path2)) {
       return false;
     }
     const id = await this.path2id(path2);
     try {
-      return (_a4 = await serialized("file:" + path2, async () => {
+      return (_a5 = await serialized("file:" + path2, async () => {
         let obj = null;
         if (opt) {
           obj = await this.localDatabase.get(id, opt);
@@ -16851,7 +17133,7 @@ var EntryManager = class {
         } else {
           return false;
         }
-      })) != null ? _a4 : false;
+      })) != null ? _a5 : false;
     } catch (ex) {
       if (isErrorOfMissingDoc(ex)) {
         return false;
@@ -16873,7 +17155,7 @@ var EntryManager = class {
     note.datatype = note.type;
     await this.splitter.initialised;
     const result = await this.chunkManager.transaction(async () => {
-      var _a4;
+      var _a5;
       let bufferedChunk = [];
       let bufferedSize = 0;
       let writeCount = 0;
@@ -16987,7 +17269,7 @@ var EntryManager = class {
         type: note.datatype,
         eden: {}
       };
-      return (_a4 = await serialized("file:" + filename, async () => {
+      return (_a5 = await serialized("file:" + filename, async () => {
         try {
           const old = await this.localDatabase.get(newDoc._id);
           newDoc._rev = old._rev;
@@ -17003,7 +17285,7 @@ var EntryManager = class {
         } else {
           return false;
         }
-      })) != null ? _a4 : false;
+      })) != null ? _a5 : false;
     });
     if (result === false) {
       Logger(`Failed to save ${dispFilename}`, LOG_LEVEL_VERBOSE);
@@ -17091,12 +17373,12 @@ var HashManagerCore = class {
    * @param options - Optional configuration to apply.
    */
   applyOptions(options) {
-    var _a4;
+    var _a5;
     if (options) {
       this.options = options;
     }
     this.settings = this.options.settings;
-    this.useEncryption = (_a4 = this.settings.encrypt) != null ? _a4 : false;
+    this.useEncryption = (_a5 = this.settings.encrypt) != null ? _a5 : false;
     const passphrase = this.settings.passphrase || "";
     const usingLetters = ~~(passphrase.length / 4 * 3);
     const passphraseForHash = SALT_OF_ID + passphrase.substring(0, usingLetters);
@@ -17515,12 +17797,12 @@ var NetworkManagerBrowser = class extends NetworkManager {
    * This detects firewall blocking that navigator.onLine misses
    */
   async checkActualConnectivity() {
-    var _a4;
+    var _a5;
     if (!navigator.onLine) {
       this._serverReachable = false;
       return false;
     }
-    return (_a4 = this._serverReachable) != null ? _a4 : true;
+    return (_a5 = this._serverReachable) != null ? _a5 : true;
   }
   /**
    * Set server reachability status
@@ -17677,8 +17959,8 @@ var LiveSyncManagers = class {
     });
   }
   clearCaches() {
-    var _a4;
-    (_a4 = this.chunkManager) == null ? void 0 : _a4.clearCaches();
+    var _a5;
+    (_a5 = this.chunkManager) == null ? void 0 : _a5.clearCaches();
   }
   async prepareHashFunction() {
     const proxy = this.getProxy();
@@ -18204,9 +18486,9 @@ var freb = function(eb, start) {
   }
   return { b, r };
 };
-var _a3 = freb(fleb, 2);
-var fl = _a3.b;
-var revfl = _a3.r;
+var _a4 = freb(fleb, 2);
+var fl = _a4.b;
+var revfl = _a4.r;
 fl[28] = 258, revfl[258] = 28;
 var _b = freb(fdeb, 0);
 var fd = _b.b;
@@ -18608,7 +18890,7 @@ var wfblk = function(out, pos, dat) {
 var wblk = function(dat, out, final, syms, lf, df, eb, li, bs, bl, p) {
   wbits(out, p++, final);
   ++lf[256];
-  var _a4 = hTree(lf, 15), dlt = _a4.t, mlb = _a4.l;
+  var _a5 = hTree(lf, 15), dlt = _a5.t, mlb = _a5.l;
   var _b2 = hTree(df, 15), ddt = _b2.t, mdb = _b2.l;
   var _c = lc(dlt), lclt = _c.c, nlc = _c.n;
   var _d = lc(ddt), lcdt = _d.c, ndc = _d.n;
@@ -19038,13 +19320,13 @@ function unmarkChanges(path2) {
   sameChangePairs.delete(path2);
 }
 function getComparingMTime(doc, includeDeleted = false) {
-  var _a4, _b2;
+  var _a5, _b2;
   if (doc === null || doc === false || doc === void 0) return 0;
   if (!includeDeleted) {
     if ("deleted" in doc && doc.deleted) return 0;
     if ("_deleted" in doc && doc._deleted) return 0;
   }
-  if ("stat" in doc && doc.stat) return (_a4 = doc.stat.mtime) != null ? _a4 : 0;
+  if ("stat" in doc && doc.stat) return (_a5 = doc.stat.mtime) != null ? _a5 : 0;
   if ("mtime" in doc) return (_b2 = doc.mtime) != null ? _b2 : 0;
   return 0;
 }
@@ -19058,8 +19340,8 @@ function onlyInNTimes(n2, fn) {
   };
 }
 function statToKey(stat) {
-  var _a4, _b2;
-  return `${(_a4 = stat == null ? void 0 : stat.mtime) != null ? _a4 : 0}-${(_b2 = stat == null ? void 0 : stat.size) != null ? _b2 : 0}`;
+  var _a5, _b2;
+  return `${(_a5 = stat == null ? void 0 : stat.mtime) != null ? _a5 : 0}-${(_b2 = stat == null ? void 0 : stat.size) != null ? _b2 : 0}`;
 }
 function docToKey(doc) {
   const deleted = doc._deleted || doc.deleted || false;
@@ -19178,9 +19460,9 @@ var PersistentMap = class {
     localStorage.setItem(this._key, JSON.stringify([...this._map.entries()]));
   }
   _load(suppliedEntries = []) {
-    var _a4;
+    var _a5;
     try {
-      const savedSource = (_a4 = localStorage.getItem(this._key)) != null ? _a4 : "";
+      const savedSource = (_a5 = localStorage.getItem(this._key)) != null ? _a5 : "";
       const sourceToParse = savedSource === "" ? "[]" : savedSource;
       const obj = JSON.parse(sourceToParse);
       this._map = new Map([...obj, ...suppliedEntries]);
@@ -20482,8 +20764,8 @@ function randomNumber(min, max3) {
     max3 = maxTimeout;
   }
   var ratio = Math.random();
-  var range2 = max3 - min;
-  return ~~(range2 * ratio + min);
+  var range3 = max3 - min;
+  return ~~(range3 * ratio + min);
 }
 function defaultBackOff(min) {
   var max3 = 0;
@@ -24762,8 +25044,8 @@ function init(api, opts, callback) {
           var start = docId + "::";
           var end = docId + "::~";
           var index5 = seqStore.index("_doc_id_rev");
-          var range2 = IDBKeyRange.bound(start, end, false, false);
-          var seqCursor = index5.openCursor(range2);
+          var range3 = IDBKeyRange.bound(start, end, false, false);
+          var seqCursor = index5.openCursor(range3);
           seqCursor.onsuccess = function(e2) {
             seqCursor = e2.target.result;
             if (!seqCursor) {
@@ -31165,7 +31447,7 @@ var FridayReplicationService = class extends ServiceBase {
    * Completely aligned with livesync's approach - no custom conflict resolution
    */
   async defaultProcessSynchroniseResult(doc) {
-    var _a4, _b2, _c, _d;
+    var _a5, _b2, _c, _d;
     try {
       if (!this.core) {
         console.error("[Friday Sync] Critical error: this.core is undefined in defaultProcessSynchroniseResult");
@@ -31216,7 +31498,7 @@ var FridayReplicationService = class extends ServiceBase {
             docPath: doc.path,
             docType: doc.type,
             docSize: doc.size,
-            docChildren: (_b2 = (_a4 = doc.children) == null ? void 0 : _a4.length) != null ? _b2 : 0
+            docChildren: (_b2 = (_a5 = doc.children) == null ? void 0 : _a5.length) != null ? _b2 : 0
           });
           return false;
         }
@@ -31976,9 +32258,9 @@ var ClerkBase = class {
     };
   }
   onProgress() {
-    var _a4;
+    var _a5;
     try {
-      (_a4 = this._onProgress) == null ? void 0 : _a4.call(this, this.stateDetail);
+      (_a5 = this._onProgress) == null ? void 0 : _a5.call(this, this.stateDetail);
     } catch (e2) {
     }
   }
@@ -31986,7 +32268,7 @@ var ClerkBase = class {
     this._onProgress = callback;
   }
   async _mainLoop() {
-    var _a4;
+    var _a5;
     this._state = ClerkState.STALLED;
     this.onProgress();
     await yieldMicrotask();
@@ -31996,7 +32278,7 @@ var ClerkBase = class {
       try {
         const item = await this._inbox.pick(void 0, [this._disposePromise.promise]);
         if (item === SENTINEL_FLUSH || item === SENTINEL_FINISHED) {
-          await ((_a4 = this._onSentinel) == null ? void 0 : _a4.call(this, item));
+          await ((_a5 = this._onSentinel) == null ? void 0 : _a5.call(this, item));
           continue;
         }
         if (item === NOT_AVAILABLE) {
@@ -32060,7 +32342,7 @@ var Clerk = class extends ClerkBase {
 };
 var ClerkGroup = class {
   constructor(params) {
-    var _a4;
+    var _a5;
     Object.defineProperty(this, "_clerks", {
       enumerable: true,
       configurable: true,
@@ -32101,7 +32383,7 @@ var ClerkGroup = class {
     this._assigned = assigned;
     this._instantiate = instantiate;
     this._job = job;
-    this._nameBase = (_a4 = params.name) != null ? _a4 : this.constructor.name;
+    this._nameBase = (_a5 = params.name) != null ? _a5 : this.constructor.name;
     this._clerks = [];
     for (let i = 0; i < initialMemberCount; i++) {
       this.hireMember({ assigned, job });
@@ -32163,15 +32445,15 @@ var QueueProcessor = class {
     return this.processingEntities;
   }
   get totalNowProcessing() {
-    var _a4;
-    return this.nowProcessing + (((_a4 = this._pipeTo) == null ? void 0 : _a4.totalNowProcessing) || 0);
+    var _a5;
+    return this.nowProcessing + (((_a5 = this._pipeTo) == null ? void 0 : _a5.totalNowProcessing) || 0);
   }
   get remaining() {
     return this._queue.length + this.processingEntities + this.waitingEntries;
   }
   get totalRemaining() {
-    var _a4;
-    return this.remaining + (((_a4 = this._pipeTo) == null ? void 0 : _a4.totalRemaining) || 0);
+    var _a5;
+    return this.remaining + (((_a5 = this._pipeTo) == null ? void 0 : _a5.totalRemaining) || 0);
   }
   updateStatus(setFunc) {
     setFunc();
@@ -32188,8 +32470,8 @@ var QueueProcessor = class {
     return this;
   }
   resumePipeLine() {
-    var _a4;
-    (_a4 = this._pipeTo) == null ? void 0 : _a4.resumePipeLine();
+    var _a5;
+    (_a5 = this._pipeTo) == null ? void 0 : _a5.resumePipeLine();
     this.resume();
     return this;
   }
@@ -32277,7 +32559,7 @@ var QueueProcessor = class {
     }
   }
   constructor(processor, params, items, enqueueProcessor) {
-    var _a4, _b2, _c, _d, _e, _f, _g;
+    var _a5, _b2, _c, _d, _e, _f, _g;
     Object.defineProperty(this, "_queue", {
       enumerable: true,
       configurable: true,
@@ -32475,7 +32757,7 @@ var QueueProcessor = class {
     });
     this._root = this;
     this._processor = processor;
-    this.batchSize = (_a4 = params == null ? void 0 : params.batchSize) != null ? _a4 : 1;
+    this.batchSize = (_a5 = params == null ? void 0 : params.batchSize) != null ? _a5 : 1;
     this.yieldThreshold = (_c = (_b2 = params == null ? void 0 : params.yieldThreshold) != null ? _b2 : params == null ? void 0 : params.batchSize) != null ? _c : 0;
     this.concurrentLimit = (_d = params == null ? void 0 : params.concurrentLimit) != null ? _d : 1;
     this.delay = (_e = params == null ? void 0 : params.delay) != null ? _e : 0;
@@ -32586,8 +32868,8 @@ var QueueProcessor = class {
     return [thisPromise];
   }
   get isSuspended() {
-    var _a4;
-    return this._isSuspended || ((_a4 = this._pipeTo) == null ? void 0 : _a4.isSuspended) || false;
+    var _a5;
+    return this._isSuspended || ((_a5 = this._pipeTo) == null ? void 0 : _a5.isSuspended) || false;
   }
   _updateReactiveSource() {
     this.root.updateReactiveSource();
@@ -32784,8 +33066,8 @@ var appendQueuePolicy = (queue2, newItem) => {
 };
 var ProcessorStage = class extends TransformStream {
   constructor(processor, options = {}) {
-    var _a4, _b2;
-    const batchSize = (_a4 = options.batchSize) != null ? _a4 : 1;
+    var _a5, _b2;
+    const batchSize = (_a5 = options.batchSize) != null ? _a5 : 1;
     const queuePolicy = (_b2 = options.queuePolicy) != null ? _b2 : appendQueuePolicy;
     const flushDelay = options.flushDelay;
     if (batchSize <= 0)
@@ -32859,9 +33141,9 @@ var FridayHiddenFileSync = class {
    * Check if hidden file sync module is enabled
    */
   isThisModuleEnabled() {
-    var _a4;
+    var _a5;
     const settings = this.core.getSettings();
-    return this._enabled && ((_a4 = settings.syncInternalFiles) != null ? _a4 : true);
+    return this._enabled && ((_a5 = settings.syncInternalFiles) != null ? _a5 : true);
   }
   /**
    * Get the vault adapter for file operations
@@ -32879,10 +33161,10 @@ var FridayHiddenFileSync = class {
    * Get settings with defaults
    */
   get settings() {
-    var _a4, _b2, _c, _d, _e;
+    var _a5, _b2, _c, _d, _e;
     const s = this.core.getSettings();
     return {
-      syncInternalFiles: (_a4 = s.syncInternalFiles) != null ? _a4 : true,
+      syncInternalFiles: (_a5 = s.syncInternalFiles) != null ? _a5 : true,
       syncInternalFilesIgnorePatterns: s.syncInternalFilesIgnorePatterns ? `${DEFAULT_INTERNAL_IGNORE_PATTERNS},${s.syncInternalFilesIgnorePatterns}` : DEFAULT_INTERNAL_IGNORE_PATTERNS,
       syncInternalFilesTargetPatterns: (_b2 = s.syncInternalFilesTargetPatterns) != null ? _b2 : "",
       syncInternalFileOverwritePatterns: (_c = s.syncInternalFileOverwritePatterns) != null ? _c : "",
@@ -32999,12 +33281,12 @@ var FridayHiddenFileSync = class {
    * This ensures storage type matches retrieval logic in readContent().
    */
   async loadFileWithInfo(path2) {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     try {
       const stat = await this.adapter.stat(path2);
       if (!stat) {
         return {
-          name: (_a4 = path2.split("/").pop()) != null ? _a4 : "",
+          name: (_a5 = path2.split("/").pop()) != null ? _a5 : "",
           path: path2,
           stat: { size: 0, mtime: 0, ctime: 0, type: "file" },
           isInternal: true,
@@ -33053,7 +33335,7 @@ var FridayHiddenFileSync = class {
    * Write file to storage
    */
   async writeFile(path2, data, opt) {
-    var _a4, _b2;
+    var _a5, _b2;
     try {
       await this.ensureDir(path2);
       if (typeof data === "string") {
@@ -33063,7 +33345,7 @@ var FridayHiddenFileSync = class {
       }
       if (opt == null ? void 0 : opt.mtime) {
         try {
-          await ((_b2 = (_a4 = this.adapter).setMtime) == null ? void 0 : _b2.call(_a4, path2, opt.mtime));
+          await ((_b2 = (_a5 = this.adapter).setMtime) == null ? void 0 : _b2.call(_a5, path2, opt.mtime));
         } catch (e2) {
         }
       }
@@ -33113,8 +33395,8 @@ var FridayHiddenFileSync = class {
    * Get last known file mtime
    */
   getLastProcessedFileMTime(file) {
-    var _a4;
-    return (_a4 = this._fileInfoLastKnown.get(file)) != null ? _a4 : 0;
+    var _a5;
+    return (_a5 = this._fileInfoLastKnown.get(file)) != null ? _a5 : 0;
   }
   /**
    * Update last processed database cache
@@ -33320,11 +33602,11 @@ var FridayHiddenFileSync = class {
       return void 0;
     }
     return await serialized("file-" + prefixedFileName, async () => {
-      var _a4, _b2;
+      var _a5, _b2;
       try {
         const metaOnDB = metaEntry || await localDB.getDBEntryMeta(prefixedFileName, { conflicts: true }, true);
         if (metaOnDB === false) throw new Error(`File not found on database: ${storageFilePath}`);
-        if ((_a4 = metaOnDB._conflicts) == null ? void 0 : _a4.length) {
+        if ((_a5 = metaOnDB._conflicts) == null ? void 0 : _a5.length) {
           Logger(`[HiddenFileSync] ${storageFilePath} has conflicts, queuing resolution`, LOG_LEVEL_INFO);
           const prefixedPath = addPrefix(storageFilePath, ICHeader);
           this.queueConflictCheck(prefixedPath);
@@ -33634,7 +33916,7 @@ var FridayHiddenFileSync = class {
   initConflictResolutionProcessor() {
     this.conflictResolutionProcessor = new QueueProcessor(
       async (paths) => {
-        var _a4;
+        var _a5;
         const path2 = paths[0];
         const localDB = this.core.localDatabase;
         if (!localDB) return [];
@@ -33642,7 +33924,7 @@ var FridayHiddenFileSync = class {
           const prefixedPath = path2.startsWith(ICHeader) ? path2 : addPrefix(path2, ICHeader);
           const id = await this.core.path2id(prefixedPath);
           const doc = await localDB.getRaw(id, { conflicts: true });
-          if (!((_a4 = doc._conflicts) == null ? void 0 : _a4.length)) return [];
+          if (!((_a5 = doc._conflicts) == null ? void 0 : _a5.length)) return [];
           Logger(`[HiddenFileSync] Resolving ${doc._conflicts.length} conflict(s) for: ${path2}`, LOG_LEVEL_INFO);
           const conflicts = doc._conflicts.sort(
             (a, b) => Number(a.split("-")[0]) - Number(b.split("-")[0])
@@ -33693,7 +33975,7 @@ var FridayHiddenFileSync = class {
    * Source: livesync CmdHiddenFileSync.ts lines 653-678
    */
   async resolveByNewerEntry(id, path2, currentDoc, currentRev, conflictedRev) {
-    var _a4, _b2;
+    var _a5, _b2;
     const localDB = this.core.localDatabase;
     if (!localDB) return;
     try {
@@ -33704,7 +33986,7 @@ var FridayHiddenFileSync = class {
       await localDB.removeRevision(id, deleteRev);
       Logger(`[HiddenFileSync] Conflict resolved, older revision deleted: ${path2}`, LOG_LEVEL_INFO);
       const updated = await localDB.getRaw(id, { conflicts: true });
-      const remainingConflicts = (_b2 = (_a4 = updated._conflicts) == null ? void 0 : _a4.length) != null ? _b2 : 0;
+      const remainingConflicts = (_b2 = (_a5 = updated._conflicts) == null ? void 0 : _a5.length) != null ? _b2 : 0;
       if (remainingConflicts === 0) {
         const storageFilePath = stripAllPrefixes(path2);
         await this.extractInternalFileFromDatabase(storageFilePath);
@@ -33722,13 +34004,13 @@ var FridayHiddenFileSync = class {
    * Source: livesync CmdHiddenFileSync.ts lines 694-724
    */
   async tryMergeJSON(id, path2, doc, currentRev, conflictedRev) {
-    var _a4, _b2, _c, _d, _e;
+    var _a5, _b2, _c, _d, _e;
     const localDB = this.core.localDatabase;
     if (!localDB) return false;
     try {
       const revInfo = await localDB.getRaw(id, { revs_info: true });
       const conflictedRevNo = Number(conflictedRev.split("-")[0]);
-      const commonBase = (_d = (_c = (_b2 = (_a4 = revInfo._revs_info) == null ? void 0 : _a4.filter((e2) => e2.status === "available" && Number(e2.rev.split("-")[0]) < conflictedRevNo)) == null ? void 0 : _b2[0]) == null ? void 0 : _c.rev) != null ? _d : "";
+      const commonBase = (_d = (_c = (_b2 = (_a5 = revInfo._revs_info) == null ? void 0 : _a5.filter((e2) => e2.status === "available" && Number(e2.rev.split("-")[0]) < conflictedRevNo)) == null ? void 0 : _b2[0]) == null ? void 0 : _c.rev) != null ? _d : "";
       if (!commonBase) return false;
       const conflictManager = (_e = this.core.managers) == null ? void 0 : _e.conflictManager;
       if (!conflictManager || !conflictManager.mergeObject) return false;
@@ -33762,7 +34044,7 @@ var FridayHiddenFileSync = class {
    * Source: livesync CmdHiddenFileSync.ts lines 635-651
    */
   async resolveConflictOnInternalFiles() {
-    var _a4;
+    var _a5;
     const localDB = this.core.localDatabase;
     if (!localDB) return;
     Logger("[HiddenFileSync] Scanning for conflicted files...", LOG_LEVEL_INFO);
@@ -33771,7 +34053,7 @@ var FridayHiddenFileSync = class {
       let conflictCount = 0;
       for await (const doc of conflicted) {
         if (!("_conflicts" in doc)) continue;
-        if (!((_a4 = doc._conflicts) == null ? void 0 : _a4.length)) continue;
+        if (!((_a5 = doc._conflicts) == null ? void 0 : _a5.length)) continue;
         if (isInternalMetadata(doc._id)) {
           const path2 = doc.path || doc._id;
           this.queueConflictCheck(path2);
@@ -33831,7 +34113,7 @@ var FridayNetworkEvents = class {
     scheduleTask("watch-online", 500, () => fireAndForget(() => this.watchOnlineAsync()));
   }
   async watchOnlineAsync() {
-    var _a4;
+    var _a5;
     const isOnline = navigator.onLine;
     Logger(`Network status changed: ${isOnline ? "online" : "offline"}`, LOG_LEVEL_INFO);
     if (isOnline) {
@@ -33843,7 +34125,7 @@ var FridayNetworkEvents = class {
       Logger("Network recovered, attempting reconnection", LOG_LEVEL_INFO);
       await this.core.handleNetworkRecovery();
     } else {
-      if ((_a4 = this.core.managers) == null ? void 0 : _a4.networkManager) {
+      if ((_a5 = this.core.managers) == null ? void 0 : _a5.networkManager) {
         this.core.managers.networkManager.setServerReachable(false);
       }
       if (this.core.offlineTracker) {
@@ -33863,7 +34145,7 @@ var FridayNetworkEvents = class {
     );
   }
   async watchWindowVisibilityAsync() {
-    var _a4;
+    var _a5;
     const settings = this.core.getSettings();
     if (settings.suspendFileWatching) return;
     if (!settings.isConfigured) return;
@@ -33886,7 +34168,7 @@ var FridayNetworkEvents = class {
       }
       if (currentStatus === "NOT_CONNECTED" || currentStatus === "ERRORED") {
         Logger("Window visible, checking for sync recovery", LOG_LEVEL_VERBOSE);
-        if ((_a4 = this.core.connectionMonitor) == null ? void 0 : _a4.isReconnectScheduled()) {
+        if ((_a5 = this.core.connectionMonitor) == null ? void 0 : _a5.isReconnectScheduled()) {
           Logger("Reconnect already scheduled, skipping duplicate attempt", LOG_LEVEL_VERBOSE);
           return;
         }
@@ -33996,7 +34278,7 @@ var FridayConnectionMonitor = class {
    * Attempt to reconnect
    */
   async attemptReconnect() {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     if (this._pausedForManualOperation) {
       Logger("Skipping reconnect - manual operation in progress", LOG_LEVEL_VERBOSE);
       return;
@@ -34009,7 +34291,7 @@ var FridayConnectionMonitor = class {
     try {
       const testResult = await this.core.testConnection();
       if (testResult.success) {
-        if ((_a4 = this.core.managers) == null ? void 0 : _a4.networkManager) {
+        if ((_a5 = this.core.managers) == null ? void 0 : _a5.networkManager) {
           this.core.managers.networkManager.setServerReachable(true);
         }
         const settings = this.core.getSettings();
@@ -34041,8 +34323,8 @@ var FridayConnectionMonitor = class {
    * Calculate backoff delay based on consecutive failures
    */
   calculateBackoffDelay() {
-    var _a4, _b2, _c;
-    const failures = (_c = (_b2 = (_a4 = this.core.managers) == null ? void 0 : _a4.networkManager) == null ? void 0 : _b2.consecutiveFailures) != null ? _c : 1;
+    var _a5, _b2, _c;
+    const failures = (_c = (_b2 = (_a5 = this.core.managers) == null ? void 0 : _a5.networkManager) == null ? void 0 : _b2.consecutiveFailures) != null ? _c : 1;
     const baseDelay = 1e4;
     const maxDelay = 3e5;
     return Math.min(baseDelay * Math.pow(1.5, failures), maxDelay);
@@ -34051,13 +34333,13 @@ var FridayConnectionMonitor = class {
    * Force an immediate reconnect attempt
    */
   async forceReconnect() {
-    var _a4, _b2;
+    var _a5, _b2;
     this.cancelReconnect();
     Logger("Forcing reconnection attempt...", LOG_LEVEL_INFO);
     try {
       const testResult = await this.core.testConnection();
       if (testResult.success) {
-        if ((_a4 = this.core.managers) == null ? void 0 : _a4.networkManager) {
+        if ((_a5 = this.core.managers) == null ? void 0 : _a5.networkManager) {
           this.core.managers.networkManager.setServerReachable(true);
         }
         return true;
@@ -34125,10 +34407,10 @@ var FridayConnectionFailureHandler = class {
    * @returns Action to take: 'retry', 'abort', or 'ignore'
    */
   async handleReplicationError(error, showNotice) {
-    var _a4;
+    var _a5;
     const errorMessage = (error == null ? void 0 : error.message) || String(error);
     if (this.isNetworkError(error)) {
-      if ((_a4 = this.core.managers) == null ? void 0 : _a4.networkManager) {
+      if ((_a5 = this.core.managers) == null ? void 0 : _a5.networkManager) {
         this.core.managers.networkManager.setServerReachable(false);
       }
       if (showNotice && this.shouldShowNotification()) {
@@ -34157,9 +34439,9 @@ var FridayConnectionFailureHandler = class {
    * Check if error is network-related
    */
   isNetworkError(error) {
-    var _a4;
+    var _a5;
     if (!error) return false;
-    const message = ((_a4 = error == null ? void 0 : error.message) == null ? void 0 : _a4.toLowerCase()) || "";
+    const message = ((_a5 = error == null ? void 0 : error.message) == null ? void 0 : _a5.toLowerCase()) || "";
     return error.name === "TypeError" && message.includes("fetch") || message.includes("network") || message.includes("econnrefused") || message.includes("enotfound") || message.includes("etimedout") || message.includes("failed to fetch") || error.status === 0;
   }
   /**
@@ -34172,9 +34454,9 @@ var FridayConnectionFailureHandler = class {
    * Check if error is timeout-related
    */
   isTimeoutError(error) {
-    var _a4;
+    var _a5;
     if (!error) return false;
-    const message = ((_a4 = error == null ? void 0 : error.message) == null ? void 0 : _a4.toLowerCase()) || "";
+    const message = ((_a5 = error == null ? void 0 : error.message) == null ? void 0 : _a5.toLowerCase()) || "";
     return message.includes("timeout") || error.name === "TimeoutError" || error.status === 408;
   }
   /**
@@ -34192,8 +34474,8 @@ var FridayConnectionFailureHandler = class {
    * Calculate retry delay with exponential backoff
    */
   getRetryDelay() {
-    var _a4, _b2, _c;
-    const failures = (_c = (_b2 = (_a4 = this.core.managers) == null ? void 0 : _a4.networkManager) == null ? void 0 : _b2.consecutiveFailures) != null ? _c : 1;
+    var _a5, _b2, _c;
+    const failures = (_c = (_b2 = (_a5 = this.core.managers) == null ? void 0 : _a5.networkManager) == null ? void 0 : _b2.consecutiveFailures) != null ? _c : 1;
     const baseDelay = 5e3;
     const maxDelay = 3e5;
     const delay2 = Math.min(baseDelay * Math.pow(2, failures - 1), maxDelay);
@@ -34670,8 +34952,8 @@ var _FridaySyncCore = class _FridaySyncCore {
     this._kvDB = new SimpleKeyValueDB("friday-kv");
     this._simpleStore = new FridaySimpleStore("checkpoint");
     this.onFileProgress = (event) => {
-      var _a4;
-      const tracker = (_a4 = this._statusDisplay) == null ? void 0 : _a4.getFileProgressTracker();
+      var _a5;
+      const tracker = (_a5 = this._statusDisplay) == null ? void 0 : _a5.getFileProgressTracker();
       if (tracker) {
         tracker.handleEvent(event);
       }
@@ -34722,8 +35004,8 @@ var _FridaySyncCore = class _FridaySyncCore {
   }
   // ==================== LiveSyncReplicatorEnv Implementation ====================
   getDatabase() {
-    var _a4;
-    if (!((_a4 = this._localDatabase) == null ? void 0 : _a4.localDatabase)) {
+    var _a5;
+    if (!((_a5 = this._localDatabase) == null ? void 0 : _a5.localDatabase)) {
       throw new Error("Local database not initialized");
     }
     return this._localDatabase.localDatabase;
@@ -34751,16 +35033,16 @@ var _FridaySyncCore = class _FridaySyncCore {
    * Current server connectivity status
    */
   get serverStatus() {
-    var _a4, _b2;
-    return (_b2 = (_a4 = this._serverChecker) == null ? void 0 : _a4.currentStatus) != null ? _b2 : "UNKNOWN";
+    var _a5, _b2;
+    return (_b2 = (_a5 = this._serverChecker) == null ? void 0 : _a5.currentStatus) != null ? _b2 : "UNKNOWN";
   }
   /**
    * Whether server is currently reachable
    * Used by replicator for error attribution
    */
   isServerReachable() {
-    var _a4, _b2;
-    return (_b2 = (_a4 = this._serverChecker) == null ? void 0 : _a4.isServerReachable) != null ? _b2 : false;
+    var _a5, _b2;
+    return (_b2 = (_a5 = this._serverChecker) == null ? void 0 : _a5.isServerReachable) != null ? _b2 : false;
   }
   get offlineTracker() {
     return this._offlineTracker;
@@ -34850,14 +35132,14 @@ var _FridaySyncCore = class _FridaySyncCore {
    * Initialize the sync core with configuration
    */
   async initialize(config) {
-    var _a4, _b2, _c, _d, _e, _f, _g, _h, _i;
+    var _a5, _b2, _c, _d, _e, _f, _g, _h, _i;
     try {
       clearHandlers();
       Logger("SyncParamsHandler cache cleared for fresh initialization", LOG_LEVEL_INFO);
       this._ignorePatterns = config.ignorePatterns || [];
       if (config.selectiveSync) {
         this._selectiveSync = {
-          syncImages: (_a4 = config.selectiveSync.syncImages) != null ? _a4 : false,
+          syncImages: (_a5 = config.selectiveSync.syncImages) != null ? _a5 : false,
           syncAudio: (_b2 = config.selectiveSync.syncAudio) != null ? _b2 : false,
           syncVideo: (_c = config.selectiveSync.syncVideo) != null ? _c : false,
           syncPdf: (_d = config.selectiveSync.syncPdf) != null ? _d : false
@@ -35006,14 +35288,14 @@ var _FridaySyncCore = class _FridaySyncCore {
    * Source: Network event handlers trigger this when online event fires
    */
   async handleNetworkRecovery() {
-    var _a4;
+    var _a5;
     Logger("Network recovery detected", LOG_LEVEL_INFO);
     const currentStatus = this.replicationStat.value.syncStatus;
     if (currentStatus === "LIVE") {
       Logger("Sync already in LIVE state, skipping recovery", LOG_LEVEL_VERBOSE);
       return;
     }
-    (_a4 = this._managers) == null ? void 0 : _a4.networkManager.setServerReachable(true);
+    (_a5 = this._managers) == null ? void 0 : _a5.networkManager.setServerReachable(true);
     if (this._offlineTracker) {
       this._offlineTracker.setOffline(false);
     }
@@ -35047,12 +35329,12 @@ var _FridaySyncCore = class _FridaySyncCore {
    * Obsidian's startup events as file changes.
    */
   async startSync(continuous = true, options) {
-    var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+    var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
     if (!this._replicator) {
       this.setStatus("ERRORED", "Replicator not initialized");
       return false;
     }
-    const reason = (_a4 = options == null ? void 0 : options.reason) != null ? _a4 : "PLUGIN_STARTUP";
+    const reason = (_a5 = options == null ? void 0 : options.reason) != null ? _a5 : "PLUGIN_STARTUP";
     const forceCheck = (_b2 = options == null ? void 0 : options.forceCheck) != null ? _b2 : reason === "PLUGIN_STARTUP";
     Logger(`Starting sync (reason: ${reason}, forceCheck: ${forceCheck})`, LOG_LEVEL_VERBOSE);
     if (this._replicator.remoteLockedAndDeviceNotAccepted) {
@@ -35144,9 +35426,9 @@ var _FridaySyncCore = class _FridaySyncCore {
    * This ensures local changes are still saved and reconnection is scheduled
    */
   handleOfflineMode(errorMessage) {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     Logger(`Server unreachable: ${errorMessage || "unknown reason"}`, LOG_LEVEL_INFO);
-    (_a4 = this._managers) == null ? void 0 : _a4.networkManager.setServerReachable(false);
+    (_a5 = this._managers) == null ? void 0 : _a5.networkManager.setServerReachable(false);
     (_b2 = this._serverChecker) == null ? void 0 : _b2.setStatus("UNREACHABLE", errorMessage);
     this.setStatus("NOT_CONNECTED", "Server unreachable, offline mode");
     this.startFileWatcherIfNeeded();
@@ -35184,12 +35466,12 @@ var _FridaySyncCore = class _FridaySyncCore {
   setupConnectionTimeout() {
     const CONNECTION_TIMEOUT_MS = 3e4;
     setTimeout(() => {
-      var _a4, _b2, _c;
+      var _a5, _b2, _c;
       const status = this.replicationStat.value.syncStatus;
       if (status === "STARTED") {
         Logger("Connection timeout - status stuck at STARTED", LOG_LEVEL_INFO);
         this.setStatus("NOT_CONNECTED", "Connection timeout");
-        (_a4 = this._managers) == null ? void 0 : _a4.networkManager.setServerReachable(false);
+        (_a5 = this._managers) == null ? void 0 : _a5.networkManager.setServerReachable(false);
         (_b2 = this._serverChecker) == null ? void 0 : _b2.setStatus("UNREACHABLE", "Connection timeout");
         (_c = this._connectionMonitor) == null ? void 0 : _c.scheduleReconnect(1e4);
       }
@@ -35204,10 +35486,10 @@ var _FridaySyncCore = class _FridaySyncCore {
    * @returns Result of the operation
    */
   async _executeManualOperation(type, operation) {
-    var _a4, _b2;
+    var _a5, _b2;
     this._manualOperationType = type;
     try {
-      (_a4 = this._connectionMonitor) == null ? void 0 : _a4.pauseDuringManualOperation();
+      (_a5 = this._connectionMonitor) == null ? void 0 : _a5.pauseDuringManualOperation();
       Logger(`Starting manual operation: ${type}`, LOG_LEVEL_INFO);
       const result = await operation();
       Logger(`Manual operation completed: ${type}`, LOG_LEVEL_INFO);
@@ -35335,14 +35617,14 @@ var _FridaySyncCore = class _FridaySyncCore {
       return false;
     }
     return this._executeManualOperation("RESET", async () => {
-      var _a4, _b2;
+      var _a5, _b2;
       try {
         this.setStatus("STARTED", "Uploading your files...");
         Logger($msg("fridaySync.rebuildRemote.rebuilding"), LOG_LEVEL_NOTICE);
         const vault = this.plugin.app.vault;
         const files = vault.getFiles();
         const totalFiles = files.length;
-        (_a4 = this.onFileProgress) == null ? void 0 : _a4.call(this, {
+        (_a5 = this.onFileProgress) == null ? void 0 : _a5.call(this, {
           type: "upload_start",
           totalFiles
         });
@@ -35477,7 +35759,7 @@ var _FridaySyncCore = class _FridaySyncCore {
    * If you need to download data from server first, use rebuildLocalFromRemote() instead.
    */
   async rebuildVaultFromDB() {
-    var _a4, _b2, _c, _d, _e, _f;
+    var _a5, _b2, _c, _d, _e, _f;
     if (!this._localDatabase) {
       Logger($msg("fridaySync.rebuild.localDbNotInitialized"), LOG_LEVEL_NOTICE);
       return false;
@@ -35514,7 +35796,7 @@ var _FridaySyncCore = class _FridaySyncCore {
           }
         }
       }
-      (_a4 = this.onFileProgress) == null ? void 0 : _a4.call(this, {
+      (_a5 = this.onFileProgress) == null ? void 0 : _a5.call(this, {
         type: "file_write_start",
         totalFiles: totalFilesToWrite
       });
@@ -35705,14 +35987,14 @@ var _FridaySyncCore = class _FridaySyncCore {
    * This ensures chunks and metadata arrive together, preventing "missing chunks" errors.
    */
   async rebuildLocalFromRemote() {
-    var _a4, _b2, _c, _d, _e;
+    var _a5, _b2, _c, _d, _e;
     const originalSuspendParseState = this._settings.suspendParseReplicationResult;
     const originalSuspendFileWatchingState = this._settings.suspendFileWatching;
     try {
       Logger($msg("fridaySync.fetch.starting") || "Starting fetch from server...", LOG_LEVEL_INFO);
       Logger("[Fetch] Phase 1: Suspending database and storage reflection", LOG_LEVEL_INFO);
       const estimatedDocs = 0;
-      (_a4 = this.onFileProgress) == null ? void 0 : _a4.call(this, {
+      (_a5 = this.onFileProgress) == null ? void 0 : _a5.call(this, {
         type: "download_start",
         totalDocs: estimatedDocs
       });
@@ -36107,8 +36389,8 @@ var _FridaySyncCore = class _FridaySyncCore {
    * This checks the file extension against the selectiveSync settings
    */
   isIgnoredBySelectiveSync(filepath) {
-    var _a4;
-    const ext2 = (_a4 = filepath.split(".").pop()) == null ? void 0 : _a4.toLowerCase();
+    var _a5;
+    const ext2 = (_a5 = filepath.split(".").pop()) == null ? void 0 : _a5.toLowerCase();
     if (!ext2) return false;
     if (_FridaySyncCore.IMAGE_EXTENSIONS.includes(ext2)) {
       return !this._selectiveSync.syncImages;
@@ -36160,8 +36442,8 @@ var SyncService = class {
    * Get current sync status
    */
   get status() {
-    var _a4, _b2;
-    return (_b2 = (_a4 = this.core) == null ? void 0 : _a4.status) != null ? _b2 : "NOT_CONNECTED";
+    var _a5, _b2;
+    return (_b2 = (_a5 = this.core) == null ? void 0 : _a5.status) != null ? _b2 : "NOT_CONNECTED";
   }
   /**
    * Check if sync is initialized
@@ -36376,8 +36658,8 @@ var SyncService = class {
    * @returns true if database reset was detected
    */
   isRemoteDatabaseReset() {
-    var _a4, _b2;
-    return (_b2 = (_a4 = this.core) == null ? void 0 : _a4.isRemoteDatabaseReset()) != null ? _b2 : false;
+    var _a5, _b2;
+    return (_b2 = (_a5 = this.core) == null ? void 0 : _a5.isRemoteDatabaseReset()) != null ? _b2 : false;
   }
   /**
    * Close and clean up resources
@@ -36620,11 +36902,11 @@ var SyncStatusDisplay = class {
    * Desktop: Respect user settings
    */
   get shouldShowEditorStatus() {
-    var _a4, _b2;
+    var _a5, _b2;
     if (import_obsidian7.Platform.isMobile) {
       return true;
     }
-    return (_b2 = (_a4 = this.plugin.settings) == null ? void 0 : _a4.showEditorStatusDisplay) != null ? _b2 : false;
+    return (_b2 = (_a5 = this.plugin.settings) == null ? void 0 : _a5.showEditorStatusDisplay) != null ? _b2 : false;
   }
   /**
    * Get file progress tracker (for FridaySyncCore to use)
@@ -36651,8 +36933,8 @@ var SyncStatusDisplay = class {
    * </div>
    */
   initialize() {
-    var _a4;
-    (_a4 = document.querySelectorAll(".livesync-status")) == null ? void 0 : _a4.forEach((e2) => e2.remove());
+    var _a5;
+    (_a5 = document.querySelectorAll(".livesync-status")) == null ? void 0 : _a5.forEach((e2) => e2.remove());
     this.statusDiv = this.plugin.app.workspace.containerEl.createDiv({ cls: "livesync-status" });
     this.statusLine = this.statusDiv.createDiv({ cls: "livesync-status-statusline" });
     this.messageArea = this.statusDiv.createDiv({ cls: "livesync-status-messagearea" });
@@ -36696,7 +36978,7 @@ var SyncStatusDisplay = class {
    * Set up reactive observers for log display (from livesync's ModuleLog)
    */
   observeForLogs() {
-    var _a4, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r;
+    var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r;
     const padSpaces = `\u2007`.repeat(10);
     function padLeftSpComputed(numI, mark) {
       const formatted = reactiveSource("");
@@ -36717,7 +36999,7 @@ var SyncStatusDisplay = class {
       });
       return computed(() => formatted.value);
     }
-    const replicationResultCount = (_b2 = (_a4 = this.core) == null ? void 0 : _a4.replicationResultCount) != null ? _b2 : reactiveSource(0);
+    const replicationResultCount = (_b2 = (_a5 = this.core) == null ? void 0 : _a5.replicationResultCount) != null ? _b2 : reactiveSource(0);
     const databaseQueueCount = (_d = (_c = this.core) == null ? void 0 : _c.databaseQueueCount) != null ? _d : reactiveSource(0);
     const storageApplyingCount = (_f = (_e = this.core) == null ? void 0 : _e.storageApplyingCount) != null ? _f : reactiveSource(0);
     const processing = (_h = (_g = this.core) == null ? void 0 : _g.processing) != null ? _h : reactiveSource(0);
@@ -36849,12 +37131,12 @@ var SyncStatusDisplay = class {
       return;
     }
     this.nextFrameQueue = requestAnimationFrame(() => {
-      var _a4;
+      var _a5;
       this.nextFrameQueue = void 0;
       const { message } = this.statusBarLabels.value;
       const newMsg = message;
       const newLog = this.statusLog.value;
-      (_a4 = this.statusBar) == null ? void 0 : _a4.setText(newMsg.split("\n")[0]);
+      (_a5 = this.statusBar) == null ? void 0 : _a5.setText(newMsg.split("\n")[0]);
       if (this.statusLine) {
         this.statusLine.innerText = newMsg;
       }
@@ -36898,10 +37180,10 @@ var SyncStatusDisplay = class {
    * Show a notice
    */
   showNotice(message, key2, timeout = 5e3) {
-    var _a4;
+    var _a5;
     if (!key2) key2 = message;
     if (key2 in this.notifies) {
-      const isShown = (_a4 = this.notifies[key2].notice.noticeEl) == null ? void 0 : _a4.isShown();
+      const isShown = (_a5 = this.notifies[key2].notice.noticeEl) == null ? void 0 : _a5.isShown();
       if (!isShown) {
         this.notifies[key2].notice = new import_obsidian7.Notice(message, 0);
       }
@@ -36957,7 +37239,7 @@ var SyncStatusDisplay = class {
    * Mobile: Simplified menu (no toggle option, always shows editor status)
    */
   showStatusBarMenu(event) {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     const { Menu } = require("obsidian");
     const menu = new Menu();
     if (import_obsidian7.Platform.isDesktop) {
@@ -36970,7 +37252,7 @@ var SyncStatusDisplay = class {
       });
       menu.addSeparator();
     }
-    const syncStatus = (_c = (_b2 = (_a4 = this.core) == null ? void 0 : _a4.replicationStat) == null ? void 0 : _b2.value) == null ? void 0 : _c.syncStatus;
+    const syncStatus = (_c = (_b2 = (_a5 = this.core) == null ? void 0 : _a5.replicationStat) == null ? void 0 : _b2.value) == null ? void 0 : _c.syncStatus;
     if (syncStatus === "NOT_CONNECTED" || syncStatus === "ERRORED") {
       menu.addItem((item) => {
         item.setTitle("\u91CD\u65B0\u8FDE\u63A5\u540C\u6B65").setIcon("refresh-cw").onClick(async () => {
@@ -36992,7 +37274,7 @@ var SyncStatusDisplay = class {
    * Clean up
    */
   onunload() {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     if (this.statusBar) {
       this.statusBar.remove();
       this.statusBar = void 0;
@@ -37001,7 +37283,7 @@ var SyncStatusDisplay = class {
       this.statusDiv.remove();
       this.statusDiv = void 0;
     }
-    (_a4 = document.querySelectorAll(".livesync-status")) == null ? void 0 : _a4.forEach((e2) => e2.remove());
+    (_a5 = document.querySelectorAll(".livesync-status")) == null ? void 0 : _a5.forEach((e2) => e2.remove());
     (_b2 = document.querySelectorAll(".syncstatusbar")) == null ? void 0 : _b2.forEach((e2) => e2.remove());
     for (const key2 in this.notifies) {
       try {
@@ -37026,8 +37308,8 @@ var SyncStatusDisplay = class {
       if (this.progressBarContainer.hasClass("active")) {
         this.progressBarContainer.addClass("fadeout");
         setTimeout(() => {
-          var _a4;
-          (_a4 = this.progressBarContainer) == null ? void 0 : _a4.removeClass("active", "fadeout");
+          var _a5;
+          (_a5 = this.progressBarContainer) == null ? void 0 : _a5.removeClass("active", "fadeout");
         }, 1e3);
       } else {
         this.progressBarContainer.removeClass("active", "fadeout");
@@ -37160,12 +37442,12 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    * Uses licenseState as the single source of truth
    */
   renderLicenseSection(containerEl) {
-    var _a4;
+    var _a5;
     containerEl.createEl("h2", {
       text: this.plugin.i18n.t("settings.license"),
       cls: "friday-section-title"
     });
-    if (((_a4 = this.plugin.licenseState) == null ? void 0 : _a4.isActivated()) && !this.plugin.licenseState.isExpired()) {
+    if (((_a5 = this.plugin.licenseState) == null ? void 0 : _a5.isActivated()) && !this.plugin.licenseState.isExpired()) {
       const licenseInfo = this.plugin.licenseState.getLicenseInfo();
       if (!licenseInfo) {
         console.warn("[Settings] License is activated but no license info available");
@@ -37179,7 +37461,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       planBadge.style.cursor = "pointer";
       planBadge.title = this.plugin.i18n.t("settings.click_to_refresh_license_info") || "Click to refresh license info";
       planBadge.addEventListener("click", async () => {
-        var _a5;
+        var _a6;
         const now = Date.now();
         if (this.isRefreshingLicenseInfo || now - this.lastLicenseInfoRefresh < 5e3) {
           return;
@@ -37190,7 +37472,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         planBadge.textContent = this.plugin.i18n.t("settings.refreshing") || "Refreshing...";
         planBadge.addClass("refreshing");
         try {
-          await ((_a5 = this.plugin.licenseState) == null ? void 0 : _a5.refresh());
+          await ((_a6 = this.plugin.licenseState) == null ? void 0 : _a6.refresh());
           await this.plugin.syncLicenseToSettings();
           await this.plugin.refreshLicenseUsage();
           await this.plugin.refreshSubdomainInfo();
@@ -37282,7 +37564,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       }).addButton((button) => {
         trialRequestBtn = button.buttonEl;
         button.setButtonText(this.plugin.i18n.t("settings.trial_request")).onClick(async () => {
-          var _a5;
+          var _a6;
           const email = trialEmailEl.value.trim();
           if (trialStatusEl) {
             trialStatusEl.setText("");
@@ -37302,7 +37584,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
               throw new Error("License service not available");
             }
             const result = await this.plugin.licenseServiceManager.requestTrial(email);
-            if (result.success && ((_a5 = result.data) == null ? void 0 : _a5.licenseKey)) {
+            if (result.success && ((_a6 = result.data) == null ? void 0 : _a6.licenseKey)) {
               const licenseKey = result.data.licenseKey;
               inputEl.value = licenseKey;
               trialStatusEl.setText(this.plugin.i18n.t("settings.trial_request_success"));
@@ -37340,7 +37622,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    * Users must explicitly enable sync via the toggle switch
    */
   renderSyncSection(containerEl) {
-    var _a4;
+    var _a5;
     const license = this.plugin.settings.license;
     const licenseSync = this.plugin.settings.licenseSync;
     if (!license || !(licenseSync == null ? void 0 : licenseSync.enabled)) return;
@@ -37360,7 +37642,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
     const syncContentContainer = containerEl.createDiv("friday-sync-content-container");
     syncContentContainer.style.display = this.plugin.settings.syncUserEnabled ? "block" : "none";
     syncToggle.addEventListener("change", async () => {
-      var _a5;
+      var _a6;
       const enabled = syncToggle.checked;
       this.plugin.settings.syncUserEnabled = enabled;
       this.plugin.settings.syncEnabled = enabled;
@@ -37380,7 +37662,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         }
       } else {
         try {
-          if ((_a5 = this.plugin.syncService) == null ? void 0 : _a5.isInitialized) {
+          if ((_a6 = this.plugin.syncService) == null ? void 0 : _a6.isInitialized) {
             await this.plugin.syncService.close();
           }
           new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_disabled_success") || "Sync disabled");
@@ -37409,9 +37691,9 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         text.setValue(encryptionPassphrase);
       }).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.show_password")).onClick(() => {
-          var _a5;
+          var _a6;
           passwordVisible = !passwordVisible;
-          const inputEl = (_a5 = button.buttonEl.parentElement) == null ? void 0 : _a5.querySelector("input");
+          const inputEl = (_a6 = button.buttonEl.parentElement) == null ? void 0 : _a6.querySelector("input");
           if (inputEl) {
             inputEl.type = passwordVisible ? "text" : "password";
           }
@@ -37432,9 +37714,9 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         });
       }).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.show_password")).onClick(() => {
-          var _a5;
+          var _a6;
           passwordVisible = !passwordVisible;
-          const inputEl = (_a5 = button.buttonEl.parentElement) == null ? void 0 : _a5.querySelector("input");
+          const inputEl = (_a6 = button.buttonEl.parentElement) == null ? void 0 : _a6.querySelector("input");
           if (inputEl) {
             inputEl.type = passwordVisible ? "text" : "password";
           }
@@ -37447,7 +37729,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
     if (this.firstTimeSync) {
       new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_first_time_title")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.upload_local_to_cloud")).setCta().onClick(async () => {
-          var _a5;
+          var _a6;
           button.setButtonText(this.plugin.i18n.t("settings.sync_uploading"));
           button.setDisabled(true);
           try {
@@ -37455,7 +37737,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
               await this.plugin.syncService.initialize(this.plugin.settings.syncConfig);
             }
             await this.plugin.syncService.rebuildRemote();
-            if ((_a5 = this.plugin.settings.syncConfig) == null ? void 0 : _a5.syncOnStart) {
+            if ((_a6 = this.plugin.settings.syncConfig) == null ? void 0 : _a6.syncOnStart) {
               await this.plugin.syncService.startSync(true);
             }
             new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_upload_success"));
@@ -37471,7 +37753,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
     } else {
       new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_data_available")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.download_from_cloud")).setCta().onClick(async () => {
-          var _a5;
+          var _a6;
           if (!this.plugin.settings.encryptionPassphrase) {
             new import_obsidian8.Notice(this.plugin.i18n.t("settings.encryption_password_required"));
             return;
@@ -37479,7 +37761,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
           button.setButtonText(this.plugin.i18n.t("settings.sync_downloading"));
           button.setDisabled(true);
           try {
-            if ((_a5 = this.plugin.syncService) == null ? void 0 : _a5.isInitialized) {
+            if ((_a6 = this.plugin.syncService) == null ? void 0 : _a6.isInitialized) {
               await this.plugin.syncService.close();
             }
             await this.plugin.clearSyncDatabase();
@@ -37516,8 +37798,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
     }
     const selectiveSync = this.plugin.settings.syncConfig.selectiveSync;
     new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_images")).setDesc(this.plugin.i18n.t("settings.sync_images_desc")).addToggle((toggle) => {
-      var _a5;
-      toggle.setValue((_a5 = selectiveSync.syncImages) != null ? _a5 : true);
+      var _a6;
+      toggle.setValue((_a6 = selectiveSync.syncImages) != null ? _a6 : true);
       toggle.onChange(async (value) => {
         selectiveSync.syncImages = value;
         await this.plugin.saveSettings();
@@ -37525,8 +37807,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
     });
     new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_audio")).setDesc(this.plugin.i18n.t("settings.sync_audio_desc")).addToggle((toggle) => {
-      var _a5;
-      toggle.setValue((_a5 = selectiveSync.syncAudio) != null ? _a5 : false);
+      var _a6;
+      toggle.setValue((_a6 = selectiveSync.syncAudio) != null ? _a6 : false);
       toggle.onChange(async (value) => {
         selectiveSync.syncAudio = value;
         await this.plugin.saveSettings();
@@ -37534,8 +37816,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
     });
     new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_video")).setDesc(this.plugin.i18n.t("settings.sync_video_desc")).addToggle((toggle) => {
-      var _a5;
-      toggle.setValue((_a5 = selectiveSync.syncVideo) != null ? _a5 : false);
+      var _a6;
+      toggle.setValue((_a6 = selectiveSync.syncVideo) != null ? _a6 : false);
       toggle.onChange(async (value) => {
         selectiveSync.syncVideo = value;
         await this.plugin.saveSettings();
@@ -37543,8 +37825,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
     });
     new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_pdf")).setDesc(this.plugin.i18n.t("settings.sync_pdf_desc")).addToggle((toggle) => {
-      var _a5;
-      toggle.setValue((_a5 = selectiveSync.syncPdf) != null ? _a5 : false);
+      var _a6;
+      toggle.setValue((_a6 = selectiveSync.syncPdf) != null ? _a6 : false);
       toggle.onChange(async (value) => {
         selectiveSync.syncPdf = value;
         await this.plugin.saveSettings();
@@ -37552,8 +37834,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
     });
     new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_themes")).setDesc(this.plugin.i18n.t("settings.sync_themes_desc")).addToggle((toggle) => {
-      var _a5;
-      toggle.setValue((_a5 = selectiveSync.syncThemes) != null ? _a5 : true);
+      var _a6;
+      toggle.setValue((_a6 = selectiveSync.syncThemes) != null ? _a6 : true);
       toggle.onChange(async (value) => {
         selectiveSync.syncThemes = value;
         await this.plugin.saveSettings();
@@ -37561,8 +37843,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
     });
     new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_snippets")).setDesc(this.plugin.i18n.t("settings.sync_snippets_desc")).addToggle((toggle) => {
-      var _a5;
-      toggle.setValue((_a5 = selectiveSync.syncSnippets) != null ? _a5 : true);
+      var _a6;
+      toggle.setValue((_a6 = selectiveSync.syncSnippets) != null ? _a6 : true);
       toggle.onChange(async (value) => {
         selectiveSync.syncSnippets = value;
         await this.plugin.saveSettings();
@@ -37570,18 +37852,18 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
     });
     new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_plugins")).setDesc(this.plugin.i18n.t("settings.sync_plugins_desc")).addToggle((toggle) => {
-      var _a5;
-      toggle.setValue((_a5 = selectiveSync.syncPlugins) != null ? _a5 : true);
+      var _a6;
+      toggle.setValue((_a6 = selectiveSync.syncPlugins) != null ? _a6 : true);
       toggle.onChange(async (value) => {
         selectiveSync.syncPlugins = value;
         await this.plugin.saveSettings();
         await this.updateSelectiveSyncSettings();
       });
     });
-    const currentPatterns = ((_a4 = this.plugin.settings.syncConfig) == null ? void 0 : _a4.ignorePatterns) || [];
+    const currentPatterns = ((_a5 = this.plugin.settings.syncConfig) == null ? void 0 : _a5.ignorePatterns) || [];
     const patternsListContainer = selectiveSyncContainer.createDiv();
     const savePatterns = async () => {
-      var _a5;
+      var _a6;
       const patterns = [];
       const inputs = patternsListContainer.querySelectorAll('input[type="text"]');
       inputs.forEach((input) => {
@@ -37592,7 +37874,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
       this.plugin.settings.syncConfig.ignorePatterns = patterns;
       await this.plugin.saveSettings();
-      if ((_a5 = this.plugin.syncService) == null ? void 0 : _a5.isInitialized) {
+      if ((_a6 = this.plugin.syncService) == null ? void 0 : _a6.isInitialized) {
         this.plugin.syncService.updateIgnorePatterns(patterns);
       }
     };
@@ -37629,7 +37911,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    * Note: ignorePatterns is separate and only for user-defined patterns (folders, custom rules)
    */
   async updateSelectiveSyncSettings() {
-    var _a4, _b2, _c, _d;
+    var _a5, _b2, _c, _d;
     const selectiveSync = this.plugin.settings.syncConfig.selectiveSync;
     if (!selectiveSync) return;
     const defaultInternalPatterns = [
@@ -37643,7 +37925,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       "plugins\\/mdfriday"
     ];
     let internalPatterns = [...defaultInternalPatterns];
-    if (!((_a4 = selectiveSync.syncThemes) != null ? _a4 : true)) {
+    if (!((_a5 = selectiveSync.syncThemes) != null ? _a5 : true)) {
       internalPatterns.push("\\.obsidian\\/themes");
     }
     if (!((_b2 = selectiveSync.syncSnippets) != null ? _b2 : true)) {
@@ -37705,7 +37987,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    * Perform the actual reset operation
    */
   async performReset() {
-    var _a4;
+    var _a5;
     try {
       const { license } = this.plugin.settings;
       if (!license) {
@@ -37718,7 +38000,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       if (!result.success) {
         throw new Error(result.error || "Failed to reset usage");
       }
-      if ((_a4 = this.plugin.syncService) == null ? void 0 : _a4.isInitialized) {
+      if ((_a5 = this.plugin.syncService) == null ? void 0 : _a5.isInitialized) {
         await this.plugin.syncService.close();
       }
       clearHandlers();
@@ -37755,7 +38037,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    * Simplified flow using licenseState as single source of truth
    */
   async activateLicense(licenseKey) {
-    var _a4;
+    var _a5;
     if (!this.plugin.licenseServiceManager) {
       throw new Error("License service not available");
     }
@@ -37776,7 +38058,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         }
       }
       await this.plugin.syncLicenseToSettings();
-      const isFirstTime = ((_a4 = licenseInfo.activation) == null ? void 0 : _a4.firstTime) || false;
+      const isFirstTime = ((_a5 = licenseInfo.activation) == null ? void 0 : _a5.firstTime) || false;
       if (licenseInfo.sync && licenseInfo.features.syncEnabled) {
         this.plugin.settings.licenseSync = {
           enabled: true,
@@ -38243,29 +38525,29 @@ var LicenseStateManager = class {
    * 检查是否已激活
    */
   isActivated() {
-    var _a4, _b2;
-    return ((_a4 = this.authStatus) == null ? void 0 : _a4.isAuthenticated) === true && !!((_b2 = this.authStatus) == null ? void 0 : _b2.license);
+    var _a5, _b2;
+    return ((_a5 = this.authStatus) == null ? void 0 : _a5.isAuthenticated) === true && !!((_b2 = this.authStatus) == null ? void 0 : _b2.license);
   }
   /**
    * 获取 license key
    */
   getLicenseKey() {
-    var _a4;
-    return ((_a4 = this.authStatus) == null ? void 0 : _a4.license) || null;
+    var _a5;
+    return ((_a5 = this.authStatus) == null ? void 0 : _a5.license) || null;
   }
   /**
    * 获取 access token (from auth login)
    */
   getAccessToken() {
-    var _a4;
-    return ((_a4 = this.authStatus) == null ? void 0 : _a4.token) || null;
+    var _a5;
+    return ((_a5 = this.authStatus) == null ? void 0 : _a5.token) || null;
   }
   /**
    * 获取 API URL (server URL)
    */
   getApiUrl() {
-    var _a4;
-    return ((_a4 = this.authStatus) == null ? void 0 : _a4.serverUrl) || null;
+    var _a5;
+    return ((_a5 = this.authStatus) == null ? void 0 : _a5.serverUrl) || null;
   }
   /**
    * 检查是否过期
@@ -38278,8 +38560,8 @@ var LicenseStateManager = class {
    * 获取 plan (统一返回小写格式以便比较)
    */
   getPlan() {
-    var _a4;
-    const plan = ((_a4 = this.licenseInfo) == null ? void 0 : _a4.plan) || "free";
+    var _a5;
+    const plan = ((_a5 = this.licenseInfo) == null ? void 0 : _a5.plan) || "free";
     return plan.toLowerCase();
   }
   /**
@@ -38287,60 +38569,60 @@ var LicenseStateManager = class {
    * 例如: "enterprise" -> "Enterprise"
    */
   getFormattedPlan() {
-    var _a4;
-    const plan = ((_a4 = this.licenseInfo) == null ? void 0 : _a4.plan) || "free";
+    var _a5;
+    const plan = ((_a5 = this.licenseInfo) == null ? void 0 : _a5.plan) || "free";
     return plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase();
   }
   /**
    * 获取过期时间（格式化字符串）
    */
   getExpires() {
-    var _a4;
-    return ((_a4 = this.licenseInfo) == null ? void 0 : _a4.expires) || "";
+    var _a5;
+    return ((_a5 = this.licenseInfo) == null ? void 0 : _a5.expires) || "";
   }
   /**
    * 获取剩余天数
    */
   getDaysRemaining() {
-    var _a4;
-    return ((_a4 = this.licenseInfo) == null ? void 0 : _a4.daysRemaining) || 0;
+    var _a5;
+    return ((_a5 = this.licenseInfo) == null ? void 0 : _a5.daysRemaining) || 0;
   }
   /**
    * 统一的功能检查方法
    */
   hasFeature(feature) {
-    var _a4;
-    if (!((_a4 = this.licenseInfo) == null ? void 0 : _a4.features)) return false;
+    var _a5;
+    if (!((_a5 = this.licenseInfo) == null ? void 0 : _a5.features)) return false;
     return this.licenseInfo.features[feature] === true;
   }
   /**
    * 获取用户邮箱
    */
   getEmail() {
-    var _a4;
-    return ((_a4 = this.authStatus) == null ? void 0 : _a4.email) || null;
+    var _a5;
+    return ((_a5 = this.authStatus) == null ? void 0 : _a5.email) || null;
   }
   /**
    * 获取用户目录
    */
   getUserDir() {
-    var _a4;
-    if (!((_a4 = this.licenseInfo) == null ? void 0 : _a4.user)) return null;
+    var _a5;
+    if (!((_a5 = this.licenseInfo) == null ? void 0 : _a5.user)) return null;
     return this.licenseInfo.user.userDir;
   }
   /**
    * 获取子域名
    */
   getSubdomain() {
-    var _a4;
-    return ((_a4 = this.domainInfo) == null ? void 0 : _a4.subdomain) || this.getUserDir();
+    var _a5;
+    return ((_a5 = this.domainInfo) == null ? void 0 : _a5.subdomain) || this.getUserDir();
   }
   /**
    * 获取自定义域名
    */
   getCustomDomain() {
-    var _a4;
-    return ((_a4 = this.domainInfo) == null ? void 0 : _a4.customDomain) || null;
+    var _a5;
+    return ((_a5 = this.domainInfo) == null ? void 0 : _a5.customDomain) || null;
   }
   /**
    * 获取完整的 license 信息（用于 UI 显示）
@@ -38386,22 +38668,22 @@ var LicenseStateManager = class {
    * 获取最大存储空间 (MB)
    */
   getMaxStorage() {
-    var _a4, _b2;
-    return ((_b2 = (_a4 = this.licenseInfo) == null ? void 0 : _a4.features) == null ? void 0 : _b2.maxStorage) || 1024;
+    var _a5, _b2;
+    return ((_b2 = (_a5 = this.licenseInfo) == null ? void 0 : _a5.features) == null ? void 0 : _b2.maxStorage) || 1024;
   }
   /**
    * 获取所有 features
    */
   getFeatures() {
-    var _a4;
-    return ((_a4 = this.licenseInfo) == null ? void 0 : _a4.features) || null;
+    var _a5;
+    return ((_a5 = this.licenseInfo) == null ? void 0 : _a5.features) || null;
   }
   /**
    * 检查是否是试用版
    */
   isTrial() {
-    var _a4;
-    return ((_a4 = this.licenseInfo) == null ? void 0 : _a4.isTrial) || false;
+    var _a5;
+    return ((_a5 = this.licenseInfo) == null ? void 0 : _a5.isTrial) || false;
   }
   /**
    * 获取上次更新时间
@@ -38413,16 +38695,16 @@ var LicenseStateManager = class {
    * Check if sync is enabled and configured
    */
   hasSyncConfig() {
-    var _a4;
-    return ((_a4 = this.authStatus) == null ? void 0 : _a4.hasSyncConfig) || false;
+    var _a5;
+    return ((_a5 = this.authStatus) == null ? void 0 : _a5.hasSyncConfig) || false;
   }
   /**
    * Get sync configuration
    * Returns sync config from authStatus if available
    */
   getSyncConfig() {
-    var _a4, _b2;
-    if (!((_a4 = this.authStatus) == null ? void 0 : _a4.hasSyncConfig) || !((_b2 = this.authStatus) == null ? void 0 : _b2.syncConfig)) {
+    var _a5, _b2;
+    if (!((_a5 = this.authStatus) == null ? void 0 : _a5.hasSyncConfig) || !((_b2 = this.authStatus) == null ? void 0 : _b2.syncConfig)) {
       return null;
     }
     return this.authStatus.syncConfig;
@@ -38720,8 +39002,8 @@ var MdfridaySyncPlugin = class extends import_obsidian11.Plugin {
           this.syncStatusDisplay.initialize();
           this.syncService.syncCore.setStatusDisplay(this.syncStatusDisplay);
           this.syncService.syncCore.setLogCallback((message, level, key2) => {
-            var _a4;
-            (_a4 = this.syncStatusDisplay) == null ? void 0 : _a4.addLog(message, level, key2);
+            var _a5;
+            (_a5 = this.syncStatusDisplay) == null ? void 0 : _a5.addLog(message, level, key2);
           });
           if (this.settings.syncConfig.syncOnStart) {
             await this.syncService.startSync(true);
@@ -38884,7 +39166,7 @@ var MdfridaySyncPlugin = class extends import_obsidian11.Plugin {
    * Identical to the original Friday plugin implementation.
    */
   initializeDefaultIgnorePatterns() {
-    var _a4, _b2, _c;
+    var _a5, _b2, _c;
     if (!this.settings.syncConfig.selectiveSync) {
       this.settings.syncConfig.selectiveSync = {
         syncImages: false,
@@ -38911,7 +39193,7 @@ var MdfridaySyncPlugin = class extends import_obsidian11.Plugin {
       "plugins\\/mdfriday-sync"
     ];
     let internalPatterns = [...defaultInternalPatterns];
-    if (!((_a4 = selectiveSync.syncThemes) != null ? _a4 : true)) {
+    if (!((_a5 = selectiveSync.syncThemes) != null ? _a5 : true)) {
       internalPatterns.push("\\.obsidian\\/themes");
     }
     if (!((_b2 = selectiveSync.syncSnippets) != null ? _b2 : true)) {
