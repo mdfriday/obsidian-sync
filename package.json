@@ -1,5 +1,5 @@
 {
-	"name": "obsidian-mdfriday-sync",
+	"name": "obsidian-sync",
 	"version": "1.0.0",
 	"description": "MDFriday Sync — CouchDB-based vault synchronization for Obsidian with end-to-end encryption. Supports Desktop and Mobile.",
 	"main": "main.js",
