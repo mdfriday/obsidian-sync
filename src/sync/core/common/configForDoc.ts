@@ -16,7 +16,7 @@ export enum RuleLevel {
     Recommended,
     Optional,
 }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- BaseRule is used as a shared structural type for derived config rule definitions
 type BaseRule<TType extends string, TValue> = {
     // type: TType;
     level?: RuleLevel;

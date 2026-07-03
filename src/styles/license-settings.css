@@ -1,11 +1,15 @@
 /* License Settings Styles - Obsidian Native Design */
 
 /* Section Title Styling - Make section headers more prominent */
+/* Applied to Setting.settingEl via .addClass('friday-section-title') */
 .friday-section-title {
     margin-top: 40px !important;
     margin-bottom: 20px !important;
     padding-bottom: 12px !important;
     border-bottom: 2px solid var(--background-modifier-border) !important;
+}
+
+.friday-section-title .setting-item-name {
     font-size: 18px !important;
     font-weight: 600 !important;
     color: var(--text-normal) !important;
@@ -15,6 +19,11 @@
 /* First section title should have no top margin */
 .friday-section-title:first-child {
     margin-top: 0 !important;
+}
+
+/* Full-width text input */
+.friday-input-full-width {
+    width: 100%;
 }
 
 /* Section Wrapper - Add spacing between sections */
@@ -172,9 +181,12 @@
     background-color: var(--background-secondary);
 }
 
-.friday-security-container h3 {
+.friday-security-container .setting-item-heading {
     margin-top: 0;
     margin-bottom: 16px;
+}
+
+.friday-security-container .setting-item-heading .setting-item-name {
     color: var(--text-normal);
     font-size: 16px;
     font-weight: 600;
@@ -245,10 +257,7 @@
     background: var(--background-secondary);
 }
 
-.friday-danger-zone-title {
-    margin: 0 0 16px 0;
-    font-size: 16px;
-    font-weight: 600;
+.friday-danger-zone-title.setting-item-heading .setting-item-name {
     color: var(--text-error);
 }
 
@@ -321,15 +330,20 @@
     border-bottom: 2px solid var(--background-modifier-border);
 }
 
-.friday-sync-header-container h2 {
-    margin: 0 0 0 16px !important;
+.friday-sync-header-container .friday-section-title {
+    border-bottom: none !important;
+    margin: 0 !important;
     padding: 0 !important;
     flex: 1;
+    background: transparent !important;
+}
+
+.friday-sync-header-container .friday-section-title .setting-item-name {
     font-size: 18px !important;
     font-weight: 600 !important;
     color: var(--text-normal) !important;
     letter-spacing: 0.02em !important;
-    border: none !important;
+    margin: 0 0 0 16px !important;
 }
 
 .friday-sync-toggle-container {

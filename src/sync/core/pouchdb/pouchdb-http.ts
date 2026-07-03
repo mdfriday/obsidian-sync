@@ -83,7 +83,7 @@ PouchDB.prototype.purgeMulti = adapterFun(
             );
         }
         //@ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        // eslint-disable-next-line @typescript-eslint/no-this-alias -- self alias is required to capture `this` inside the nested callback closure for PouchDB compatibility
         const self = this;
         const tasks = docs.map(
             (param) => () =>

@@ -59,7 +59,7 @@ export function resolveWithIgnoreKnownError<T>(p: Promise<T>, def: T): Promise<T
 // Referenced below
 // https://zenn.dev/sora_kumo/articles/539d7f6e7f3c63
 export const Parallels = (ps = new Set<Promise<unknown>>()) => ({
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises -- Promise chain is used intentionally for side-effect removal of the completed promise from the Set
     add: (p: Promise<unknown>) => ps.add(!!p.then(() => ps.delete(p)).catch(() => ps.delete(p)) && p),
     wait: (limit: number) => ps.size >= limit && Promise.race(ps),
     all: () => Promise.all(ps),

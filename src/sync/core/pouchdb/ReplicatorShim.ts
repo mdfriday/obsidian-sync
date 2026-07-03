@@ -181,7 +181,7 @@ Target: ${targetDBInfo.db_name} (${targetDBInfo.update_seq})`;
                         .filter((e) => "ok" in e)
                         .map((e) => e.ok);
 
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- result intentionally ignored; new_edits:false writes docs as-is regardless of return value
                     const _ = await targetDB.bulkDocs(fetchedMissingDocs, { new_edits: false });
                     // new_edits = false: means that we aimed to write the docs as they are, even if they are conflicted.
                     // Hence, we can resolve the conflicts.

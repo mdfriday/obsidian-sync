@@ -332,7 +332,7 @@ export async function splitPieces2V2(
     useSegmenter?: boolean
 ) {
     if (dataSrc.size == 0) {
-        // eslint-disable-next-line require-yield
+        // eslint-disable-next-line require-yield -- generator returns early for empty blobs without yielding; this is intentional to avoid processing overhead
         return function* noItems(): Generator<string> {
             return;
         };

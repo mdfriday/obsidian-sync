@@ -485,9 +485,9 @@ export class SyncStatusDisplay {
     applyEditorStatusVisibility() {
         if (this.statusDiv) {
             if (this.shouldShowEditorStatus) {
-                this.statusDiv.style.display = '';  // Show
+                this.statusDiv.show();
             } else {
-                this.statusDiv.style.display = 'none';  // Hide
+                this.statusDiv.hide();
             }
         }
     }
@@ -634,12 +634,12 @@ export class SyncStatusDisplay {
         if (progress === -1) {
             // 不确定进度：显示滚动动画（实时同步场景）
             this.progressBarFill.addClass("indeterminate");
-            this.progressBarFill.style.width = '';  // CSS 动画控制宽度
+            this.progressBarFill.setCssStyles({ width: '' });  // CSS 动画控制宽度
             this.progressBarLabel.innerText = displayText;
         } else {
             // 确定进度：显示百分比（首次上传/下载场景）
             this.progressBarFill.removeClass("indeterminate");
-            this.progressBarFill.style.width = `${progress}%`;
+            this.progressBarFill.setCssStyles({ width: `${progress}%` });
             this.progressBarLabel.innerText = displayText;
         }
         

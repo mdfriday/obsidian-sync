@@ -4,6 +4,8 @@
   margin-bottom: 20px !important;
   padding-bottom: 12px !important;
   border-bottom: 2px solid var(--background-modifier-border) !important;
+}
+.friday-section-title .setting-item-name {
   font-size: 18px !important;
   font-weight: 600 !important;
   color: var(--text-normal) !important;
@@ -11,6 +13,9 @@
 }
 .friday-section-title:first-child {
   margin-top: 0 !important;
+}
+.friday-input-full-width {
+  width: 100%;
 }
 .friday-settings-section {
   margin-bottom: 32px;
@@ -158,9 +163,11 @@
   border-radius: 8px;
   background-color: var(--background-secondary);
 }
-.friday-security-container h3 {
+.friday-security-container .setting-item-heading {
   margin-top: 0;
   margin-bottom: 16px;
+}
+.friday-security-container .setting-item-heading .setting-item-name {
   color: var(--text-normal);
   font-size: 16px;
   font-weight: 600;
@@ -217,10 +224,7 @@
   border-radius: 8px;
   background: var(--background-secondary);
 }
-.friday-danger-zone-title {
-  margin: 0 0 16px 0;
-  font-size: 16px;
-  font-weight: 600;
+.friday-danger-zone-title.setting-item-heading .setting-item-name {
   color: var(--text-error);
 }
 .friday-premium-btn {
@@ -281,15 +285,19 @@
   padding-bottom: 12px;
   border-bottom: 2px solid var(--background-modifier-border);
 }
-.friday-sync-header-container h2 {
-  margin: 0 0 0 16px !important;
+.friday-sync-header-container .friday-section-title {
+  border-bottom: none !important;
+  margin: 0 !important;
   padding: 0 !important;
   flex: 1;
+  background: transparent !important;
+}
+.friday-sync-header-container .friday-section-title .setting-item-name {
   font-size: 18px !important;
   font-weight: 600 !important;
   color: var(--text-normal) !important;
   letter-spacing: 0.02em !important;
-  border: none !important;
+  margin: 0 0 0 16px !important;
 }
 .friday-sync-toggle-container {
   display: flex;

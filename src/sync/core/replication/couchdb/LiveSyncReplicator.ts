@@ -67,16 +67,15 @@ const currentVersionRange: ChunkVersionRange = {
 
 const selectorOnDemandPull = { selector: { type: { $ne: "leaf" } } };
 
-// eslint-disable-next-line
-type EventParamArray<T extends {}> =
+type EventParamArray<T extends object> =
     | ["change", PouchDB.Replication.SyncResult<T>]
     | ["change", PouchDB.Replication.ReplicationResult<T>]
     | ["active"]
     | ["complete", PouchDB.Replication.SyncResultComplete<T>]
     | ["complete", PouchDB.Replication.ReplicationResultComplete<T>]
-    | ["error", any]
-    | ["denied", any]
-    | ["paused", any]
+    | ["error", unknown]
+    | ["denied", unknown]
+    | ["paused", unknown]
     | ["finally"];
 
 async function* genReplication(
@@ -327,7 +326,7 @@ export class LiveSyncCouchDBReplicator extends LiveSyncAbstractReplicator {
         }
     }
 
-    // eslint-disable-next-line require-await
+    // eslint-disable-next-line require-await -- function signature requires async for interface compatibility; implementation returns a resolved Promise directly
     async migrate(from: number, to: number): Promise<boolean> {
         // Don't show technical "Database updated" message to user
         Logger(`Database updated from ${from} to ${to}`, LOG_LEVEL_INFO);
@@ -553,7 +552,7 @@ export class LiveSyncCouchDBReplicator extends LiveSyncAbstractReplicator {
                         // Don't show technical "Replication stopped" message
                         Logger("Replication stopped.", showResult ? LOG_LEVEL_INFO : LOG_LEVEL_VERBOSE, "sync");
                         if (this.env.services.API.isLastPostFailedDueToPayloadSize()) {
-                            if (e && e?.status == 413) {
+                            if (e && typeof e === 'object' && 'status' in e && (e as { status: unknown }).status == 413) {
                                 Logger(
                                     $msg("liveSyncReplicator.syncFileSizeError") ||
                                     `Sync failed due to file size. Please check the log for details.`,

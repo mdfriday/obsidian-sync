@@ -5,6 +5,7 @@
  * Uses Obsidian's vault.adapter for file I/O instead of Node.js fs.
  */
 
+import { Platform } from 'obsidian';
 import type { Vault } from 'obsidian';
 import type {
   IdentityHttpClient,
@@ -147,7 +148,7 @@ async function getDeviceId(): Promise<string> {
   try {
     if (typeof crypto !== 'undefined' && crypto.subtle) {
       const data = new TextEncoder().encode(
-        [typeof navigator !== 'undefined' ? navigator.userAgent : '', new Date().getTimezoneOffset()].join('|')
+        [Platform.isMobile ? 'mobile' : 'desktop', new Date().getTimezoneOffset()].join('|')
       );
       const buf = await crypto.subtle.digest('SHA-256', data);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').slice(0, 16);
@@ -157,12 +158,11 @@ async function getDeviceId(): Promise<string> {
 }
 
 function getDeviceInfo(): { deviceName: string; deviceType: 'desktop' | 'mobile' } {
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-  const isMobile = ua.includes('Mobile') || ua.includes('Android') || ua.includes('iPhone');
-  let name = isMobile ? 'Obsidian Mobile' : 'Obsidian Desktop';
-  if (ua.includes('iPhone') || ua.includes('iPad')) name = 'Obsidian on iOS';
-  else if (ua.includes('Android')) name = 'Obsidian on Android';
-  return { deviceName: name, deviceType: isMobile ? 'mobile' : 'desktop' };
+  const deviceType: 'desktop' | 'mobile' = Platform.isMobile ? 'mobile' : 'desktop';
+  let name = Platform.isMobile ? 'MDFriday Sync Mobile' : 'MDFriday Sync Desktop';
+  if (Platform.isIosApp) name = 'MDFriday Sync on iOS';
+  else if (Platform.isAndroidApp) name = 'MDFriday Sync on Android';
+  return { deviceName: name, deviceType };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

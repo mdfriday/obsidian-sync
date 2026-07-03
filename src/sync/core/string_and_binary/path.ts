@@ -20,7 +20,7 @@ import { uint8ArrayToHexString, writeString } from "./convert.ts";
 import { unique } from "octagonal-wheels/collection.js";
 // --- path utilities
 export function isValidFilenameInWidows(filename: string): boolean {
-    // eslint-disable-next-line no-control-regex
+    // eslint-disable-next-line no-control-regex -- regex intentionally matches control characters (U+0000–U+001F) for Windows filename validation
     const regex = /[\u0000-\u001f]|[\\":?<>|*#]/g;
     if (regex.test(filename)) return false;
     const win = /(\\|\/)(COM\d|LPT\d|CON|PRN|AUX|NUL|CLOCK$)($|\.)/gi;
@@ -28,19 +28,19 @@ export function isValidFilenameInWidows(filename: string): boolean {
     return true;
 }
 export function isValidFilenameInDarwin(filename: string): boolean {
-    // eslint-disable-next-line no-control-regex
+    // eslint-disable-next-line no-control-regex -- regex intentionally matches control characters (U+0000–U+001F) for macOS filename validation
     const regex = /[\u0000-\u001f]|[:]/g;
     return !regex.test(filename);
 }
 export function isValidFilenameInLinux(filename: string): boolean {
     // In the specification, `:` could be accepted, LiveSync should ignore this for make things simple.
-    // eslint-disable-next-line no-control-regex
+    // eslint-disable-next-line no-control-regex -- regex intentionally matches control characters (U+0000–U+001F) for Linux filename validation
     const regex = /[\u0000-\u001f]|[:]/g;
     return !regex.test(filename);
 }
 export function isValidFilenameInAndroid(filename: string): boolean {
     // In principle, Android can handle the path as like Linux, but most devices mount the storage in VFAT.
-    // eslint-disable-next-line no-control-regex
+    // eslint-disable-next-line no-control-regex -- regex intentionally matches control characters (U+0000–U+001F) for Android filename validation
     const regex = /[\u0000-\u001f]|[\\":?<>|*#]/g;
     return !regex.test(filename);
 }

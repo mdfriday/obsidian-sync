@@ -10,6 +10,7 @@
  *   .mdfriday/config.json      – global plugin config
  */
 
+import { Platform } from 'obsidian';
 import type {
   IdentityHttpClient,
   ObsidianAuthResult,
@@ -132,7 +133,7 @@ async function getDeviceId(): Promise<string> {
   try {
     if (typeof crypto !== 'undefined' && crypto.subtle) {
       const components = [
-        typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        Platform.isMobile ? 'mobile' : 'desktop',
         typeof navigator !== 'undefined' ? navigator.language : '',
         new Date().getTimezoneOffset().toString(),
       ].join('|');
@@ -145,15 +146,13 @@ async function getDeviceId(): Promise<string> {
 }
 
 function getDeviceInfo() {
-  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
-  let deviceType: 'desktop' | 'mobile' = 'desktop';
-  if (ua.includes('Mobile') || ua.includes('Android') || ua.includes('iPhone')) deviceType = 'mobile';
-  let deviceName = 'Obsidian';
-  if (ua.includes('Mac')) deviceName = 'Obsidian on macOS';
-  else if (ua.includes('Windows')) deviceName = 'Obsidian on Windows';
-  else if (ua.includes('Linux')) deviceName = 'Obsidian on Linux';
-  else if (ua.includes('iPhone') || ua.includes('iPad')) deviceName = 'Obsidian on iOS';
-  else if (ua.includes('Android')) deviceName = 'Obsidian on Android';
+  const deviceType: 'desktop' | 'mobile' = Platform.isMobile ? 'mobile' : 'desktop';
+  let deviceName = 'MDFriday Sync';
+  if (Platform.isIosApp) deviceName = 'MDFriday Sync on iOS';
+  else if (Platform.isAndroidApp) deviceName = 'MDFriday Sync on Android';
+  else if (Platform.isMacOS) deviceName = 'MDFriday Sync on macOS';
+  else if (Platform.isWin) deviceName = 'MDFriday Sync on Windows';
+  else if (Platform.isLinux) deviceName = 'MDFriday Sync on Linux';
   return { deviceName, deviceType };
 }
 

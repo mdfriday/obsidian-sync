@@ -2805,7 +2805,7 @@ async function getDeviceId() {
   try {
     if (typeof crypto !== "undefined" && crypto.subtle) {
       const components = [
-        typeof navigator !== "undefined" ? navigator.userAgent : "",
+        import_obsidian11.Platform.isMobile ? "mobile" : "desktop",
         typeof navigator !== "undefined" ? navigator.language : "",
         (/* @__PURE__ */ new Date()).getTimezoneOffset().toString()
       ].join("|");
@@ -2818,15 +2818,13 @@ async function getDeviceId() {
   return Math.random().toString(36).slice(2, 18);
 }
 function getDeviceInfo() {
-  const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : "";
-  let deviceType = "desktop";
-  if (ua.includes("Mobile") || ua.includes("Android") || ua.includes("iPhone")) deviceType = "mobile";
-  let deviceName = "Obsidian";
-  if (ua.includes("Mac")) deviceName = "Obsidian on macOS";
-  else if (ua.includes("Windows")) deviceName = "Obsidian on Windows";
-  else if (ua.includes("Linux")) deviceName = "Obsidian on Linux";
-  else if (ua.includes("iPhone") || ua.includes("iPad")) deviceName = "Obsidian on iOS";
-  else if (ua.includes("Android")) deviceName = "Obsidian on Android";
+  const deviceType = import_obsidian11.Platform.isMobile ? "mobile" : "desktop";
+  let deviceName = "MDFriday Sync";
+  if (import_obsidian11.Platform.isIosApp) deviceName = "MDFriday Sync on iOS";
+  else if (import_obsidian11.Platform.isAndroidApp) deviceName = "MDFriday Sync on Android";
+  else if (import_obsidian11.Platform.isMacOS) deviceName = "MDFriday Sync on macOS";
+  else if (import_obsidian11.Platform.isWin) deviceName = "MDFriday Sync on Windows";
+  else if (import_obsidian11.Platform.isLinux) deviceName = "MDFriday Sync on Linux";
   return { deviceName, deviceType };
 }
 function buildLicenseInfoFromActivation(data, userDir) {
@@ -2936,9 +2934,10 @@ function createObsidianLicenseService(httpClient) {
 function createObsidianGlobalConfigService() {
   return new LightweightGlobalConfigService();
 }
-var MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
+var import_obsidian11, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
 var init_foundry = __esm({
   "src/foundry/index.ts"() {
+    import_obsidian11 = require("obsidian");
     MDFRIDAY_DIR = ".mdfriday";
     USER_DATA_FILE = "user-data.json";
     WORKSPACE_FILE = "workspace.json";
@@ -3783,7 +3782,7 @@ async function getDeviceId2() {
   try {
     if (typeof crypto !== "undefined" && crypto.subtle) {
       const data = new TextEncoder().encode(
-        [typeof navigator !== "undefined" ? navigator.userAgent : "", (/* @__PURE__ */ new Date()).getTimezoneOffset()].join("|")
+        [import_obsidian12.Platform.isMobile ? "mobile" : "desktop", (/* @__PURE__ */ new Date()).getTimezoneOffset()].join("|")
       );
       const buf = await crypto.subtle.digest("SHA-256", data);
       return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
@@ -3793,12 +3792,11 @@ async function getDeviceId2() {
   return Math.random().toString(36).slice(2, 18);
 }
 function getDeviceInfo2() {
-  const ua = typeof navigator !== "undefined" ? navigator.userAgent || "" : "";
-  const isMobile = ua.includes("Mobile") || ua.includes("Android") || ua.includes("iPhone");
-  let name = isMobile ? "Obsidian Mobile" : "Obsidian Desktop";
-  if (ua.includes("iPhone") || ua.includes("iPad")) name = "Obsidian on iOS";
-  else if (ua.includes("Android")) name = "Obsidian on Android";
-  return { deviceName: name, deviceType: isMobile ? "mobile" : "desktop" };
+  const deviceType = import_obsidian12.Platform.isMobile ? "mobile" : "desktop";
+  let name = import_obsidian12.Platform.isMobile ? "MDFriday Sync Mobile" : "MDFriday Sync Desktop";
+  if (import_obsidian12.Platform.isIosApp) name = "MDFriday Sync on iOS";
+  else if (import_obsidian12.Platform.isAndroidApp) name = "MDFriday Sync on Android";
+  return { deviceName: name, deviceType };
 }
 function buildLicenseInfoFromActivation2(data, userDir) {
   var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
@@ -3909,9 +3907,10 @@ function createObsidianGlobalConfigService2(config) {
   const { vault, pluginDir } = extractVaultAndDir(config);
   return new MobileConfigService(vault, pluginDir);
 }
-var MDFRIDAY_DIR3, USER_DATA_FILE2, WORKSPACE_FILE3, CONFIG_FILE2, DEFAULT_API_URL2, MobileAuthService, MobileLicenseService, MobileWorkspaceService, MobileConfigService;
+var import_obsidian12, MDFRIDAY_DIR3, USER_DATA_FILE2, WORKSPACE_FILE3, CONFIG_FILE2, DEFAULT_API_URL2, MobileAuthService, MobileLicenseService, MobileWorkspaceService, MobileConfigService;
 var init_mobile = __esm({
   "src/foundry/mobile.ts"() {
+    import_obsidian12 = require("obsidian");
     init_obsidian_mobile_repositories();
     MDFRIDAY_DIR3 = ".mdfriday";
     USER_DATA_FILE2 = "user-data.json";
@@ -4178,7 +4177,7 @@ __export(main_exports, {
   default: () => MdfridaySyncPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian11 = require("obsidian");
+var import_obsidian13 = require("obsidian");
 
 // src/i18n/utils.ts
 var AVAILABLE_LANGUAGES = [
@@ -14773,7 +14772,7 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
       return null;
     }
   }
-  // eslint-disable-next-line require-await
+  // eslint-disable-next-line require-await -- function signature requires async for interface compatibility; implementation returns a resolved Promise directly
   async migrate(from, to) {
     Logger(`Database updated from ${from} to ${to}`, LOG_LEVEL_INFO);
     return Promise.resolve(true);
@@ -14938,7 +14937,7 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
             this.replicationErrored(e2);
             Logger("Replication stopped.", showResult ? LOG_LEVEL_INFO : LOG_LEVEL_VERBOSE, "sync");
             if (this.env.services.API.isLastPostFailedDueToPayloadSize()) {
-              if (e2 && (e2 == null ? void 0 : e2.status) == 413) {
+              if (e2 && typeof e2 === "object" && "status" in e2 && e2.status == 413) {
                 Logger(
                   $msg("liveSyncReplicator.syncFileSizeError") || `Sync failed due to file size. Please check the log for details.`,
                   LOG_LEVEL_NOTICE
@@ -37219,9 +37218,9 @@ var SyncStatusDisplay = class {
   applyEditorStatusVisibility() {
     if (this.statusDiv) {
       if (this.shouldShowEditorStatus) {
-        this.statusDiv.style.display = "";
+        this.statusDiv.show();
       } else {
-        this.statusDiv.style.display = "none";
+        this.statusDiv.hide();
       }
     }
   }
@@ -37320,11 +37319,11 @@ var SyncStatusDisplay = class {
     this.progressBarContainer.removeClass("fadeout");
     if (progress === -1) {
       this.progressBarFill.addClass("indeterminate");
-      this.progressBarFill.style.width = "";
+      this.progressBarFill.setCssStyles({ width: "" });
       this.progressBarLabel.innerText = displayText;
     } else {
       this.progressBarFill.removeClass("indeterminate");
-      this.progressBarFill.style.width = `${progress}%`;
+      this.progressBarFill.setCssStyles({ width: `${progress}%` });
       this.progressBarLabel.innerText = displayText;
     }
     if (progress >= 100) {
@@ -37407,10 +37406,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    */
   renderEnterpriseSettings(containerEl) {
     const { enterpriseServerUrl } = this.plugin.settings;
-    containerEl.createEl("h2", {
-      text: this.plugin.i18n.t("settings.enterprise_settings"),
-      cls: "friday-section-title"
-    });
+    new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_settings")).setHeading().settingEl.addClass("friday-section-title");
     new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_server_url")).setDesc(this.plugin.i18n.t("settings.enterprise_server_url_desc")).addText((text) => {
       text.setPlaceholder("https://your-enterprise-server.com").setValue(enterpriseServerUrl || "").onChange(async (value) => {
         const trimmedValue = value.trim();
@@ -37432,7 +37428,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
           }
         }
       });
-      text.inputEl.style.width = "100%";
+      text.inputEl.addClass("friday-input-full-width");
     });
   }
   /**
@@ -37443,10 +37439,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    */
   renderLicenseSection(containerEl) {
     var _a5;
-    containerEl.createEl("h2", {
-      text: this.plugin.i18n.t("settings.license"),
-      cls: "friday-section-title"
-    });
+    new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.license")).setHeading().settingEl.addClass("friday-section-title");
     if (((_a5 = this.plugin.licenseState) == null ? void 0 : _a5.isActivated()) && !this.plugin.licenseState.isExpired()) {
       const licenseInfo = this.plugin.licenseState.getLicenseInfo();
       if (!licenseInfo) {
@@ -37458,7 +37451,6 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         cls: `friday-plan-badge ${licenseInfo.plan.toLowerCase()} clickable`,
         text: formatPlanName(licenseInfo.plan)
       });
-      planBadge.style.cursor = "pointer";
       planBadge.title = this.plugin.i18n.t("settings.click_to_refresh_license_info") || "Click to refresh license info";
       planBadge.addEventListener("click", async () => {
         var _a6;
@@ -37627,10 +37619,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
     const licenseSync = this.plugin.settings.licenseSync;
     if (!license || !(licenseSync == null ? void 0 : licenseSync.enabled)) return;
     const syncHeaderContainer = containerEl.createDiv("friday-sync-header-container");
-    const syncHeader = syncHeaderContainer.createEl("h2", {
-      text: this.plugin.i18n.t("settings.sync"),
-      cls: "friday-section-title"
-    });
+    new import_obsidian8.Setting(syncHeaderContainer).setName(this.plugin.i18n.t("settings.sync")).setHeading().settingEl.addClass("friday-section-title");
     const toggleContainer = syncHeaderContainer.createDiv("friday-sync-toggle-container");
     let syncToggle;
     const toggleWrapper = toggleContainer.createDiv("friday-sync-toggle-wrapper");
@@ -37681,7 +37670,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       return;
     }
     const securityContainer = syncContentContainer.createDiv("friday-security-container");
-    securityContainer.createEl("h3", { text: this.plugin.i18n.t("settings.security") });
+    new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.security")).setHeading();
     let passwordVisible = false;
     const encryptionPassphrase = this.plugin.settings.encryptionPassphrase;
     if (this.firstTimeSync && encryptionPassphrase) {
@@ -37951,10 +37940,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    */
   renderDangerZone(containerEl) {
     const dangerZone = containerEl.createDiv("friday-danger-zone");
-    dangerZone.createEl("h3", {
-      text: this.plugin.i18n.t("settings.danger_zone"),
-      cls: "friday-danger-zone-title"
-    });
+    new import_obsidian8.Setting(dangerZone).setName(this.plugin.i18n.t("settings.danger_zone")).setHeading().settingEl.addClass("friday-danger-zone-title");
     let resetInput = "";
     let resetButton;
     new import_obsidian8.Setting(dangerZone).setName(this.plugin.i18n.t("settings.reset_sync_title")).setDesc(this.plugin.i18n.t("settings.reset_sync_message")).addText((text) => {
@@ -38771,7 +38757,7 @@ function GetBaseUrl(settings) {
   }
   return API_URL_PRO;
 }
-var MdfridaySyncPlugin = class extends import_obsidian11.Plugin {
+var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
   constructor() {
     super(...arguments);
     this.syncStatusDisplay = null;
@@ -38780,9 +38766,9 @@ var MdfridaySyncPlugin = class extends import_obsidian11.Plugin {
     this.pluginDir = `${this.manifest.dir}`;
     await this.loadSettings();
     await this.initCore();
-    if (import_obsidian11.Platform.isDesktop) {
+    if (import_obsidian13.Platform.isDesktop) {
       const adapter = this.app.vault.adapter;
-      if (adapter instanceof import_obsidian11.FileSystemAdapter) {
+      if (adapter instanceof import_obsidian13.FileSystemAdapter) {
         const basePath = adapter.getBasePath();
         this.vaultBasePath = basePath;
         const path2 = require("path");
@@ -38792,7 +38778,7 @@ var MdfridaySyncPlugin = class extends import_obsidian11.Plugin {
     } else {
       this.absWorkspacePath = joinVaultPath(this.pluginDir, "workspace");
       const adapter = this.app.vault.adapter;
-      if (adapter instanceof import_obsidian11.FileSystemAdapter) {
+      if (adapter instanceof import_obsidian13.FileSystemAdapter) {
         this.vaultBasePath = adapter.getBasePath();
       }
       await this.initMobileFeatures();

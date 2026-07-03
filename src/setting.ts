@@ -68,11 +68,11 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 		// =========================================
 		// Enterprise Settings Section (at the bottom)
 		// =========================================
-		containerEl.createEl("h2", {
-			text: this.plugin.i18n.t('settings.enterprise_settings'),
-			cls: 'friday-section-title'
-		});
-		
+		new Setting(containerEl)
+			.setName(this.plugin.i18n.t('settings.enterprise_settings'))
+			.setHeading()
+			.settingEl.addClass('friday-section-title');
+
 		// Enterprise Server URL Setting
 		new Setting(containerEl)
 			.setName(this.plugin.i18n.t('settings.enterprise_server_url'))
@@ -104,7 +104,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 							}
 						}
 					});
-				text.inputEl.style.width = '100%';
+				text.inputEl.addClass('friday-input-full-width');
 			});
 	}
 
@@ -115,10 +115,10 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 	 * Uses licenseState as the single source of truth
 	 */
 	private renderLicenseSection(containerEl: HTMLElement): void {
-		containerEl.createEl("h2", {
-			text: this.plugin.i18n.t('settings.license'),
-			cls: 'friday-section-title'
-		});
+		new Setting(containerEl)
+			.setName(this.plugin.i18n.t('settings.license'))
+			.setHeading()
+			.settingEl.addClass('friday-section-title');
 
 		// Use licenseState for all license-related checks
 		if (this.plugin.licenseState?.isActivated() && !this.plugin.licenseState.isExpired()) {
@@ -142,7 +142,6 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 			});
 			
 			// Make plan badge clickable to refresh license info
-			planBadge.style.cursor = 'pointer';
 			planBadge.title = this.plugin.i18n.t('settings.click_to_refresh_license_info') || 'Click to refresh license info';
 			
 			planBadge.addEventListener('click', async () => {
@@ -416,11 +415,11 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 
 		// Create sync section header with toggle switch
 		const syncHeaderContainer = containerEl.createDiv('friday-sync-header-container');
-		const syncHeader = syncHeaderContainer.createEl("h2", {
-			text: this.plugin.i18n.t('settings.sync'),
-			cls: 'friday-section-title'
-		});
-		
+		new Setting(syncHeaderContainer)
+			.setName(this.plugin.i18n.t('settings.sync'))
+			.setHeading()
+			.settingEl.addClass('friday-section-title');
+
 		// Add toggle switch to the right of the header
 		const toggleContainer = syncHeaderContainer.createDiv('friday-sync-toggle-container');
 		let syncToggle: HTMLInputElement;
@@ -487,7 +486,9 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 
 		// ========== Security Subsection (moved to syncContentContainer) ==========
 		const securityContainer = syncContentContainer.createDiv('friday-security-container');
-		securityContainer.createEl("h3", {text: this.plugin.i18n.t('settings.security')});
+		new Setting(securityContainer)
+			.setName(this.plugin.i18n.t('settings.security'))
+			.setHeading();
 
 		// Encryption Password (editable for non-first-time, readonly for first-time with show/hide)
 		let passwordVisible = false;
@@ -878,10 +879,10 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 	 */
 	private renderDangerZone(containerEl: HTMLElement): void {
 		const dangerZone = containerEl.createDiv('friday-danger-zone');
-		dangerZone.createEl('h3', { 
-			text: this.plugin.i18n.t('settings.danger_zone'), 
-			cls: 'friday-danger-zone-title' 
-		});
+		new Setting(dangerZone)
+			.setName(this.plugin.i18n.t('settings.danger_zone'))
+			.setHeading()
+			.settingEl.addClass('friday-danger-zone-title');
 
 		let resetInput = '';
 		let resetButton: HTMLButtonElement;
