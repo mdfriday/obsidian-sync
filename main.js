@@ -2756,13 +2756,7 @@ function licenseToPassword(key2) {
   if (typeof btoa !== "undefined") return btoa(part);
   return Buffer.from(part).toString("base64");
 }
-function getNodeModules() {
-  const fs = require("fs");
-  const path2 = require("path");
-  return { fs, path: path2 };
-}
 async function readJsonFile(filePath) {
-  const { fs } = getNodeModules();
   try {
     const raw = fs.readFileSync(filePath, "utf8");
     return JSON.parse(raw);
@@ -2771,12 +2765,10 @@ async function readJsonFile(filePath) {
   }
 }
 async function writeJsonFile(filePath, data) {
-  const { fs } = getNodeModules();
-  fs.mkdirSync(require("path").dirname(filePath), { recursive: true });
+  fs.mkdirSync(nodePath.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
 }
 function fileExists(filePath) {
-  const { fs } = getNodeModules();
   try {
     fs.accessSync(filePath);
     return true;
@@ -2785,8 +2777,7 @@ function fileExists(filePath) {
   }
 }
 function userDataPath(workspacePath) {
-  const { path: path2 } = getNodeModules();
-  return path2.join(workspacePath, MDFRIDAY_DIR, USER_DATA_FILE);
+  return nodePath.join(workspacePath, MDFRIDAY_DIR, USER_DATA_FILE);
 }
 async function loadUserData(workspacePath) {
   return readJsonFile(userDataPath(workspacePath));
@@ -2934,18 +2925,20 @@ function createObsidianLicenseService(httpClient) {
 function createObsidianGlobalConfigService() {
   return new LightweightGlobalConfigService();
 }
-var import_obsidian11, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
+var import_obsidian11, fs, nodePath, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
 var init_foundry = __esm({
   "src/foundry/index.ts"() {
     import_obsidian11 = require("obsidian");
+    fs = __toESM(require("fs"), 1);
+    nodePath = __toESM(require("path"), 1);
     MDFRIDAY_DIR = ".mdfriday";
     USER_DATA_FILE = "user-data.json";
     WORKSPACE_FILE = "workspace.json";
     CONFIG_FILE = "config.json";
     DEFAULT_API_URL = "https://app.mdfriday.com";
     LightweightAuthService = class {
-      constructor(http) {
-        this.http = http;
+      constructor(http2) {
+        this.http = http2;
       }
       async getStatus(workspacePath) {
         var _a5, _b2;
@@ -2996,8 +2989,8 @@ var init_foundry = __esm({
       }
     };
     LightweightLicenseService = class {
-      constructor(http) {
-        this.http = http;
+      constructor(http2) {
+        this.http = http2;
       }
       async requestTrial(workspacePath, email) {
         var _a5, _b2;
@@ -3173,8 +3166,7 @@ var init_foundry = __esm({
     LightweightWorkspaceService = class {
       async workspaceExists(workspacePath) {
         try {
-          const { path: path2 } = getNodeModules();
-          const marker = path2.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
+          const marker = nodePath.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
           return { success: true, data: fileExists(marker) };
         } catch (e2) {
           return { success: false, error: e2.message };
@@ -3182,9 +3174,8 @@ var init_foundry = __esm({
       }
       async initWorkspace(workspacePath) {
         try {
-          const { path: path2 } = getNodeModules();
-          const dir = path2.join(workspacePath, MDFRIDAY_DIR);
-          const marker = path2.join(dir, WORKSPACE_FILE);
+          const dir = nodePath.join(workspacePath, MDFRIDAY_DIR);
+          const marker = nodePath.join(dir, WORKSPACE_FILE);
           const metadata = {
             id: `ws-${Date.now()}`,
             name: "workspace",
@@ -3194,7 +3185,7 @@ var init_foundry = __esm({
             version: "1.0.0"
           };
           await writeJsonFile(marker, metadata);
-          const configPath = path2.join(dir, CONFIG_FILE);
+          const configPath = nodePath.join(dir, CONFIG_FILE);
           if (!fileExists(configPath)) {
             await writeJsonFile(configPath, {});
           }
@@ -3218,7 +3209,7 @@ var init_foundry = __esm({
     };
     LightweightGlobalConfigService = class {
       configPath(workspacePath) {
-        return require("path").join(workspacePath, MDFRIDAY_DIR, CONFIG_FILE);
+        return nodePath.join(workspacePath, MDFRIDAY_DIR, CONFIG_FILE);
       }
       async load(workspacePath) {
         return await readJsonFile(this.configPath(workspacePath)) || {};
@@ -3918,8 +3909,8 @@ var init_mobile = __esm({
     CONFIG_FILE2 = "config.json";
     DEFAULT_API_URL2 = "https://app.mdfriday.com";
     MobileAuthService = class {
-      constructor(http, vault, pluginDir) {
-        this.http = http;
+      constructor(http2, vault, pluginDir) {
+        this.http = http2;
         this.vault = vault;
         this.pluginDir = pluginDir;
       }
@@ -3972,8 +3963,8 @@ var init_mobile = __esm({
       }
     };
     MobileLicenseService = class {
-      constructor(http, vault, pluginDir) {
-        this.http = http;
+      constructor(http2, vault, pluginDir) {
+        this.http = http2;
         this.vault = vault;
         this.pluginDir = pluginDir;
       }
@@ -4178,6 +4169,7 @@ __export(main_exports, {
 });
 module.exports = __toCommonJS(main_exports);
 var import_obsidian13 = require("obsidian");
+var nodePath2 = __toESM(require("path"), 1);
 
 // src/i18n/utils.ts
 var AVAILABLE_LANGUAGES = [
@@ -37239,8 +37231,7 @@ var SyncStatusDisplay = class {
    */
   showStatusBarMenu(event) {
     var _a5, _b2, _c;
-    const { Menu } = require("obsidian");
-    const menu = new Menu();
+    const menu = new import_obsidian7.Menu();
     if (import_obsidian7.Platform.isDesktop) {
       menu.addItem((item) => {
         item.setTitle(
@@ -38093,6 +38084,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
 
 // src/http.ts
 var import_obsidian9 = require("obsidian");
+var http = __toESM(require("http"), 1);
+var https = __toESM(require("https"), 1);
 var ObsidianIdentityHttpClient = class {
   /**
    * POST JSON data
@@ -38771,8 +38764,7 @@ var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
       if (adapter instanceof import_obsidian13.FileSystemAdapter) {
         const basePath = adapter.getBasePath();
         this.vaultBasePath = basePath;
-        const path2 = require("path");
-        this.absWorkspacePath = path2.join(basePath, this.pluginDir, "workspace");
+        this.absWorkspacePath = nodePath2.join(basePath, this.pluginDir, "workspace");
       }
       await this.initDesktopFeatures();
     } else {

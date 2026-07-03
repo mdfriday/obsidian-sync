@@ -35,7 +35,6 @@
 		"@types/pouchdb-replication": "^6.4.7",
 		"@types/transform-pouch": "^1.0.6",
 		"@vitest/coverage-v8": "^4.1.9",
-		"builtin-modules": "5.0.0",
 		"esbuild": "0.25.0",
 		"esbuild-plugin-inline-worker": "^0.1.1",
 		"events": "^3.3.0",

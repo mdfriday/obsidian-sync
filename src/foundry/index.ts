@@ -11,6 +11,8 @@
  */
 
 import { Platform } from 'obsidian';
+import * as fs from 'fs';
+import * as nodePath from 'path';
 import type {
   IdentityHttpClient,
   ObsidianAuthResult,
@@ -60,19 +62,11 @@ function licenseToPassword(key: string): string {
 // Node.js file helpers  (fs / path are external — not bundled)
 // ─────────────────────────────────────────────────────────────────────────────
 
-function getNodeModules() {
-  const fs   = require('fs');
-  const path = require('path');
-  return { fs, path };
-}
-
 function mdfridayDir(workspacePath: string): string {
-  const { path } = getNodeModules();
-  return path.join(workspacePath, MDFRIDAY_DIR);
+  return nodePath.join(workspacePath, MDFRIDAY_DIR);
 }
 
 async function readJsonFile<T>(filePath: string): Promise<T | null> {
-  const { fs } = getNodeModules();
   try {
     const raw = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(raw) as T;
@@ -81,14 +75,12 @@ async function readJsonFile<T>(filePath: string): Promise<T | null> {
   }
 }
 
-async function writeJsonFile(filePath: string, data: any): Promise<void> {
-  const { fs } = getNodeModules();
-  fs.mkdirSync(require('path').dirname(filePath), { recursive: true });
+async function writeJsonFile(filePath: string, data: unknown): Promise<void> {
+  fs.mkdirSync(nodePath.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
 }
 
 function fileExists(filePath: string): boolean {
-  const { fs } = getNodeModules();
   try { fs.accessSync(filePath); return true; } catch { return false; }
 }
 
@@ -105,8 +97,7 @@ interface UserData {
 }
 
 function userDataPath(workspacePath: string): string {
-  const { path } = getNodeModules();
-  return path.join(workspacePath, MDFRIDAY_DIR, USER_DATA_FILE);
+  return nodePath.join(workspacePath, MDFRIDAY_DIR, USER_DATA_FILE);
 }
 
 async function loadUserData(workspacePath: string): Promise<UserData | null> {
@@ -497,8 +488,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
 class LightweightWorkspaceService implements ObsidianWorkspaceService {
   async workspaceExists(workspacePath: string): Promise<ObsidianWorkspaceResult<boolean>> {
     try {
-      const { path } = getNodeModules();
-      const marker = path.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
+      const marker = nodePath.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
       return { success: true, data: fileExists(marker) };
     } catch (e) {
       return { success: false, error: (e as Error).message };
@@ -507,9 +497,8 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
 
   async initWorkspace(workspacePath: string): Promise<ObsidianWorkspaceResult<ObsidianWorkspaceInfo>> {
     try {
-      const { path } = getNodeModules();
-      const dir    = path.join(workspacePath, MDFRIDAY_DIR);
-      const marker = path.join(dir, WORKSPACE_FILE);
+      const dir    = nodePath.join(workspacePath, MDFRIDAY_DIR);
+      const marker = nodePath.join(dir, WORKSPACE_FILE);
 
       const metadata = {
         id:         `ws-${Date.now()}`,
@@ -522,7 +511,7 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
       await writeJsonFile(marker, metadata);
 
       // ensure config.json exists
-      const configPath = path.join(dir, CONFIG_FILE);
+      const configPath = nodePath.join(dir, CONFIG_FILE);
       if (!fileExists(configPath)) {
         await writeJsonFile(configPath, {});
       }
@@ -572,7 +561,7 @@ function getNested(obj: any, key: string): any {
 
 class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
   private configPath(workspacePath: string): string {
-    return require('path').join(workspacePath, MDFRIDAY_DIR, CONFIG_FILE);
+    return nodePath.join(workspacePath, MDFRIDAY_DIR, CONFIG_FILE);
   }
 
   private async load(workspacePath: string): Promise<Record<string, any>> {

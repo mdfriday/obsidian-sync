@@ -4,7 +4,7 @@
  * This is a direct port of livesync's ModuleLog status display functionality
  */
 
-import { Plugin, Notice, Platform } from "obsidian";
+import { Plugin, Notice, Platform, Menu } from "obsidian";
 import { computed, reactive, reactiveSource, type ReactiveValue } from "octagonal-wheels/dataobject/reactive";
 import type { DatabaseConnectingStatus } from "./core/common/types";
 import type { FridaySyncCore } from "./FridaySyncCore";
@@ -510,7 +510,6 @@ export class SyncStatusDisplay {
      * Mobile: Simplified menu (no toggle option, always shows editor status)
      */
     private showStatusBarMenu(event: MouseEvent) {
-        const { Menu } = require('obsidian');
         const menu = new Menu();
         
         // Menu item 1: Toggle editor status display (Desktop only)

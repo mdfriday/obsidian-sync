@@ -1,4 +1,5 @@
 import {FileSystemAdapter, Notice, Platform, Plugin} from 'obsidian';
+import * as nodePath from 'path';
 import './styles/license-settings.css';
 import './styles/live-sync.css';
 import {I18nService} from "./i18n";
@@ -94,8 +95,7 @@ export default class MdfridaySyncPlugin extends Plugin {
 			if (adapter instanceof FileSystemAdapter) {
 				const basePath = adapter.getBasePath();
 				this.vaultBasePath = basePath;
-				const path = require('path');
-				this.absWorkspacePath = path.join(basePath, this.pluginDir, 'workspace');
+				this.absWorkspacePath = nodePath.join(basePath, this.pluginDir, 'workspace');
 			}
 			await this.initDesktopFeatures();
 		} else {

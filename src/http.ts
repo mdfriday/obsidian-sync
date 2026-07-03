@@ -6,7 +6,9 @@
  */
 
 import { requestUrl, type RequestUrlParam, type RequestUrlResponse } from 'obsidian';
-import type { 
+import * as http from 'http';
+import * as https from 'https';
+import type {
 	PublishHttpClient, 
 	PublishHttpResponse, 
 	IdentityHttpClient, 
@@ -608,11 +610,6 @@ export class ObsidianLLMHttpClient implements LLMHttpClient {
 	 * Fetch request (with streaming support)
 	 */
 	async fetch(request: LLMHttpRequest): Promise<LLMHttpResponse> {
-		// 注意：必须在函数内部 require，不能在模块顶层 import
-		// 因为这些是 Node.js 模块，在 Electron 主进程中可用
-		const http = require('http');
-		const https = require('https');
-		
 		return new Promise((resolve, reject) => {
 			const url = new URL(request.url);
 			const transport = url.protocol === 'https:' ? https : http;
