@@ -127,12 +127,14 @@ MDFriday Sync can keep your Obsidian configuration — themes, snippets, plugin 
 
 The following are excluded by default because they are device-specific or auto-regenerated:
 
-| Excluded | Why |
+| Excluded pattern | Why |
 |---|---|
-| `workspace.json`, `workspace-mobile.json` | Window layout — differs per device |
-| `cache/` | Auto-regenerated, large, and device-specific |
+| `.obsidian/workspace` | Workspace state — differs per device |
+| `.obsidian/workspace.json` | Workspace JSON — differs per device |
+| `.obsidian/workspace-mobile.json` | Mobile workspace — differs per device |
+| `.obsidian/cache` | Auto-regenerated, large, and device-specific |
 | `node_modules/`, `.git/` | Development artifacts |
-| `plugins/mdfriday/` | MDFriday plugin data — device-specific |
+| `plugins/mdfriday-sync` | This plugin's own data — device-specific |
 
 ---
 
