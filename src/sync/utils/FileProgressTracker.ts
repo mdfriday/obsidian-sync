@@ -62,7 +62,7 @@ export class FileProgressTracker {
                 
             case 'upload_complete':
                 this.state.uploadedFiles = event.successCount;
-                setTimeout(() => this.reset(), 2000);
+                window.setTimeout(() => this.reset(), 2000);
                 break;
             
             // === 下载事件 ===
@@ -94,7 +94,7 @@ export class FileProgressTracker {
                 
             case 'file_write_complete':
                 this.state.writtenFiles = event.successCount;
-                setTimeout(() => this.reset(), 2000);
+                window.setTimeout(() => this.reset(), 2000);
                 break;
             
             // === 实时同步活动事件 ===
@@ -113,7 +113,7 @@ export class FileProgressTracker {
                 this.state.syncActivityProcessed = event.totalProcessed;
                 this.state.syncActivityCompleted = true;
                 // 显示完成状态3秒后隐藏
-                setTimeout(() => this.reset(), 3000);
+                window.setTimeout(() => this.reset(), 3000);
                 break;
         }
         

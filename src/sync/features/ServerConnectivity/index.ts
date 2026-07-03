@@ -121,7 +121,7 @@ export class ServerConnectivityChecker {
             }
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+            const timeoutId = window.setTimeout(() => controller.abort(), 10000); // 10s timeout
 
             const response = await fetch(uri, {
                 method: "GET",

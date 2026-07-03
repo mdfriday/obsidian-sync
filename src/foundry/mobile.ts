@@ -153,7 +153,9 @@ async function getDeviceId(): Promise<string> {
       const buf = await crypto.subtle.digest('SHA-256', data);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').slice(0, 16);
     }
-  } catch {}
+  } catch {
+    // crypto.subtle unavailable — fall through to random fallback
+  }
   return Math.random().toString(36).slice(2, 18);
 }
 
@@ -302,7 +304,7 @@ class MobileLicenseService implements ObsidianLicenseService {
       const token = res.data?.data?.[0];
       if (!token) throw new Error('No token in login response');
       await saveUserData(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
-      return { success: true, data: {} };
+      return { success: true, data: {} as object };
     } catch (e) {
       return { success: false, error: (e as Error).message };
     }

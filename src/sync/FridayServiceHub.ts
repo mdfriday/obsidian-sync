@@ -282,7 +282,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
     // 实时同步活动统计
     private syncActivityStarted = false;
     private totalProcessed = 0;
-    private completeTimer?: ReturnType<typeof setTimeout>;
+    private completeTimer?: number;
 
     constructor(backend: ServiceBackend, core: FridaySyncCore) {
         super(backend);
@@ -531,7 +531,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
             } finally {
                 // Unmark file after a short delay to allow vault events to settle
                 if (storageEventManager) {
-                    setTimeout(() => {
+                    window.setTimeout(() => {
                         storageEventManager.unmarkFileProcessing(path);
                     }, 1000);
                 }
@@ -707,7 +707,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
         }
         
         // 设置新的定时器：2秒后发送完成事件
-        this.completeTimer = setTimeout(() => {
+        this.completeTimer = window.setTimeout(() => {
             // 再次检查队列是否为空
             if (this.processingQueue.length === 0 && this.syncActivityStarted && this.core.onFileProgress) {
                 this.core.onFileProgress({
@@ -957,7 +957,7 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
                     // Each batch should complete within this timeout
                     const DEFAULT_HTTP_TIMEOUT = 30000; // 30 seconds per batch
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), DEFAULT_HTTP_TIMEOUT);
+                    const timeoutId = window.setTimeout(() => controller.abort(), DEFAULT_HTTP_TIMEOUT);
                     
                     try {
                         const response = await fetch(url, { 

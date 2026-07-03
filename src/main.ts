@@ -110,7 +110,7 @@ export default class MdfridaySyncPlugin extends Plugin {
 		// Initialize Sync Service (common for both platforms)
 		// Only initialize if user has explicitly enabled sync
 		if (this.settings.syncUserEnabled) {
-			setTimeout(() => {
+			window.setTimeout(() => {
 				void this.initializeSyncService();
 			}, 0);
 		}
@@ -310,7 +310,7 @@ export default class MdfridaySyncPlugin extends Plugin {
 		}
 	}
 
-	async onunload() {
+	onunload() {
 		// Clean up sync status display
 		if (this.syncStatusDisplay) {
 			this.syncStatusDisplay.onunload();
@@ -319,7 +319,7 @@ export default class MdfridaySyncPlugin extends Plugin {
 
 		// Stop sync service
 		if (this.syncService) {
-			await this.syncService.stopSync();
+			void this.syncService.stopSync(); // fire-and-forget: onunload must not return a Promise
 		}
 	}
 
@@ -569,13 +569,15 @@ export default class MdfridaySyncPlugin extends Plugin {
 			this.settings.syncConfig.ignorePatterns = [];
 		}
 
-		// Build internal ignore patterns for .obsidian folder
+		// Build internal ignore patterns using the vault's actual config directory
 		const selectiveSync = this.settings.syncConfig.selectiveSync;
+		const configDir = this.app?.vault?.configDir ?? '.obsidian';
+		const c = configDir.replace(/\./g, '\\.').replace(/\//g, '\\/');
 		const defaultInternalPatterns = [
-			"\\.obsidian\\/workspace",
-			"\\.obsidian\\/workspace\\.json",
-			"\\.obsidian\\/workspace-mobile\\.json",
-			"\\.obsidian\\/cache",
+			`${c}\\/workspace`,
+			`${c}\\/workspace\\.json`,
+			`${c}\\/workspace-mobile\\.json`,
+			`${c}\\/cache`,
 			"\\/node_modules\\/",
 			"\\/\\.git\\/",
 			"^\\.git\\/",
@@ -585,13 +587,13 @@ export default class MdfridaySyncPlugin extends Plugin {
 		let internalPatterns = [...defaultInternalPatterns];
 
 		if (!(selectiveSync.syncThemes ?? true)) {
-			internalPatterns.push("\\.obsidian\\/themes");
+			internalPatterns.push(`${c}\\/themes`);
 		}
 		if (!(selectiveSync.syncSnippets ?? true)) {
-			internalPatterns.push("\\.obsidian\\/snippets");
+			internalPatterns.push(`${c}\\/snippets`);
 		}
 		if (!(selectiveSync.syncPlugins ?? true)) {
-			internalPatterns.push("\\.obsidian\\/plugins");
+			internalPatterns.push(`${c}\\/plugins`);
 		}
 
 		if (!this.settings.syncConfig.syncInternalFilesIgnorePatterns) {

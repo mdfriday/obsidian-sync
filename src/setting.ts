@@ -826,12 +826,14 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 		const selectiveSync = this.plugin.settings.syncConfig.selectiveSync;
 		if (!selectiveSync) return;
 
-		// Build internal ignore patterns for .obsidian folder (themes, plugins)
+		// Build internal ignore patterns using the vault's actual config directory
+		const configDir = this.plugin.app?.vault?.configDir ?? '.obsidian';
+		const c = configDir.replace(/\./g, '\\.').replace(/\//g, '\\/');
 		const defaultInternalPatterns = [
-			"\\.obsidian\\/workspace",
-			"\\.obsidian\\/workspace\\.json",
-			"\\.obsidian\\/workspace-mobile\\.json",
-			"\\.obsidian\\/cache",
+			`${c}\\/workspace`,
+			`${c}\\/workspace\\.json`,
+			`${c}\\/workspace-mobile\\.json`,
+			`${c}\\/cache`,
 			"\\/node_modules\\/",
 			"\\/\\.git\\/",
 			"^\\.git\\/",
@@ -842,17 +844,17 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 		
 		// Add themes folder to ignore if not syncing themes
 		if (!(selectiveSync.syncThemes ?? true)) {
-			internalPatterns.push("\\.obsidian\\/themes");
+			internalPatterns.push(`${c}\\/themes`);
 		}
 		
 		// Add snippets folder to ignore if not syncing snippets
 		if (!(selectiveSync.syncSnippets ?? true)) {
-			internalPatterns.push("\\.obsidian\\/snippets");
+			internalPatterns.push(`${c}\\/snippets`);
 		}
 		
 		// Add plugins folder to ignore if not syncing plugins
 		if (!(selectiveSync.syncPlugins ?? true)) {
-			internalPatterns.push("\\.obsidian\\/plugins");
+			internalPatterns.push(`${c}\\/plugins`);
 		}
 		
 		// Update settings

@@ -479,7 +479,7 @@ export class DirectFileManipulator implements LiveSyncLocalDBEnv {
                     Logger(`WATCH: CONNECTION HAS BEEN CLOSED, RECONNECTING...`, LEVEL_INFO, "watch");
                     this.watching = false;
                     this.changes = undefined;
-                    setTimeout(() => {
+                    window.setTimeout(() => {
                         this.beginWatch(callback, checkIsInterested);
                     }, 10000);
                 } else {

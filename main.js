@@ -2819,52 +2819,52 @@ function getDeviceInfo() {
   return { deviceName, deviceType };
 }
 function buildLicenseInfoFromActivation(data, userDir) {
-  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
-  const f3 = data.features || {};
-  const expiresAt = data.expires_at || 0;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w;
+  const f3 = (_a5 = data.features) != null ? _a5 : {};
+  const expiresAt = (_b2 = data.expires_at) != null ? _b2 : 0;
   const msRemaining = expiresAt - Date.now();
   const daysRemaining = Math.max(0, Math.ceil(msRemaining / 864e5));
   const expiresDate = new Date(expiresAt);
   const expires = expiresDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   const info3 = {
-    key: data.license_key,
+    key: (_c = data.license_key) != null ? _c : "",
     plan: data.plan ? data.plan.charAt(0).toUpperCase() + data.plan.slice(1).toLowerCase() : "Free",
     isExpired: Date.now() > expiresAt,
     expires,
     expiresAt,
     daysRemaining,
-    isTrial: (data.plan || "").toLowerCase() === "free",
+    isTrial: ((_d = data.plan) != null ? _d : "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a5 = f3.max_devices) != null ? _a5 : 1,
-      maxIps: (_b2 = f3.max_ips) != null ? _b2 : 1,
-      syncEnabled: (_c = f3.sync_enabled) != null ? _c : false,
-      syncQuota: (_d = f3.sync_quota) != null ? _d : 0,
-      publishEnabled: (_e = f3.publish_enabled) != null ? _e : false,
-      maxSites: (_f = f3.max_sites) != null ? _f : 1,
-      maxStorage: (_g = f3.max_storage) != null ? _g : 1024,
-      customDomain: (_h = f3.custom_domain) != null ? _h : false,
-      customSubDomain: (_i = f3.custom_sub_domain) != null ? _i : false,
-      validityDays: (_j = f3.validity_days) != null ? _j : 365
+      maxDevices: (_e = f3.max_devices) != null ? _e : 1,
+      maxIps: (_f = f3.max_ips) != null ? _f : 1,
+      syncEnabled: (_g = f3.sync_enabled) != null ? _g : false,
+      syncQuota: (_h = f3.sync_quota) != null ? _h : 0,
+      publishEnabled: (_i = f3.publish_enabled) != null ? _i : false,
+      maxSites: (_j = f3.max_sites) != null ? _j : 1,
+      maxStorage: (_k = f3.max_storage) != null ? _k : 1024,
+      customDomain: (_l = f3.custom_domain) != null ? _l : false,
+      customSubDomain: (_m = f3.custom_sub_domain) != null ? _m : false,
+      validityDays: (_n = f3.validity_days) != null ? _n : 365
     },
-    user: { email: ((_k = data.user) == null ? void 0 : _k.email) || "", userDir },
-    activation: { activated: (_l = data.activated) != null ? _l : true, firstTime: (_m = data.first_time) != null ? _m : false }
+    user: { email: (_p = (_o = data.user) == null ? void 0 : _o.email) != null ? _p : "", userDir },
+    activation: { activated: (_q = data.activated) != null ? _q : true, firstTime: (_r = data.first_time) != null ? _r : false }
   };
   if (data.sync && f3.sync_enabled) {
     info3.sync = {
       enabled: true,
-      status: data.sync.status || "active",
-      dbEndpoint: data.sync.db_endpoint || "",
-      dbName: data.sync.db_name || "",
-      email: data.sync.email || "",
-      dbPassword: data.sync.db_password || "",
+      status: (_s = data.sync.status) != null ? _s : "active",
+      dbEndpoint: (_t = data.sync.db_endpoint) != null ? _t : "",
+      dbName: (_u = data.sync.db_name) != null ? _u : "",
+      email: (_v = data.sync.email) != null ? _v : "",
+      dbPassword: (_w = data.sync.db_password) != null ? _w : "",
       userDir
     };
   }
   return info3;
 }
 function buildLicenseInfoFromStored(stored) {
-  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
-  const expiresAt = stored.expiresAt || 0;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+  const expiresAt = (_a5 = stored.expiresAt) != null ? _a5 : 0;
   const msRemaining = expiresAt - Date.now();
   const daysRemaining = Math.max(0, Math.ceil(msRemaining / 864e5));
   const expiresDate = new Date(expiresAt);
@@ -2879,16 +2879,16 @@ function buildLicenseInfoFromStored(stored) {
     daysRemaining,
     isTrial: (stored.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a5 = f3.maxDevices) != null ? _a5 : 1,
-      maxIps: (_b2 = f3.maxIps) != null ? _b2 : 1,
-      syncEnabled: (_c = f3.syncEnabled) != null ? _c : false,
-      syncQuota: (_d = f3.syncQuota) != null ? _d : 0,
-      publishEnabled: (_e = f3.publishEnabled) != null ? _e : false,
-      maxSites: (_f = f3.maxSites) != null ? _f : 1,
-      maxStorage: (_g = f3.maxStorage) != null ? _g : 1024,
-      customDomain: (_h = f3.customDomain) != null ? _h : false,
-      customSubDomain: (_i = f3.customSubDomain) != null ? _i : false,
-      validityDays: (_j = f3.validityDays) != null ? _j : 365
+      maxDevices: (_b2 = f3.maxDevices) != null ? _b2 : 1,
+      maxIps: (_c = f3.maxIps) != null ? _c : 1,
+      syncEnabled: (_d = f3.syncEnabled) != null ? _d : false,
+      syncQuota: (_e = f3.syncQuota) != null ? _e : 0,
+      publishEnabled: (_f = f3.publishEnabled) != null ? _f : false,
+      maxSites: (_g = f3.maxSites) != null ? _g : 1,
+      maxStorage: (_h = f3.maxStorage) != null ? _h : 1024,
+      customDomain: (_i = f3.customDomain) != null ? _i : false,
+      customSubDomain: (_j = f3.customSubDomain) != null ? _j : false,
+      validityDays: (_k = f3.validityDays) != null ? _k : 365
     },
     user: stored.user,
     activation: stored.activation,
@@ -3069,7 +3069,7 @@ var init_foundry = __esm({
         }
       }
       async getLicenseInfo(workspacePath, options) {
-        var _a5, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d, _e, _f, _g;
         try {
           const ud = await loadUserData(workspacePath);
           if (!(ud == null ? void 0 : ud.license)) return { success: true, message: "No active license" };
@@ -3084,7 +3084,7 @@ var init_foundry = __esm({
             );
             if (res2.status === 200 && ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0])) {
               const raw = res2.data.data[0];
-              const userDir = ((_c = ud.syncConfig) == null ? void 0 : _c.userDir) || ((_e = (_d = ud.license) == null ? void 0 : _d.user) == null ? void 0 : _e.userDir) || "";
+              const userDir = String((_g = (_f = (_c = ud.syncConfig) == null ? void 0 : _c.userDir) != null ? _f : (_e = (_d = ud.license) == null ? void 0 : _d.user) == null ? void 0 : _e.userDir) != null ? _g : "");
               const info3 = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || "", user_dir: userDir } }, userDir);
               const updated = { ...ud.license, ...{ key: raw.license_key || licenseKey, plan: info3.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info3.features, isExpired: info3.isExpired } };
               await saveUserData(workspacePath, { license: updated });
@@ -9054,7 +9054,7 @@ var ChunkFetcher = class {
   onEvent(ids) {
     this.queue = unique([...this.queue, ...ids]);
     if (this.canRequestMore()) {
-      setTimeout(() => void this.requestMissingChunks(), 1);
+      window.setTimeout(() => void this.requestMissingChunks(), 1);
     }
   }
   canRequestMore() {
@@ -9140,7 +9140,7 @@ var ChunkFetcher = class {
       this.currentProcessing--;
       this.previousRequestTime = Date.now();
       if (this.queue.length > 0) {
-        setTimeout(() => void this.requestMissingChunks(), 0);
+        window.setTimeout(() => void this.requestMissingChunks(), 0);
       }
     }
   }
@@ -9164,7 +9164,7 @@ function buildChunkMap(chunks) {
 var DEFAULT_TIMEOUT = 15e3;
 function withTimeout(proc, timeout, onTimedOut) {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       resolve(onTimedOut());
     }, timeout);
     proc.then(resolve).catch(reject).finally(() => {
@@ -19261,24 +19261,28 @@ var MARK_SHIFT_COMPRESSED = `${MARK_SHIFT}Z`;
 var ICHeader = "i:";
 var ICHeaderEnd = "i;";
 var ICHeaderLength = ICHeader.length;
-var DEFAULT_INTERNAL_IGNORE_PATTERNS = [
-  "\\.obsidian\\/workspace",
-  // Workspace layout (device-specific)
-  "\\.obsidian\\/workspace\\.json",
-  // Workspace JSON
-  "\\.obsidian\\/workspace-mobile\\.json",
-  // Mobile workspace
-  "\\.obsidian\\/cache",
-  // Cache directory
-  "\\/node_modules\\/",
-  // Node modules
-  "\\/\\.git\\/",
-  // Git directories (in subdirectories)
-  "^\\.git\\/",
-  // Git directories (at root)
-  "plugins\\/mdfriday"
-  // MDFriday plugin directory (device-specific)
-].join(",");
+function getDefaultInternalIgnorePatterns(configDir) {
+  const c = configDir.replace(/\./g, "\\.").replace(/\//g, "\\/");
+  return [
+    `${c}\\/workspace`,
+    // Workspace layout (device-specific)
+    `${c}\\/workspace\\.json`,
+    // Workspace JSON
+    `${c}\\/workspace-mobile\\.json`,
+    // Mobile workspace
+    `${c}\\/cache`,
+    // Cache directory
+    "\\/node_modules\\/",
+    // Node modules
+    "\\/\\.git\\/",
+    // Git directories (in subdirectories)
+    "^\\.git\\/",
+    // Git directories (at root)
+    "plugins\\/mdfriday"
+    // MDFriday plugin directory (device-specific)
+  ];
+}
+var DEFAULT_INTERNAL_IGNORE_PATTERNS = getDefaultInternalIgnorePatterns(".obsidian").join(",");
 
 // src/sync/utils/hiddenFileUtils.ts
 var TARGET_IS_NEW = 1;
@@ -19685,7 +19689,7 @@ var FridayStorageEventManager = class {
    */
   markFileProcessing(path2) {
     this.processingFiles.add(path2);
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.processingFiles.delete(path2);
     }, 5e3);
   }
@@ -19868,7 +19872,7 @@ var FridayStorageEventManager = class {
     if (existingTimer) {
       clearTimeout(existingTimer);
     }
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       this.debounceTimers.delete(path2);
       this.enqueueEvent(event);
     }, this.DEBOUNCE_DELAY);
@@ -19902,7 +19906,7 @@ var FridayStorageEventManager = class {
     try {
       if (event.type === "CREATE" || event.type === "CHANGED") {
         if (event.file) {
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await new Promise((resolve) => window.setTimeout(resolve, 10));
           if (this.recentlyTouched(event.file)) {
             Logger(`File recently touched by us, skipping: ${event.path}`, LOG_LEVEL_VERBOSE);
             return true;
@@ -20116,7 +20120,7 @@ var FridayStorageEventManager = class {
    */
   async waitForIdle() {
     while (this.eventQueue.length > 0 || this.isProcessingQueue) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => window.setTimeout(resolve, 100));
     }
   }
   /**
@@ -31573,7 +31577,7 @@ var FridayReplicationService = class extends ServiceBase {
         return true;
       } finally {
         if (storageEventManager) {
-          setTimeout(() => {
+          window.setTimeout(() => {
             storageEventManager.unmarkFileProcessing(path2);
           }, 1e3);
         }
@@ -31699,7 +31703,7 @@ var FridayReplicationService = class extends ServiceBase {
     if (this.completeTimer) {
       clearTimeout(this.completeTimer);
     }
-    this.completeTimer = setTimeout(() => {
+    this.completeTimer = window.setTimeout(() => {
       if (this.processingQueue.length === 0 && this.syncActivityStarted && this.core.onFileProgress) {
         this.core.onFileProgress({
           type: "sync_activity_complete",
@@ -31865,7 +31869,7 @@ var FridayRemoteService = class extends ServiceBase {
           }
           const DEFAULT_HTTP_TIMEOUT = 3e4;
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), DEFAULT_HTTP_TIMEOUT);
+          const timeoutId = window.setTimeout(() => controller.abort(), DEFAULT_HTTP_TIMEOUT);
           try {
             const response = await fetch(url, {
               ...opts,
@@ -34233,7 +34237,7 @@ var FridayConnectionMonitor = class {
   scheduleReconnect(delay2) {
     this.cancelReconnect();
     Logger(`Scheduling reconnect in ${delay2}ms`, LOG_LEVEL_VERBOSE);
-    this.reconnectTimer = setTimeout(async () => {
+    this.reconnectTimer = window.setTimeout(async () => {
       this.reconnectTimer = null;
       await this.attemptReconnect();
     }, delay2);
@@ -34747,7 +34751,7 @@ var ServerConnectivityChecker = class {
         return { ok: false, error: "No server URI configured" };
       }
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1e4);
+      const timeoutId = window.setTimeout(() => controller.abort(), 1e4);
       const response = await fetch(uri, {
         method: "GET",
         signal: controller.signal,
@@ -35442,7 +35446,7 @@ var _FridaySyncCore = class _FridaySyncCore {
       this._fileWatcherStarted = true;
       const WATCH_DELAY_MS = 1500;
       Logger(`File watcher will start in ${WATCH_DELAY_MS}ms...`, LOG_LEVEL_VERBOSE);
-      setTimeout(() => {
+      window.setTimeout(() => {
         if (this._storageEventManager) {
           this._storageEventManager.beginWatch();
           Logger("File watcher started - local changes will be saved", LOG_LEVEL_INFO);
@@ -35456,7 +35460,7 @@ var _FridaySyncCore = class _FridaySyncCore {
    */
   setupConnectionTimeout() {
     const CONNECTION_TIMEOUT_MS = 3e4;
-    setTimeout(() => {
+    window.setTimeout(() => {
       var _a5, _b2, _c;
       const status = this.replicationStat.value.syncStatus;
       if (status === "STARTED") {
@@ -35642,7 +35646,7 @@ var _FridaySyncCore = class _FridaySyncCore {
         } catch (error) {
           console.error("[RebuildRemote] Step 5: Create remote database error:", error);
         }
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => window.setTimeout(resolve, 500));
         Logger("Step 6: Pushing all data to remote server...", LOG_LEVEL_INFO);
         Logger($msg("fridaySync.rebuildRemote.pushingData"), LOG_LEVEL_INFO);
         let result = await this._replicator.replicateAllToServer(this._settings, true);
@@ -35650,7 +35654,7 @@ var _FridaySyncCore = class _FridaySyncCore {
           console.error("[RebuildRemote] \u274C First push attempt failed, retrying...");
           Logger("First push attempt failed, retrying...", LOG_LEVEL_INFO);
         }
-        await new Promise((resolve) => setTimeout(resolve, 1e3));
+        await new Promise((resolve) => window.setTimeout(resolve, 1e3));
         Logger("Step 7: Final push to ensure all data is synced...", LOG_LEVEL_INFO);
         result = await this._replicator.replicateAllToServer(this._settings, true);
         if (result) {
@@ -36242,7 +36246,7 @@ var _FridaySyncCore = class _FridaySyncCore {
    * Helper function for delays
    */
   delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
   /**
    * Stop synchronization
@@ -36719,7 +36723,7 @@ var FileProgressTracker = class {
         break;
       case "upload_complete":
         this.state.uploadedFiles = event.successCount;
-        setTimeout(() => this.reset(), 2e3);
+        window.setTimeout(() => this.reset(), 2e3);
         break;
       // === 下载事件 ===
       case "download_start":
@@ -36744,7 +36748,7 @@ var FileProgressTracker = class {
         break;
       case "file_write_complete":
         this.state.writtenFiles = event.successCount;
-        setTimeout(() => this.reset(), 2e3);
+        window.setTimeout(() => this.reset(), 2e3);
         break;
       // === 实时同步活动事件 ===
       case "sync_activity_start":
@@ -36759,7 +36763,7 @@ var FileProgressTracker = class {
         this.state.currentOperation = "sync_completed";
         this.state.syncActivityProcessed = event.totalProcessed;
         this.state.syncActivityCompleted = true;
-        setTimeout(() => this.reset(), 3e3);
+        window.setTimeout(() => this.reset(), 3e3);
         break;
     }
     this.notifyChange();
@@ -36981,7 +36985,7 @@ var SyncStatusDisplay = class {
         maxLen = maxLen < numLen ? numLen : maxLen;
         if (timer) clearTimeout(timer);
         if (num == 0) {
-          timer = setTimeout(() => {
+          timer = window.setTimeout(() => {
             formatted.value = "";
             maxLen = 1;
           }, 3e3);
@@ -37088,7 +37092,7 @@ var SyncStatusDisplay = class {
     let updateTimer;
     const applyToDisplay = (label) => {
       if (updateTimer) return;
-      updateTimer = setTimeout(() => {
+      updateTimer = window.setTimeout(() => {
         updateTimer = void 0;
         this.applyStatusBarText();
       }, 20);
@@ -37159,7 +37163,7 @@ var SyncStatusDisplay = class {
     if (this.logHideTimer) {
       clearTimeout(this.logHideTimer);
     }
-    this.logHideTimer = setTimeout(() => {
+    this.logHideTimer = window.setTimeout(() => {
       this.statusLog.value = "";
       this.applyStatusBarText();
     }, 3e3);
@@ -37192,7 +37196,7 @@ var SyncStatusDisplay = class {
       };
     }
     if (!key2.startsWith("keepalive-") || message.indexOf(MARK_DONE) !== -1) {
-      setTimeout(() => {
+      window.setTimeout(() => {
         if (this.notifies[key2]) {
           const notice = this.notifies[key2].notice;
           delete this.notifies[key2];
@@ -37297,7 +37301,7 @@ var SyncStatusDisplay = class {
     if (state.currentOperation === "idle") {
       if (this.progressBarContainer.hasClass("active")) {
         this.progressBarContainer.addClass("fadeout");
-        setTimeout(() => {
+        window.setTimeout(() => {
           var _a5;
           (_a5 = this.progressBarContainer) == null ? void 0 : _a5.removeClass("active", "fadeout");
         }, 1e3);
@@ -37891,32 +37895,34 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    * Note: ignorePatterns is separate and only for user-defined patterns (folders, custom rules)
    */
   async updateSelectiveSyncSettings() {
-    var _a5, _b2, _c, _d;
+    var _a5, _b2, _c, _d, _e, _f, _g;
     const selectiveSync = this.plugin.settings.syncConfig.selectiveSync;
     if (!selectiveSync) return;
+    const configDir = (_c = (_b2 = (_a5 = this.plugin.app) == null ? void 0 : _a5.vault) == null ? void 0 : _b2.configDir) != null ? _c : ".obsidian";
+    const c = configDir.replace(/\./g, "\\.").replace(/\//g, "\\/");
     const defaultInternalPatterns = [
-      "\\.obsidian\\/workspace",
-      "\\.obsidian\\/workspace\\.json",
-      "\\.obsidian\\/workspace-mobile\\.json",
-      "\\.obsidian\\/cache",
+      `${c}\\/workspace`,
+      `${c}\\/workspace\\.json`,
+      `${c}\\/workspace-mobile\\.json`,
+      `${c}\\/cache`,
       "\\/node_modules\\/",
       "\\/\\.git\\/",
       "^\\.git\\/",
       "plugins\\/mdfriday"
     ];
     let internalPatterns = [...defaultInternalPatterns];
-    if (!((_a5 = selectiveSync.syncThemes) != null ? _a5 : true)) {
-      internalPatterns.push("\\.obsidian\\/themes");
+    if (!((_d = selectiveSync.syncThemes) != null ? _d : true)) {
+      internalPatterns.push(`${c}\\/themes`);
     }
-    if (!((_b2 = selectiveSync.syncSnippets) != null ? _b2 : true)) {
-      internalPatterns.push("\\.obsidian\\/snippets");
+    if (!((_e = selectiveSync.syncSnippets) != null ? _e : true)) {
+      internalPatterns.push(`${c}\\/snippets`);
     }
-    if (!((_c = selectiveSync.syncPlugins) != null ? _c : true)) {
-      internalPatterns.push("\\.obsidian\\/plugins");
+    if (!((_f = selectiveSync.syncPlugins) != null ? _f : true)) {
+      internalPatterns.push(`${c}\\/plugins`);
     }
     this.plugin.settings.syncConfig.syncInternalFilesIgnorePatterns = internalPatterns.join(", ");
     await this.plugin.saveSettings();
-    if ((_d = this.plugin.syncService) == null ? void 0 : _d.isInitialized) {
+    if ((_g = this.plugin.syncService) == null ? void 0 : _g.isInitialized) {
       this.plugin.syncService.updateSelectiveSync({
         syncImages: selectiveSync.syncImages,
         syncAudio: selectiveSync.syncAudio,
@@ -38776,7 +38782,7 @@ var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
       await this.initMobileFeatures();
     }
     if (this.settings.syncUserEnabled) {
-      setTimeout(() => {
+      window.setTimeout(() => {
         void this.initializeSyncService();
       }, 0);
     }
@@ -38952,13 +38958,13 @@ var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
       console.error("[MDFriday Sync Mobile] Error initializing workspace:", error);
     }
   }
-  async onunload() {
+  onunload() {
     if (this.syncStatusDisplay) {
       this.syncStatusDisplay.onunload();
       this.syncStatusDisplay = null;
     }
     if (this.syncService) {
-      await this.syncService.stopSync();
+      void this.syncService.stopSync();
     }
   }
   /**
@@ -39144,7 +39150,7 @@ var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
    * Identical to the original Friday plugin implementation.
    */
   initializeDefaultIgnorePatterns() {
-    var _a5, _b2, _c;
+    var _a5, _b2, _c, _d, _e, _f;
     if (!this.settings.syncConfig.selectiveSync) {
       this.settings.syncConfig.selectiveSync = {
         syncImages: false,
@@ -39160,25 +39166,27 @@ var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
       this.settings.syncConfig.ignorePatterns = [];
     }
     const selectiveSync = this.settings.syncConfig.selectiveSync;
+    const configDir = (_c = (_b2 = (_a5 = this.app) == null ? void 0 : _a5.vault) == null ? void 0 : _b2.configDir) != null ? _c : ".obsidian";
+    const c = configDir.replace(/\./g, "\\.").replace(/\//g, "\\/");
     const defaultInternalPatterns = [
-      "\\.obsidian\\/workspace",
-      "\\.obsidian\\/workspace\\.json",
-      "\\.obsidian\\/workspace-mobile\\.json",
-      "\\.obsidian\\/cache",
+      `${c}\\/workspace`,
+      `${c}\\/workspace\\.json`,
+      `${c}\\/workspace-mobile\\.json`,
+      `${c}\\/cache`,
       "\\/node_modules\\/",
       "\\/\\.git\\/",
       "^\\.git\\/",
       "plugins\\/mdfriday-sync"
     ];
     let internalPatterns = [...defaultInternalPatterns];
-    if (!((_a5 = selectiveSync.syncThemes) != null ? _a5 : true)) {
-      internalPatterns.push("\\.obsidian\\/themes");
+    if (!((_d = selectiveSync.syncThemes) != null ? _d : true)) {
+      internalPatterns.push(`${c}\\/themes`);
     }
-    if (!((_b2 = selectiveSync.syncSnippets) != null ? _b2 : true)) {
-      internalPatterns.push("\\.obsidian\\/snippets");
+    if (!((_e = selectiveSync.syncSnippets) != null ? _e : true)) {
+      internalPatterns.push(`${c}\\/snippets`);
     }
-    if (!((_c = selectiveSync.syncPlugins) != null ? _c : true)) {
-      internalPatterns.push("\\.obsidian\\/plugins");
+    if (!((_f = selectiveSync.syncPlugins) != null ? _f : true)) {
+      internalPatterns.push(`${c}\\/plugins`);
     }
     if (!this.settings.syncConfig.syncInternalFilesIgnorePatterns) {
       this.settings.syncConfig.syncInternalFilesIgnorePatterns = internalPatterns.join(", ");

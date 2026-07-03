@@ -162,7 +162,7 @@ export class FridayStorageEventManager {
     private isProcessingQueue = false;
     
     // Debounce map for file changes
-    private debounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+    private debounceTimers = new Map<string, number>();
     private readonly DEBOUNCE_DELAY = 500; // 500ms debounce for file changes
     
     constructor(plugin: Plugin, core: FridaySyncCore) {
@@ -215,7 +215,7 @@ export class FridayStorageEventManager {
     markFileProcessing(path: string) {
         this.processingFiles.add(path);
         // Auto-clear after 5 seconds
-        setTimeout(() => {
+        window.setTimeout(() => {
             this.processingFiles.delete(path);
         }, 5000);
     }
@@ -445,7 +445,7 @@ export class FridayStorageEventManager {
         }
         
         // Set new timer
-        const timer = setTimeout(() => {
+        const timer = window.setTimeout(() => {
             this.debounceTimers.delete(path);
             this.enqueueEvent(event);
         }, this.DEBOUNCE_DELAY);
@@ -493,7 +493,7 @@ export class FridayStorageEventManager {
                 if (event.file) {
                     // Wait 10ms to let the writer complete the touch() call
                     // This matches livesync's StorageEventManager.appendQueue line 279
-                    await new Promise(resolve => setTimeout(resolve, 10));
+                    await new Promise(resolve => window.setTimeout(resolve, 10));
                     
                     // Check if this file was recently touched by us
                     // If yes, this event was triggered by our own write → skip it
@@ -771,7 +771,7 @@ export class FridayStorageEventManager {
      */
     async waitForIdle(): Promise<void> {
         while (this.eventQueue.length > 0 || this.isProcessingQueue) {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => window.setTimeout(resolve, 100));
         }
     }
     

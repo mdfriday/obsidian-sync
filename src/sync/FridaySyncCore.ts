@@ -962,7 +962,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
             const WATCH_DELAY_MS = 1500;
             Logger(`File watcher will start in ${WATCH_DELAY_MS}ms...`, LOG_LEVEL_VERBOSE);
             
-            setTimeout(() => {
+            window.setTimeout(() => {
                 if (this._storageEventManager) {
                     this._storageEventManager.beginWatch();
                     Logger("File watcher started - local changes will be saved", LOG_LEVEL_INFO);
@@ -977,7 +977,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
      */
     private setupConnectionTimeout(): void {
         const CONNECTION_TIMEOUT_MS = 30000;
-        setTimeout(() => {
+        window.setTimeout(() => {
             const status = this.replicationStat.value.syncStatus;
             if (status === "STARTED") {
                 Logger("Connection timeout - status stuck at STARTED", LOG_LEVEL_INFO);
@@ -1223,7 +1223,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 }
                 
                 // Small delay to ensure database is ready
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => window.setTimeout(resolve, 500));
 
                 // Step 6: Push all local data to remote (first pass)
                 Logger("Step 6: Pushing all data to remote server...", LOG_LEVEL_INFO);
@@ -1236,7 +1236,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 }
                 
                 // Small delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => window.setTimeout(resolve, 1000));
                 
                 // Step 7: Push again to ensure all data is synced (livesync does this twice)
                 Logger("Step 7: Final push to ensure all data is synced...", LOG_LEVEL_INFO);
@@ -2047,7 +2047,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
      * Helper function for delays
      */
     private delay(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise(resolve => window.setTimeout(resolve, ms));
     }
 
     /**

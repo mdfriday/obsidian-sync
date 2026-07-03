@@ -298,7 +298,7 @@ export interface ObsidianAuthService {
 
 export interface ObsidianLicenseService {
   requestTrial(workspacePath: string, email: string): Promise<ObsidianLicenseResult<{ email: string; licenseKey: string; password: string; validityDays: number }>>;
-  loginWithLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<{}>>;
+  loginWithLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<object>>;
   activateLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<ObsidianLicenseInfo>>;
   getLicenseInfo(workspacePath: string, options?: { refresh?: boolean }): Promise<ObsidianLicenseResult<ObsidianLicenseInfo>>;
   getLicenseUsage(workspacePath: string): Promise<ObsidianLicenseResult<ObsidianLicenseUsage>>;

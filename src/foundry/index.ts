@@ -92,8 +92,18 @@ interface UserData {
   email?: string;
   token?: string;
   serverConfig?: { apiUrl?: string; websiteUrl?: string };
-  license?: any;
-  syncConfig?: any;
+  license?: StoredLicenseShape;
+  syncConfig?: SyncConfigShape;
+}
+
+interface SyncConfigShape {
+  dbEndpoint?: string;
+  dbName?: string;
+  email?: string;
+  userDir?: string;
+  status?: string;
+  dbPassword?: string;
+  [key: string]: unknown;
 }
 
 function userDataPath(workspacePath: string): string {
@@ -132,7 +142,9 @@ async function getDeviceId(): Promise<string> {
       const buf  = await crypto.subtle.digest('SHA-256', data);
       return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
     }
-  } catch {}
+  } catch {
+    // crypto.subtle unavailable — fall through to random fallback
+  }
   return Math.random().toString(36).slice(2, 18);
 }
 
@@ -148,25 +160,80 @@ function getDeviceInfo() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// API response shapes (typed to replace `any` parameter patterns)
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface ActivationApiFeatures {
+  max_devices?: number;
+  max_ips?: number;
+  sync_enabled?: boolean;
+  sync_quota?: number;
+  publish_enabled?: boolean;
+  max_sites?: number;
+  max_storage?: number;
+  custom_domain?: boolean;
+  custom_sub_domain?: boolean;
+  validity_days?: number;
+}
+
+interface ActivationApiResponse {
+  features?: ActivationApiFeatures;
+  expires_at?: number;
+  license_key?: string;
+  plan?: string;
+  activated?: boolean;
+  first_time?: boolean;
+  user?: { email?: string };
+  sync?: {
+    status?: string;
+    db_endpoint?: string;
+    db_name?: string;
+    email?: string;
+    db_password?: string;
+  };
+}
+
+interface StoredLicenseShape {
+  key?: string;
+  plan?: string;
+  expiresAt?: number;
+  features?: {
+    maxDevices?: number;
+    maxIps?: number;
+    syncEnabled?: boolean;
+    syncQuota?: number;
+    publishEnabled?: boolean;
+    maxSites?: number;
+    maxStorage?: number;
+    customDomain?: boolean;
+    customSubDomain?: boolean;
+    validityDays?: number;
+  };
+  user?: ObsidianLicenseInfo['user'];
+  activation?: ObsidianLicenseInfo['activation'];
+  sync?: ObsidianLicenseInfo['sync'];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Build license info from raw API activation response
 // ─────────────────────────────────────────────────────────────────────────────
 
-function buildLicenseInfoFromActivation(data: any, userDir: string): ObsidianLicenseInfo {
-  const f = data.features || {};
-  const expiresAt: number = data.expires_at || 0;
+function buildLicenseInfoFromActivation(data: ActivationApiResponse, userDir: string): ObsidianLicenseInfo {
+  const f: ActivationApiFeatures = data.features ?? {};
+  const expiresAt: number = data.expires_at ?? 0;
   const msRemaining = expiresAt - Date.now();
   const daysRemaining = Math.max(0, Math.ceil(msRemaining / 86400000));
   const expiresDate = new Date(expiresAt);
   const expires = expiresDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   const info: ObsidianLicenseInfo = {
-    key: data.license_key,
+    key: data.license_key ?? '',
     plan: data.plan ? (data.plan.charAt(0).toUpperCase() + data.plan.slice(1).toLowerCase()) : 'Free',
     isExpired: Date.now() > expiresAt,
     expires,
     expiresAt,
     daysRemaining,
-    isTrial: (data.plan || '').toLowerCase() === 'free',
+    isTrial: (data.plan ?? '').toLowerCase() === 'free',
     features: {
       maxDevices:    f.max_devices ?? 1,
       maxIps:        f.max_ips ?? 1,
@@ -179,18 +246,18 @@ function buildLicenseInfoFromActivation(data: any, userDir: string): ObsidianLic
       customSubDomain: f.custom_sub_domain ?? false,
       validityDays:  f.validity_days ?? 365,
     },
-    user: { email: data.user?.email || '', userDir },
+    user: { email: data.user?.email ?? '', userDir },
     activation: { activated: data.activated ?? true, firstTime: data.first_time ?? false },
   };
 
   if (data.sync && f.sync_enabled) {
     info.sync = {
       enabled:    true,
-      status:     data.sync.status || 'active',
-      dbEndpoint: data.sync.db_endpoint || '',
-      dbName:     data.sync.db_name || '',
-      email:      data.sync.email || '',
-      dbPassword: data.sync.db_password || '',
+      status:     data.sync.status ?? 'active',
+      dbEndpoint: data.sync.db_endpoint ?? '',
+      dbName:     data.sync.db_name ?? '',
+      email:      data.sync.email ?? '',
+      dbPassword: data.sync.db_password ?? '',
       userDir,
     };
   }
@@ -198,8 +265,8 @@ function buildLicenseInfoFromActivation(data: any, userDir: string): ObsidianLic
   return info;
 }
 
-function buildLicenseInfoFromStored(stored: any): ObsidianLicenseInfo {
-  const expiresAt: number = stored.expiresAt || 0;
+function buildLicenseInfoFromStored(stored: StoredLicenseShape): ObsidianLicenseInfo {
+  const expiresAt: number = stored.expiresAt ?? 0;
   const msRemaining = expiresAt - Date.now();
   const daysRemaining = Math.max(0, Math.ceil(msRemaining / 86400000));
   const expiresDate = new Date(expiresAt);
@@ -323,7 +390,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       if (!token) throw new Error('No token in login response');
 
       await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
-      return { success: true, data: {} };
+      return { success: true, data: {} as object };
     } catch (e) {
       return { success: false, error: (e as Error).message };
     }
@@ -398,7 +465,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
         );
         if (res.status === 200 && res.data?.data?.[0]) {
           const raw = res.data.data[0];
-          const userDir = ud.syncConfig?.userDir || ud.license?.user?.userDir || '';
+          const userDir = String(ud.syncConfig?.userDir ?? ud.license?.user?.userDir ?? '');
           const info = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || '', user_dir: userDir } }, userDir);
           // update stored license
           const updated = { ...ud.license, ...{ key: raw.license_key || licenseKey, plan: info.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info.features, isExpired: info.isExpired } };

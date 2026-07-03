@@ -28,23 +28,28 @@ export interface InternalFileInfo {
 }
 
 /**
- * Default ignore patterns for .obsidian sync
+ * Default ignore patterns for Obsidian config-dir sync
  * Following Obsidian official sync best practices:
  * - workspace*: Device-specific layout state, different per device
  * - cache: Temporary cache files, regenerated automatically
  * - node_modules/.git: Development artifacts
- * - mdfriday/preview, mdfriday/themes, mdfriday/data.json: MDFriday plugin generated files
  */
-export const DEFAULT_INTERNAL_IGNORE_PATTERNS = [
-    "\\.obsidian\\/workspace",           // Workspace layout (device-specific)
-    "\\.obsidian\\/workspace\\.json",    // Workspace JSON
-    "\\.obsidian\\/workspace-mobile\\.json", // Mobile workspace
-    "\\.obsidian\\/cache",               // Cache directory
-    "\\/node_modules\\/",                // Node modules
-    "\\/\\.git\\/",                      // Git directories (in subdirectories)
-    "^\\.git\\/",                        // Git directories (at root)
-    "plugins\\/mdfriday",                // MDFriday plugin directory (device-specific)
-].join(",");
+export function getDefaultInternalIgnorePatterns(configDir: string): string[] {
+    const c = configDir.replace(/\./g, '\\.').replace(/\//g, '\\/');
+    return [
+        `${c}\\/workspace`,           // Workspace layout (device-specific)
+        `${c}\\/workspace\\.json`,    // Workspace JSON
+        `${c}\\/workspace-mobile\\.json`, // Mobile workspace
+        `${c}\\/cache`,               // Cache directory
+        "\\/node_modules\\/",         // Node modules
+        "\\/\\.git\\/",               // Git directories (in subdirectories)
+        "^\\.git\\/",                 // Git directories (at root)
+        "plugins\\/mdfriday",         // MDFriday plugin directory (device-specific)
+    ];
+}
+
+/** @deprecated Use getDefaultInternalIgnorePatterns() instead */
+export const DEFAULT_INTERNAL_IGNORE_PATTERNS = getDefaultInternalIgnorePatterns('.obsidian').join(",");
 
 /**
  * Hidden file sync settings interface

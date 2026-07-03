@@ -50,7 +50,7 @@ export type WriteResult = {
 
 function withTimeout<T>(proc: Promise<T>, timeout: number, onTimedOut: () => T): Promise<T> {
     return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => {
+        const timer = window.setTimeout(() => {
             resolve(onTimedOut()); // Call onTimedOut if a timeout occurs
         }, timeout);
         proc.then(resolve)

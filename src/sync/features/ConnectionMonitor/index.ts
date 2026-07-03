@@ -79,7 +79,7 @@ export class FridayConnectionMonitor {
 
         Logger(`Scheduling reconnect in ${delay}ms`, LOG_LEVEL_VERBOSE);
 
-        this.reconnectTimer = setTimeout(async () => {
+        this.reconnectTimer = window.setTimeout(async () => {
             this.reconnectTimer = null;
             await this.attemptReconnect();
         }, delay);

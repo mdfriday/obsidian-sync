@@ -53,7 +53,7 @@ export class ChunkFetcher {
     onEvent(ids: DocumentID[]): void {
         this.queue = unique([...this.queue, ...ids]);
         if (this.canRequestMore()) {
-            setTimeout(() => void this.requestMissingChunks(), 1);
+            window.setTimeout(() => void this.requestMissingChunks(), 1);
         }
     }
 
@@ -160,7 +160,7 @@ export class ChunkFetcher {
             if (this.queue.length > 0) {
                 // If there are remaining items in the queue, trigger the next process.
                 // Use setTimeout to release the call stack once.
-                setTimeout(() => void this.requestMissingChunks(), 0);
+                window.setTimeout(() => void this.requestMissingChunks(), 0);
             }
         }
     }

@@ -4,7 +4,7 @@
  * This is a direct port of livesync's ModuleLog status display functionality
  */
 
-import { Plugin, Notice, Platform, Menu } from "obsidian";
+import { Plugin, Notice, Platform, Menu, MenuItem } from "obsidian";
 import { computed, reactive, reactiveSource, type ReactiveValue } from "octagonal-wheels/dataobject/reactive";
 import type { DatabaseConnectingStatus } from "./core/common/types";
 import type { FridaySyncCore } from "./FridaySyncCore";
@@ -68,7 +68,7 @@ export class SyncStatusDisplay {
     nextFrameQueue: ReturnType<typeof requestAnimationFrame> | undefined = undefined;
     
     // Log message hide timer
-    private logHideTimer?: ReturnType<typeof setTimeout>;
+    private logHideTimer?: number;
     
     /**
      * Get whether editor status should be shown from plugin settings
@@ -194,7 +194,7 @@ export class SyncStatusDisplay {
         // Helper function to create padded counter labels
         function padLeftSpComputed(numI: ReactiveValue<number>, mark: string) {
             const formatted = reactiveSource("");
-            let timer: ReturnType<typeof setTimeout> | undefined = undefined;
+            let timer: number | undefined = undefined;
             let maxLen = 1;
             numI.onChanged((numX) => {
                 const num = numX.value;
@@ -202,7 +202,7 @@ export class SyncStatusDisplay {
                 maxLen = maxLen < numLen ? numLen : maxLen;
                 if (timer) clearTimeout(timer);
                 if (num == 0) {
-                    timer = setTimeout(() => {
+                    timer = window.setTimeout(() => {
                         formatted.value = "";
                         maxLen = 1;
                     }, 3000);
@@ -330,10 +330,10 @@ export class SyncStatusDisplay {
         this.statusBarLabels = statusBarLabels;
         
         // Throttled update
-        let updateTimer: ReturnType<typeof setTimeout> | undefined;
+        let updateTimer: number | undefined;
         const applyToDisplay = (label: typeof statusBarLabels.value) => {
             if (updateTimer) return;
-            updateTimer = setTimeout(() => {
+            updateTimer = window.setTimeout(() => {
                 updateTimer = undefined;
                 this.applyStatusBarText();
             }, 20);
@@ -425,7 +425,7 @@ export class SyncStatusDisplay {
         if (this.logHideTimer) {
             clearTimeout(this.logHideTimer);
         }
-        this.logHideTimer = setTimeout(() => {
+        this.logHideTimer = window.setTimeout(() => {
             this.statusLog.value = "";
             this.applyStatusBarText();
         }, 3000);
@@ -465,7 +465,7 @@ export class SyncStatusDisplay {
         
         // Schedule hide
         if (!key.startsWith("keepalive-") || message.indexOf(MARK_DONE) !== -1) {
-            setTimeout(() => {
+            window.setTimeout(() => {
                 if (this.notifies[key]) {
                     const notice = this.notifies[key].notice;
                     delete this.notifies[key];
@@ -515,7 +515,7 @@ export class SyncStatusDisplay {
         // Menu item 1: Toggle editor status display (Desktop only)
         // Mobile always shows editor status, no need for this option
         if (Platform.isDesktop) {
-            menu.addItem((item: any) => {
+            menu.addItem((item: MenuItem) => {
                 item
                     .setTitle(
                         this.shouldShowEditorStatus 
@@ -534,7 +534,7 @@ export class SyncStatusDisplay {
         // Menu item 2: Reconnect if not connected
         const syncStatus = this.core?.replicationStat?.value?.syncStatus;
         if (syncStatus === 'NOT_CONNECTED' || syncStatus === 'ERRORED') {
-            menu.addItem((item: any) => {
+            menu.addItem((item: MenuItem) => {
                 item
                     .setTitle('重新连接同步')
                     .setIcon('refresh-cw')
@@ -547,7 +547,7 @@ export class SyncStatusDisplay {
         }
         
         // Menu item 3: Open sync settings
-        menu.addItem((item: any) => {
+        menu.addItem((item: MenuItem) => {
             item
                 .setTitle('同步设置')
                 .setIcon('settings')
@@ -616,7 +616,7 @@ export class SyncStatusDisplay {
             // Only animate fadeout if the progress bar was previously active
             if (this.progressBarContainer.hasClass("active")) {
                 this.progressBarContainer.addClass("fadeout");
-                setTimeout(() => {
+                window.setTimeout(() => {
                     this.progressBarContainer?.removeClass("active", "fadeout");
                 }, 1000);
             } else {
