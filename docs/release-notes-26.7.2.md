@@ -23,8 +23,12 @@ None. / 无。
 ### API Compliance / API 合规
 
 #### `manifest.json`
-- **`minAppVersion` bumped** `0.15.0` → `1.0.0` to match the actual Obsidian APIs used throughout the codebase  
-  将 `minAppVersion` 从 `0.15.0` 提升至 `1.0.0`，与代码中实际使用的 Obsidian API 版本对齐
+- **`minAppVersion` bumped** `0.15.0` → `1.4.0` to match the actual Obsidian APIs used throughout the codebase:
+  - `ButtonComponent.setDisabled()` — requires ≥ 1.4.0
+  - `FileManager.trashFile()` — requires ≥ 1.3.5
+  - `vault.createFolder()` (new `Promise<TFolder>` return type) — requires ≥ 1.0.0
+  - `ExtraButtonComponent.setIcon()` / `.setTooltip()` — requires ≥ 1.0.0  
+  将 `minAppVersion` 从 `0.15.0` 提升至 `1.4.0`，与代码中实际使用的 Obsidian API 版本对齐（如 `ButtonComponent.setDisabled()`、`FileManager.trashFile()` 等）
 - **Plugin description** no longer contains the word "Obsidian" (Obsidian review policy)  
   插件描述中移除了 "Obsidian" 一词（符合 Obsidian 审核政策）
 
