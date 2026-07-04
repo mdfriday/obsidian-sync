@@ -3,9 +3,9 @@ import { Logger, LOG_LEVEL_VERBOSE } from "octagonal-wheels/common/logger";
 // import { DirectTransport } from "octagonal-wheels/channel/transport";
 
 class ChannelBase {
-    protected readonly handlers: Array<(...args: any[]) => Promise<any> | any> = [];
-    protected readonly handlerNames: Map<(...args: any[]) => Promise<any> | any, string> = new Map();
-    protected isAlreadyRegistered(handler: (...args: any[]) => Promise<any> | any) {
+    protected readonly handlers: Array<(...args: any[]) => any> = [];
+    protected readonly handlerNames: Map<(...args: any[]) => any, string> = new Map();
+    protected isAlreadyRegistered(handler: (...args: any[]) => any) {
         const result = this.handlers.indexOf(handler);
         if (result === -1) {
             return false;
@@ -13,10 +13,10 @@ class ChannelBase {
         console.error("Handler already registered at index", result);
         return true;
     }
-    protected getHandlerName(handler: (...args: any[]) => Promise<any> | any): string | undefined {
+    protected getHandlerName(handler: (...args: any[]) => any): string | undefined {
         return this.handlerNames.get(handler);
     }
-    register(handler: (...args: any[]) => Promise<any> | any, name: string): void {
+    register(handler: (...args: any[]) => any, name: string): void {
         if (this.isAlreadyRegistered(handler)) {
             Logger("Handler already registered for " + this.name, LOG_LEVEL_VERBOSE);
             return;
@@ -142,7 +142,7 @@ class Broadcaster<T extends any[]> extends ChannelBase {
     constructor(name: string) {
         super(name);
     }
-    override register(handler: (...args: T) => Promise<any> | any, name: string): void {
+    override register(handler: (...args: T) => unknown, name: string): void {
         super.register(handler, name);
     }
     async invoke(...args: T): Promise<void> {
@@ -212,7 +212,7 @@ export class ServiceBackend {
 
         return [
             (...args: T) => pipeline.invoke(...args),
-            (func: (...args: T) => Promise<any> | any) => pipeline.register(func, `${name} for ${func.name}`),
+            (func: (...args: T) => any) => pipeline.register(func, `${name} for ${func.name}`),
         ] as const;
     }
 
@@ -292,7 +292,7 @@ export class ServiceBackend {
         const broadcaster = this.getBroadcaster<T>(name);
         return [
             (...args: T) => broadcaster.invoke(...args),
-            (func: (...args: T) => Promise<any> | any) => broadcaster.register(func, `${name} for ${func.name}`),
+            (func: (...args: T) => any) => broadcaster.register(func, `${name} for ${func.name}`),
         ] as const;
     }
 

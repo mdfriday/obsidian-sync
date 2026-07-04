@@ -123,7 +123,7 @@ export class SyncStatusDisplay {
      */
     initialize() {
         // Remove any existing status divs
-        document.querySelectorAll(".livesync-status")?.forEach((e) => e.remove());
+        activeDocument.querySelectorAll(".livesync-status")?.forEach((e) => e.remove());
         
         // Create status div in workspace container (exactly matching livesync's structure)
         this.statusDiv = this.plugin.app.workspace.containerEl.createDiv({ cls: "livesync-status" });
@@ -200,7 +200,7 @@ export class SyncStatusDisplay {
                 const num = numX.value;
                 const numLen = `${Math.abs(num)}`.length + 1;
                 maxLen = maxLen < numLen ? numLen : maxLen;
-                if (timer) clearTimeout(timer);
+                if (timer) window.clearTimeout(timer);
                 if (num == 0) {
                     timer = window.setTimeout(() => {
                         formatted.value = "";
@@ -372,7 +372,7 @@ export class SyncStatusDisplay {
         if (this.nextFrameQueue) {
             return;
         }
-        this.nextFrameQueue = requestAnimationFrame(() => {
+        this.nextFrameQueue = window.requestAnimationFrame(() => {
             this.nextFrameQueue = undefined;
             const { message } = this.statusBarLabels.value;
             const newMsg = message;
@@ -423,7 +423,7 @@ export class SyncStatusDisplay {
         
         // Schedule log message clear after 3 seconds (like livesync)
         if (this.logHideTimer) {
-            clearTimeout(this.logHideTimer);
+            window.clearTimeout(this.logHideTimer);
         }
         this.logHideTimer = window.setTimeout(() => {
             this.statusLog.value = "";
@@ -578,10 +578,10 @@ export class SyncStatusDisplay {
             this.statusDiv.remove();
             this.statusDiv = undefined;
         }
-        document.querySelectorAll(".livesync-status")?.forEach((e) => e.remove());
+        activeDocument.querySelectorAll(".livesync-status")?.forEach((e) => e.remove());
         
         // Clear status bar items with syncstatusbar class
-        document.querySelectorAll(".syncstatusbar")?.forEach((e) => e.remove());
+        activeDocument.querySelectorAll(".syncstatusbar")?.forEach((e) => e.remove());
         
         // Hide all notifications
         for (const key in this.notifies) {

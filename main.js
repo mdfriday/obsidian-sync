@@ -2724,12 +2724,12 @@ var require_transform_pouch = __commonJS({
 function joinVaultPath(basePath, ...segments) {
   const allParts = [basePath, ...segments].filter(Boolean);
   const joined = allParts.join("/");
-  return (0, import_obsidian10.normalizePath)(joined);
+  return (0, import_obsidian11.normalizePath)(joined);
 }
-var import_obsidian10;
+var import_obsidian11;
 var init_path = __esm({
   "src/utils/path.ts"() {
-    import_obsidian10 = require("obsidian");
+    import_obsidian11 = require("obsidian");
   }
 });
 
@@ -2796,7 +2796,7 @@ async function getDeviceId() {
   try {
     if (typeof crypto !== "undefined" && crypto.subtle) {
       const components = [
-        import_obsidian11.Platform.isMobile ? "mobile" : "desktop",
+        import_obsidian12.Platform.isMobile ? "mobile" : "desktop",
         typeof navigator !== "undefined" ? navigator.language : "",
         (/* @__PURE__ */ new Date()).getTimezoneOffset().toString()
       ].join("|");
@@ -2809,13 +2809,13 @@ async function getDeviceId() {
   return Math.random().toString(36).slice(2, 18);
 }
 function getDeviceInfo() {
-  const deviceType = import_obsidian11.Platform.isMobile ? "mobile" : "desktop";
+  const deviceType = import_obsidian12.Platform.isMobile ? "mobile" : "desktop";
   let deviceName = "MDFriday Sync";
-  if (import_obsidian11.Platform.isIosApp) deviceName = "MDFriday Sync on iOS";
-  else if (import_obsidian11.Platform.isAndroidApp) deviceName = "MDFriday Sync on Android";
-  else if (import_obsidian11.Platform.isMacOS) deviceName = "MDFriday Sync on macOS";
-  else if (import_obsidian11.Platform.isWin) deviceName = "MDFriday Sync on Windows";
-  else if (import_obsidian11.Platform.isLinux) deviceName = "MDFriday Sync on Linux";
+  if (import_obsidian12.Platform.isIosApp) deviceName = "MDFriday Sync on iOS";
+  else if (import_obsidian12.Platform.isAndroidApp) deviceName = "MDFriday Sync on Android";
+  else if (import_obsidian12.Platform.isMacOS) deviceName = "MDFriday Sync on macOS";
+  else if (import_obsidian12.Platform.isWin) deviceName = "MDFriday Sync on Windows";
+  else if (import_obsidian12.Platform.isLinux) deviceName = "MDFriday Sync on Linux";
   return { deviceName, deviceType };
 }
 function buildLicenseInfoFromActivation(data, userDir) {
@@ -2925,10 +2925,10 @@ function createObsidianLicenseService(httpClient) {
 function createObsidianGlobalConfigService() {
   return new LightweightGlobalConfigService();
 }
-var import_obsidian11, fs, nodePath, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
+var import_obsidian12, fs, nodePath, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
 var init_foundry = __esm({
   "src/foundry/index.ts"() {
-    import_obsidian11 = require("obsidian");
+    import_obsidian12 = require("obsidian");
     fs = __toESM(require("fs"), 1);
     nodePath = __toESM(require("path"), 1);
     MDFRIDAY_DIR = ".mdfriday";
@@ -3773,7 +3773,7 @@ async function getDeviceId2() {
   try {
     if (typeof crypto !== "undefined" && crypto.subtle) {
       const data = new TextEncoder().encode(
-        [import_obsidian12.Platform.isMobile ? "mobile" : "desktop", (/* @__PURE__ */ new Date()).getTimezoneOffset()].join("|")
+        [import_obsidian13.Platform.isMobile ? "mobile" : "desktop", (/* @__PURE__ */ new Date()).getTimezoneOffset()].join("|")
       );
       const buf = await crypto.subtle.digest("SHA-256", data);
       return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
@@ -3783,10 +3783,10 @@ async function getDeviceId2() {
   return Math.random().toString(36).slice(2, 18);
 }
 function getDeviceInfo2() {
-  const deviceType = import_obsidian12.Platform.isMobile ? "mobile" : "desktop";
-  let name = import_obsidian12.Platform.isMobile ? "MDFriday Sync Mobile" : "MDFriday Sync Desktop";
-  if (import_obsidian12.Platform.isIosApp) name = "MDFriday Sync on iOS";
-  else if (import_obsidian12.Platform.isAndroidApp) name = "MDFriday Sync on Android";
+  const deviceType = import_obsidian13.Platform.isMobile ? "mobile" : "desktop";
+  let name = import_obsidian13.Platform.isMobile ? "MDFriday Sync Mobile" : "MDFriday Sync Desktop";
+  if (import_obsidian13.Platform.isIosApp) name = "MDFriday Sync on iOS";
+  else if (import_obsidian13.Platform.isAndroidApp) name = "MDFriday Sync on Android";
   return { deviceName: name, deviceType };
 }
 function buildLicenseInfoFromActivation2(data, userDir) {
@@ -3898,10 +3898,10 @@ function createObsidianGlobalConfigService2(config) {
   const { vault, pluginDir } = extractVaultAndDir(config);
   return new MobileConfigService(vault, pluginDir);
 }
-var import_obsidian12, MDFRIDAY_DIR3, USER_DATA_FILE2, WORKSPACE_FILE3, CONFIG_FILE2, DEFAULT_API_URL2, MobileAuthService, MobileLicenseService, MobileWorkspaceService, MobileConfigService;
+var import_obsidian13, MDFRIDAY_DIR3, USER_DATA_FILE2, WORKSPACE_FILE3, CONFIG_FILE2, DEFAULT_API_URL2, MobileAuthService, MobileLicenseService, MobileWorkspaceService, MobileConfigService;
 var init_mobile = __esm({
   "src/foundry/mobile.ts"() {
-    import_obsidian12 = require("obsidian");
+    import_obsidian13 = require("obsidian");
     init_obsidian_mobile_repositories();
     MDFRIDAY_DIR3 = ".mdfriday";
     USER_DATA_FILE2 = "user-data.json";
@@ -4168,7 +4168,7 @@ __export(main_exports, {
   default: () => MdfridaySyncPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian13 = require("obsidian");
+var import_obsidian14 = require("obsidian");
 var nodePath2 = __toESM(require("path"), 1);
 
 // src/i18n/utils.ts
@@ -8006,10 +8006,10 @@ var I18nService = class {
 };
 
 // src/sync/SyncService.ts
-var import_obsidian6 = require("obsidian");
+var import_obsidian7 = require("obsidian");
 
 // src/sync/FridaySyncCore.ts
-var import_obsidian5 = require("obsidian");
+var import_obsidian6 = require("obsidian");
 
 // node_modules/octagonal-wheels/dist/common/polyfill.js
 var _a;
@@ -9168,7 +9168,7 @@ function withTimeout(proc, timeout, onTimedOut) {
       resolve(onTimedOut());
     }, timeout);
     proc.then(resolve).catch(reject).finally(() => {
-      clearTimeout(timer);
+      window.clearTimeout(timer);
     });
   });
 }
@@ -11977,14 +11977,11 @@ async function getWebCrypto() {
   if (webcrypto) {
     return webcrypto;
   }
-  if (globalThis.crypto) {
-    webcrypto = globalThis.crypto;
-    return webcrypto;
-  } else {
-    const module2 = await import("crypto");
-    webcrypto = module2.webcrypto;
+  if (window.crypto) {
+    webcrypto = window.crypto;
     return webcrypto;
   }
+  throw new Error("Web Crypto API is not available in this environment");
 }
 
 // src/sync/core/string_and_binary/path.ts
@@ -12420,13 +12417,13 @@ function readContent(doc) {
   }
 }
 var _a3;
-var isIndexDBCmpExist = typeof ((_a3 = globalThis == null ? void 0 : globalThis.indexedDB) == null ? void 0 : _a3.cmp) !== "undefined";
+var isIndexDBCmpExist = typeof ((_a3 = window == null ? void 0 : window.indexedDB) == null ? void 0 : _a3.cmp) !== "undefined";
 async function isDocContentSame(docA, docB) {
   const blob1 = createBlob(docA);
   const blob2 = createBlob(docB);
   if (blob1.size != blob2.size) return false;
   if (isIndexDBCmpExist) {
-    return globalThis.indexedDB.cmp(await blob1.arrayBuffer(), await blob2.arrayBuffer()) === 0;
+    return window.indexedDB.cmp(await blob1.arrayBuffer(), await blob2.arrayBuffer()) === 0;
   }
   const checkQuantum = 1e4;
   const length = blob1.size;
@@ -17853,7 +17850,7 @@ var LiveSyncManagers = class {
     if (options.networkManager) {
       this.networkManager = options.networkManager;
     } else {
-      if ("navigator" in globalThis) {
+      if ("navigator" in window) {
         this.networkManager = new NetworkManagerBrowser();
       } else {
         throw new LiveSyncError("No NetworkManager available");
@@ -19720,16 +19717,16 @@ var FridayStorageEventManager = class {
     this.watchVaultDelete = this.watchVaultDelete.bind(this);
     this.watchVaultRename = this.watchVaultRename.bind(this);
     this.plugin.registerEvent(
-      this.plugin.app.vault.on("create", this.watchVaultCreate)
+      this.plugin.app.vault.on("create", (f3) => this.watchVaultCreate(f3))
     );
     this.plugin.registerEvent(
-      this.plugin.app.vault.on("modify", this.watchVaultChange)
+      this.plugin.app.vault.on("modify", (f3) => this.watchVaultChange(f3))
     );
     this.plugin.registerEvent(
-      this.plugin.app.vault.on("delete", this.watchVaultDelete)
+      this.plugin.app.vault.on("delete", (f3) => this.watchVaultDelete(f3))
     );
     this.plugin.registerEvent(
-      this.plugin.app.vault.on("rename", this.watchVaultRename)
+      this.plugin.app.vault.on("rename", (f3, old) => this.watchVaultRename(f3, old))
     );
     this.plugin.registerEvent(
       this.plugin.app.vault.on("raw", this.watchVaultRawEvents.bind(this))
@@ -19753,7 +19750,7 @@ var FridayStorageEventManager = class {
   stopWatch() {
     this._isWatching = false;
     for (const timer of this.debounceTimers.values()) {
-      clearTimeout(timer);
+      window.clearTimeout(timer);
     }
     this.debounceTimers.clear();
     Logger("Storage event manager stopped", LOG_LEVEL_VERBOSE);
@@ -19797,6 +19794,7 @@ var FridayStorageEventManager = class {
       return;
     }
     if (file instanceof import_obsidian.TFolder) return;
+    if (!(file instanceof import_obsidian.TFile)) return;
     if (this.isFileProcessing(file.path)) {
       Logger(`File create skipped (being processed): ${file.path}`, LOG_LEVEL_VERBOSE);
       return;
@@ -19815,6 +19813,7 @@ var FridayStorageEventManager = class {
       return;
     }
     if (file instanceof import_obsidian.TFolder) return;
+    if (!(file instanceof import_obsidian.TFile)) return;
     if (this.isFileProcessing(file.path)) {
       Logger(`File change skipped (being processed): ${file.path}`, LOG_LEVEL_VERBOSE);
       return;
@@ -19839,7 +19838,7 @@ var FridayStorageEventManager = class {
     }
     const existingTimer = this.debounceTimers.get(file.path);
     if (existingTimer) {
-      clearTimeout(existingTimer);
+      window.clearTimeout(existingTimer);
       this.debounceTimers.delete(file.path);
     }
     this.enqueueEvent({
@@ -19853,6 +19852,7 @@ var FridayStorageEventManager = class {
       return;
     }
     if (file instanceof import_obsidian.TFolder) return;
+    if (!(file instanceof import_obsidian.TFile)) return;
     this.enqueueEvent({
       type: "DELETE",
       path: oldPath
@@ -19870,7 +19870,7 @@ var FridayStorageEventManager = class {
     const path2 = event.path;
     const existingTimer = this.debounceTimers.get(path2);
     if (existingTimer) {
-      clearTimeout(existingTimer);
+      window.clearTimeout(existingTimer);
     }
     const timer = window.setTimeout(() => {
       this.debounceTimers.delete(path2);
@@ -20009,11 +20009,12 @@ var FridayStorageEventManager = class {
               { path: path2, mtime: existingEntry.mtime }
             );
             switch (freshnessResult) {
-              case "EVEN":
+              case "EVEN": {
                 Logger(`File mtimes are equivalent (marked or same), skip: ${path2}`, LOG_LEVEL_VERBOSE);
                 const cacheKey = `${event.type}-${path2}`;
                 this.lastProcessedMtime.set(cacheKey, file.stat.mtime);
                 return true;
+              }
               case "BASE_IS_NEW":
               case "TARGET_IS_NEW":
                 shouldUpdate = true;
@@ -31291,10 +31292,15 @@ var FridayAPIService = class extends ServiceBase {
   getCustomFetchHandler() {
     return {
       handle: async (request) => {
-        const response = await fetch(request.url, {
+        const result = await (0, import_obsidian2.requestUrl)({
+          url: request.url,
           method: request.method,
           headers: request.headers,
           body: request.body
+        });
+        const response = new Response(result.arrayBuffer, {
+          status: result.status,
+          headers: result.headers
         });
         return { response };
       }
@@ -31609,11 +31615,8 @@ var FridayReplicationService = class extends ServiceBase {
     const settings = this.core.settings;
     const vault = this.core.app.vault;
     const dir = file.parent;
-    if (settings.trashInsteadDelete) {
-      await vault.trash(file, false);
-    } else {
-      await vault.delete(file);
-    }
+    const fileManager = this.core.app.fileManager;
+    await fileManager.trashFile(file);
     Logger(`xxx <- STORAGE (deleted) ${file.path}`, LOG_LEVEL_VERBOSE);
     if (dir) {
       Logger(`files: ${dir.children.length}`, LOG_LEVEL_VERBOSE);
@@ -31647,7 +31650,7 @@ var FridayReplicationService = class extends ServiceBase {
     }
     if (queuedCount > 0 && this.core.onFileProgress) {
       if (this.completeTimer) {
-        clearTimeout(this.completeTimer);
+        window.clearTimeout(this.completeTimer);
         this.completeTimer = void 0;
       }
       if (!this.syncActivityStarted) {
@@ -31659,7 +31662,7 @@ var FridayReplicationService = class extends ServiceBase {
       }
     }
     if (!this.isProcessing) {
-      this.processQueue();
+      void this.processQueue();
     }
   }
   async processQueue() {
@@ -31701,7 +31704,7 @@ var FridayReplicationService = class extends ServiceBase {
    */
   scheduleComplete() {
     if (this.completeTimer) {
-      clearTimeout(this.completeTimer);
+      window.clearTimeout(this.completeTimer);
     }
     this.completeTimer = window.setTimeout(() => {
       if (this.processingQueue.length === 0 && this.syncActivityStarted && this.core.onFileProgress) {
@@ -31868,23 +31871,29 @@ var FridayRemoteService = class extends ServiceBase {
             headers.append("Authorization", `Basic ${credentials}`);
           }
           const DEFAULT_HTTP_TIMEOUT = 3e4;
-          const controller = new AbortController();
-          const timeoutId = window.setTimeout(() => controller.abort(), DEFAULT_HTTP_TIMEOUT);
+          const timeoutPromise = new Promise(
+            (_, reject) => window.setTimeout(() => reject(new Error(`Request timeout after ${DEFAULT_HTTP_TIMEOUT}ms`)), DEFAULT_HTTP_TIMEOUT)
+          );
           try {
-            const response = await fetch(url, {
-              ...opts,
-              headers,
-              signal: controller.signal
+            const headersRecord = {};
+            headers.forEach((value, key2) => {
+              headersRecord[key2] = value;
             });
-            clearTimeout(timeoutId);
-            return response;
+            const result = await Promise.race([
+              (0, import_obsidian2.requestUrl)({
+                url: typeof url === "string" ? url : url.url,
+                method: opts.method || "GET",
+                headers: headersRecord,
+                body: opts.body
+              }),
+              timeoutPromise
+            ]);
+            return new Response(result.arrayBuffer, {
+              status: result.status,
+              headers: result.headers
+            });
           } catch (ex) {
-            clearTimeout(timeoutId);
-            if (ex.name === "AbortError") {
-              console.error("[Friday Sync] Request timeout after", DEFAULT_HTTP_TIMEOUT, "ms:", url);
-              throw new Error(`Request timeout after ${DEFAULT_HTTP_TIMEOUT}ms`);
-            }
-            console.error("[Friday Sync] Fetch error:", ex);
+            console.error("[Friday Sync] Request error:", ex);
             throw ex;
           }
         }
@@ -34091,7 +34100,7 @@ var FridayNetworkEvents = class {
     };
     this.plugin.registerDomEvent(window, "online", this.boundHandlers.online);
     this.plugin.registerDomEvent(window, "offline", this.boundHandlers.offline);
-    this.plugin.registerDomEvent(document, "visibilitychange", this.boundHandlers.visibilityChange);
+    this.plugin.registerDomEvent(activeDocument, "visibilitychange", this.boundHandlers.visibilityChange);
     this.plugin.registerDomEvent(window, "focus", this.boundHandlers.focus);
     this.plugin.registerDomEvent(window, "blur", this.boundHandlers.blur);
     Logger("Network event listeners registered", LOG_LEVEL_VERBOSE);
@@ -34147,7 +34156,7 @@ var FridayNetworkEvents = class {
     if (this.isLastHidden && !this.hasFocus) {
       return;
     }
-    const isHidden = document.hidden;
+    const isHidden = activeDocument.hidden;
     if (this.isLastHidden === isHidden) {
       return;
     }
@@ -34200,8 +34209,8 @@ var FridayConnectionMonitor = class {
   startMonitoring() {
     if (this.isMonitoring) return;
     this.isMonitoring = true;
-    this.healthCheckTimer = setInterval(() => {
-      this.performHealthCheck();
+    this.healthCheckTimer = window.setInterval(() => {
+      void this.performHealthCheck();
     }, this.healthCheckInterval);
     Logger("Connection monitoring started", LOG_LEVEL_VERBOSE);
   }
@@ -34212,7 +34221,7 @@ var FridayConnectionMonitor = class {
     this.isMonitoring = false;
     this.cancelReconnect();
     if (this.healthCheckTimer) {
-      clearInterval(this.healthCheckTimer);
+      window.clearInterval(this.healthCheckTimer);
       this.healthCheckTimer = null;
     }
     Logger("Connection monitoring stopped", LOG_LEVEL_VERBOSE);
@@ -34247,7 +34256,7 @@ var FridayConnectionMonitor = class {
    */
   cancelReconnect() {
     if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
+      window.clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
   }
@@ -34512,7 +34521,7 @@ var FridayOfflineTracker = class {
     const wasOffline = this._isOffline;
     this._isOffline = offline;
     if (wasOffline && !offline) {
-      this.persistChanges();
+      void this.persistChanges();
       Logger(`Came online with ${this.pendingChanges.size} pending changes`, LOG_LEVEL_INFO);
     }
     if (!wasOffline && offline) {
@@ -34531,7 +34540,7 @@ var FridayOfflineTracker = class {
     };
     this.pendingChanges.set(path2, change);
     Logger(`Tracked offline change: ${type} ${path2}`, LOG_LEVEL_VERBOSE);
-    this.persistChanges();
+    void this.persistChanges();
   }
   /**
    * Get all pending offline changes
@@ -34664,6 +34673,7 @@ var FridayOfflineTracker = class {
 };
 
 // src/sync/features/ServerConnectivity/index.ts
+var import_obsidian5 = require("obsidian");
 var ServerConnectivityChecker = class {
   constructor() {
     this._lastCheckTime = 0;
@@ -34750,15 +34760,14 @@ var ServerConnectivityChecker = class {
       if (!uri) {
         return { ok: false, error: "No server URI configured" };
       }
-      const controller = new AbortController();
-      const timeoutId = window.setTimeout(() => controller.abort(), 1e4);
-      const response = await fetch(uri, {
-        method: "GET",
-        signal: controller.signal,
-        headers: this.getAuthHeaders(setting)
-      });
-      clearTimeout(timeoutId);
-      if (response.ok || response.status === 401 || response.status === 403) {
+      const timeoutPromise = new Promise(
+        (_, reject) => window.setTimeout(() => reject(new Error("Server connectivity check timed out")), 1e4)
+      );
+      const response = await Promise.race([
+        (0, import_obsidian5.requestUrl)({ url: uri, method: "GET", headers: this.getAuthHeaders(setting) }),
+        timeoutPromise
+      ]);
+      if (response.status < 400 || response.status === 401 || response.status === 403) {
         return { ok: true };
       } else if (response.status === 404) {
         return { ok: true };
@@ -35112,7 +35121,7 @@ var _FridaySyncCore = class _FridaySyncCore {
     }
   }
   setupStatusMonitoring() {
-    setInterval(() => {
+    window.setInterval(() => {
       const currentStatus = this.replicationStat.value.syncStatus;
       if (currentStatus !== this._lastLoggedStatus) {
         Logger(`[Status Change] ${this._lastLoggedStatus || "initial"} -> ${currentStatus}`, LOG_LEVEL_VERBOSE);
@@ -36315,23 +36324,24 @@ var _FridaySyncCore = class _FridaySyncCore {
       const uri = this._settings.couchDB_URI.replace(/\/$/, "");
       const dbUrl = `${uri}/${this._settings.couchDB_DBNAME}`;
       const credentials = btoa(`${this._settings.couchDB_USER}:${this._settings.couchDB_PASSWORD}`);
-      const response = await fetch(dbUrl, {
+      const response = await (0, import_obsidian6.requestUrl)({
+        url: dbUrl,
         method: "GET",
         headers: {
           "Authorization": `Basic ${credentials}`,
           "Content-Type": "application/json"
         }
       });
-      if (response.ok) {
-        const data = await response.json();
+      if (response.status >= 200 && response.status < 300) {
+        const data = response.json;
         return {
           success: true,
-          message: `Connected to ${data.db_name}, docs: ${data.doc_count}`
+          message: `Connected to ${data["db_name"]}, docs: ${data["doc_count"]}`
         };
       } else if (response.status === 404) {
         return { success: false, message: "Database not found. Please create it first." };
       } else {
-        return { success: false, message: `Connection failed: ${response.statusText}` };
+        return { success: false, message: `Connection failed: HTTP ${response.status}` };
       }
     } catch (error) {
       return { success: false, message: `Connection error: ${error}` };
@@ -36468,7 +36478,7 @@ var SyncService = class {
     this.config = config;
     try {
       if (!config.couchDB_URI || !config.couchDB_DBNAME) {
-        new import_obsidian6.Notice("Sync: CouchDB URI and database name are required");
+        new import_obsidian7.Notice("Sync: CouchDB URI and database name are required");
         return false;
       }
       this.core = new FridaySyncCore(this.plugin);
@@ -36480,7 +36490,7 @@ var SyncService = class {
       return result;
     } catch (error) {
       console.error("Sync initialization failed:", error);
-      new import_obsidian6.Notice("Sync initialization failed. Please check your settings.");
+      new import_obsidian7.Notice("Sync initialization failed. Please check your settings.");
       return false;
     }
   }
@@ -36508,7 +36518,7 @@ var SyncService = class {
    */
   async startSync(continuous = true) {
     if (!this.core) {
-      new import_obsidian6.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.startSync(continuous);
@@ -36520,7 +36530,7 @@ var SyncService = class {
    */
   async pullFromServer() {
     if (!this.core) {
-      new import_obsidian6.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.pullFromServer();
@@ -36532,7 +36542,7 @@ var SyncService = class {
    */
   async pushToServer() {
     if (!this.core) {
-      new import_obsidian6.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.pushToServer();
@@ -36547,7 +36557,7 @@ var SyncService = class {
    */
   async fetchFromServer() {
     if (!this.core) {
-      new import_obsidian6.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.fetchFromServer();
@@ -36560,7 +36570,7 @@ var SyncService = class {
    */
   async rebuildVaultFromDB() {
     if (!this.core) {
-      new import_obsidian6.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.rebuildVaultFromDB();
@@ -36574,7 +36584,7 @@ var SyncService = class {
    */
   async rebuildRemote() {
     if (!this.core) {
-      new import_obsidian6.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.rebuildRemote();
@@ -36689,7 +36699,7 @@ var SyncService = class {
 };
 
 // src/sync/SyncStatusDisplay.ts
-var import_obsidian7 = require("obsidian");
+var import_obsidian8 = require("obsidian");
 
 // src/sync/utils/FileProgressTracker.ts
 var FileProgressTracker = class {
@@ -36867,7 +36877,7 @@ var FileProgressTracker = class {
 // src/sync/SyncStatusDisplay.ts
 var MARK_DONE = "\u2009\u2009";
 function truncateMiddleForMobile(text, maxLength = 60) {
-  if (!import_obsidian7.Platform.isMobile || text.length <= maxLength) {
+  if (!import_obsidian8.Platform.isMobile || text.length <= maxLength) {
     return text;
   }
   const headLength = Math.floor(maxLength * 0.4);
@@ -36898,7 +36908,7 @@ var SyncStatusDisplay = class {
    */
   get shouldShowEditorStatus() {
     var _a5, _b2;
-    if (import_obsidian7.Platform.isMobile) {
+    if (import_obsidian8.Platform.isMobile) {
       return true;
     }
     return (_b2 = (_a5 = this.plugin.settings) == null ? void 0 : _a5.showEditorStatusDisplay) != null ? _b2 : false;
@@ -36929,7 +36939,7 @@ var SyncStatusDisplay = class {
    */
   initialize() {
     var _a5;
-    (_a5 = document.querySelectorAll(".livesync-status")) == null ? void 0 : _a5.forEach((e2) => e2.remove());
+    (_a5 = activeDocument.querySelectorAll(".livesync-status")) == null ? void 0 : _a5.forEach((e2) => e2.remove());
     this.statusDiv = this.plugin.app.workspace.containerEl.createDiv({ cls: "livesync-status" });
     this.statusLine = this.statusDiv.createDiv({ cls: "livesync-status-statusline" });
     this.messageArea = this.statusDiv.createDiv({ cls: "livesync-status-messagearea" });
@@ -36983,7 +36993,7 @@ var SyncStatusDisplay = class {
         const num = numX.value;
         const numLen = `${Math.abs(num)}`.length + 1;
         maxLen = maxLen < numLen ? numLen : maxLen;
-        if (timer) clearTimeout(timer);
+        if (timer) window.clearTimeout(timer);
         if (num == 0) {
           timer = window.setTimeout(() => {
             formatted.value = "";
@@ -37125,7 +37135,7 @@ var SyncStatusDisplay = class {
     if (this.nextFrameQueue) {
       return;
     }
-    this.nextFrameQueue = requestAnimationFrame(() => {
+    this.nextFrameQueue = window.requestAnimationFrame(() => {
       var _a5;
       this.nextFrameQueue = void 0;
       const { message } = this.statusBarLabels.value;
@@ -37161,7 +37171,7 @@ var SyncStatusDisplay = class {
     this.statusLog.value = message;
     this.applyStatusBarText();
     if (this.logHideTimer) {
-      clearTimeout(this.logHideTimer);
+      window.clearTimeout(this.logHideTimer);
     }
     this.logHideTimer = window.setTimeout(() => {
       this.statusLog.value = "";
@@ -37180,7 +37190,7 @@ var SyncStatusDisplay = class {
     if (key2 in this.notifies) {
       const isShown = (_a5 = this.notifies[key2].notice.noticeEl) == null ? void 0 : _a5.isShown();
       if (!isShown) {
-        this.notifies[key2].notice = new import_obsidian7.Notice(message, 0);
+        this.notifies[key2].notice = new import_obsidian8.Notice(message, 0);
       }
       if (key2 === message) {
         this.notifies[key2].count++;
@@ -37189,7 +37199,7 @@ var SyncStatusDisplay = class {
         this.notifies[key2].notice.setMessage(message);
       }
     } else {
-      const notice = new import_obsidian7.Notice(message, 0);
+      const notice = new import_obsidian8.Notice(message, 0);
       this.notifies[key2] = {
         count: 0,
         notice
@@ -37235,8 +37245,8 @@ var SyncStatusDisplay = class {
    */
   showStatusBarMenu(event) {
     var _a5, _b2, _c;
-    const menu = new import_obsidian7.Menu();
-    if (import_obsidian7.Platform.isDesktop) {
+    const menu = new import_obsidian8.Menu();
+    if (import_obsidian8.Platform.isDesktop) {
       menu.addItem((item) => {
         item.setTitle(
           this.shouldShowEditorStatus ? "\u9690\u85CF\u7F16\u8F91\u5668\u5185\u72B6\u6001" : "\u663E\u793A\u7F16\u8F91\u5668\u5185\u72B6\u6001"
@@ -37277,8 +37287,8 @@ var SyncStatusDisplay = class {
       this.statusDiv.remove();
       this.statusDiv = void 0;
     }
-    (_a5 = document.querySelectorAll(".livesync-status")) == null ? void 0 : _a5.forEach((e2) => e2.remove());
-    (_b2 = document.querySelectorAll(".syncstatusbar")) == null ? void 0 : _b2.forEach((e2) => e2.remove());
+    (_a5 = activeDocument.querySelectorAll(".livesync-status")) == null ? void 0 : _a5.forEach((e2) => e2.remove());
+    (_b2 = activeDocument.querySelectorAll(".syncstatusbar")) == null ? void 0 : _b2.forEach((e2) => e2.remove());
     for (const key2 in this.notifies) {
       try {
         this.notifies[key2].notice.hide();
@@ -37357,8 +37367,8 @@ function formatPlanName(plan) {
 }
 
 // src/setting.ts
-var import_obsidian8 = require("obsidian");
-var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
+var import_obsidian9 = require("obsidian");
+var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
   constructor(app, plugin2) {
     super(app, plugin2);
     this.isActivating = false;
@@ -37401,8 +37411,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    */
   renderEnterpriseSettings(containerEl) {
     const { enterpriseServerUrl } = this.plugin.settings;
-    new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_settings")).setHeading().settingEl.addClass("friday-section-title");
-    new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_server_url")).setDesc(this.plugin.i18n.t("settings.enterprise_server_url_desc")).addText((text) => {
+    new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_settings")).setHeading().settingEl.addClass("friday-section-title");
+    new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_server_url")).setDesc(this.plugin.i18n.t("settings.enterprise_server_url_desc")).addText((text) => {
       text.setPlaceholder("https://your-enterprise-server.com").setValue(enterpriseServerUrl || "").onChange(async (value) => {
         const trimmedValue = value.trim();
         this.plugin.settings.enterpriseServerUrl = trimmedValue;
@@ -37434,45 +37444,47 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    */
   renderLicenseSection(containerEl) {
     var _a5;
-    new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.license")).setHeading().settingEl.addClass("friday-section-title");
+    new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.license")).setHeading().settingEl.addClass("friday-section-title");
     if (((_a5 = this.plugin.licenseState) == null ? void 0 : _a5.isActivated()) && !this.plugin.licenseState.isExpired()) {
       const licenseInfo = this.plugin.licenseState.getLicenseInfo();
       if (!licenseInfo) {
         console.warn("[Settings] License is activated but no license info available");
         return;
       }
-      const licenseKeySetting = new import_obsidian8.Setting(containerEl).setName(maskLicenseKey(this.plugin.licenseState.getLicenseKey() || "")).setDesc(this.plugin.i18n.t("settings.valid_until") + ": " + licenseInfo.expires);
+      const licenseKeySetting = new import_obsidian9.Setting(containerEl).setName(maskLicenseKey(this.plugin.licenseState.getLicenseKey() || "")).setDesc(this.plugin.i18n.t("settings.valid_until") + ": " + licenseInfo.expires);
       const planBadge = licenseKeySetting.controlEl.createSpan({
         cls: `friday-plan-badge ${licenseInfo.plan.toLowerCase()} clickable`,
         text: formatPlanName(licenseInfo.plan)
       });
       planBadge.title = this.plugin.i18n.t("settings.click_to_refresh_license_info") || "Click to refresh license info";
-      planBadge.addEventListener("click", async () => {
-        var _a6;
-        const now = Date.now();
-        if (this.isRefreshingLicenseInfo || now - this.lastLicenseInfoRefresh < 5e3) {
-          return;
-        }
-        this.isRefreshingLicenseInfo = true;
-        this.lastLicenseInfoRefresh = now;
-        const originalText = planBadge.textContent || "";
-        planBadge.textContent = this.plugin.i18n.t("settings.refreshing") || "Refreshing...";
-        planBadge.addClass("refreshing");
-        try {
-          await ((_a6 = this.plugin.licenseState) == null ? void 0 : _a6.refresh());
-          await this.plugin.syncLicenseToSettings();
-          await this.plugin.refreshLicenseUsage();
-          await this.plugin.refreshSubdomainInfo();
-          new import_obsidian8.Notice(this.plugin.i18n.t("settings.license_info_refreshed") || "License info updated");
-          this.display();
-        } catch (error) {
-          new import_obsidian8.Notice(this.plugin.i18n.t("settings.refresh_failed") || "Failed to refresh license info");
-          console.error("Failed to refresh license info:", error);
-          planBadge.textContent = originalText;
-          planBadge.removeClass("refreshing");
-        } finally {
-          this.isRefreshingLicenseInfo = false;
-        }
+      planBadge.addEventListener("click", () => {
+        void (async () => {
+          var _a6;
+          const now = Date.now();
+          if (this.isRefreshingLicenseInfo || now - this.lastLicenseInfoRefresh < 5e3) {
+            return;
+          }
+          this.isRefreshingLicenseInfo = true;
+          this.lastLicenseInfoRefresh = now;
+          const originalText = planBadge.textContent || "";
+          planBadge.textContent = this.plugin.i18n.t("settings.refreshing") || "Refreshing...";
+          planBadge.addClass("refreshing");
+          try {
+            await ((_a6 = this.plugin.licenseState) == null ? void 0 : _a6.refresh());
+            await this.plugin.syncLicenseToSettings();
+            await this.plugin.refreshLicenseUsage();
+            await this.plugin.refreshSubdomainInfo();
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.license_info_refreshed") || "License info updated");
+            this.display();
+          } catch (error) {
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.refresh_failed") || "Failed to refresh license info");
+            console.error("Failed to refresh license info:", error);
+            planBadge.textContent = originalText;
+            planBadge.removeClass("refreshing");
+          } finally {
+            this.isRefreshingLicenseInfo = false;
+          }
+        })();
       });
       if (licenseInfo.plan.toLowerCase() === "free") {
         const pricingBtn = licenseKeySetting.controlEl.createEl("button", {
@@ -37487,7 +37499,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       const usedStorage = (usage == null ? void 0 : usage.totalDiskUsage) || 0;
       const maxStorage = this.plugin.licenseState.getMaxStorage();
       const usagePercentage = maxStorage > 0 ? usedStorage / maxStorage * 100 : 0;
-      const storageSetting = new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.storage_usage")).setDesc(this.plugin.i18n.t("settings.storage_usage_desc"));
+      const storageSetting = new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.storage_usage")).setDesc(this.plugin.i18n.t("settings.storage_usage_desc"));
       const progressContainer = storageSetting.controlEl.createDiv({ cls: "friday-storage-progress-container" });
       const usageText = progressContainer.createDiv({ cls: "friday-storage-usage-text" });
       usageText.setText(this.formatStorageSize(usedStorage) + " / " + this.formatStorageSize(maxStorage));
@@ -37498,7 +37510,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       let inputEl;
       let activateBtn;
       let statusEl;
-      const licenseSetting = new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.license_key")).setDesc(this.plugin.i18n.t("settings.license_key_placeholder")).addText((text) => {
+      const licenseSetting = new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.license_key")).setDesc(this.plugin.i18n.t("settings.license_key_placeholder")).addText((text) => {
         inputEl = text.inputEl;
         text.setPlaceholder(this.plugin.i18n.t("settings.license_key_placeholder")).onChange((value) => {
           text.setValue(value.toUpperCase());
@@ -37521,7 +37533,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
           inputEl.disabled = true;
           try {
             await this.activateLicense(licenseKey);
-            new import_obsidian8.Notice(this.plugin.i18n.t("settings.license_activated_success"));
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.license_activated_success"));
             this.display();
           } catch (error) {
             statusEl.setText(this.plugin.i18n.t("settings.license_activation_failed"));
@@ -37545,7 +37557,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       let trialEmailEl;
       let trialRequestBtn;
       let trialStatusEl;
-      const trialSetting = new import_obsidian8.Setting(containerEl).setName(this.plugin.i18n.t("settings.trial_license")).setDesc(this.plugin.i18n.t("settings.trial_email")).addText((text) => {
+      const trialSetting = new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.trial_license")).setDesc(this.plugin.i18n.t("settings.trial_email")).addText((text) => {
         trialEmailEl = text.inputEl;
         text.setPlaceholder(this.plugin.i18n.t("settings.trial_email_placeholder")).setValue("");
       }).addButton((button) => {
@@ -37578,12 +37590,12 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
               trialStatusEl.addClass("friday-license-success");
               try {
                 await this.activateLicense(licenseKey);
-                new import_obsidian8.Notice(this.plugin.i18n.t("settings.license_activated_success"));
+                new import_obsidian9.Notice(this.plugin.i18n.t("settings.license_activated_success"));
                 trialEmailEl.value = "";
                 this.display();
               } catch (activationError) {
                 console.error("Auto-activation failed:", activationError);
-                new import_obsidian8.Notice(this.plugin.i18n.t("settings.trial_request_success"));
+                new import_obsidian9.Notice(this.plugin.i18n.t("settings.trial_request_success"));
                 this.display();
               }
             } else {
@@ -37614,7 +37626,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
     const licenseSync = this.plugin.settings.licenseSync;
     if (!license || !(licenseSync == null ? void 0 : licenseSync.enabled)) return;
     const syncHeaderContainer = containerEl.createDiv("friday-sync-header-container");
-    new import_obsidian8.Setting(syncHeaderContainer).setName(this.plugin.i18n.t("settings.sync")).setHeading().settingEl.addClass("friday-section-title");
+    new import_obsidian9.Setting(syncHeaderContainer).setName(this.plugin.i18n.t("settings.sync")).setHeading().settingEl.addClass("friday-section-title");
     const toggleContainer = syncHeaderContainer.createDiv("friday-sync-toggle-container");
     let syncToggle;
     const toggleWrapper = toggleContainer.createDiv("friday-sync-toggle-wrapper");
@@ -37625,36 +37637,38 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
     toggleElement.createSpan({ cls: "friday-sync-slider" });
     const syncContentContainer = containerEl.createDiv("friday-sync-content-container");
     syncContentContainer.style.display = this.plugin.settings.syncUserEnabled ? "block" : "none";
-    syncToggle.addEventListener("change", async () => {
-      var _a6;
-      const enabled = syncToggle.checked;
-      this.plugin.settings.syncUserEnabled = enabled;
-      this.plugin.settings.syncEnabled = enabled;
-      await this.plugin.saveSettings();
-      if (enabled) {
-        try {
-          await this.plugin.initializeSyncService();
-          new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_enabled_success") || "Sync enabled");
-          this.display();
-        } catch (error) {
-          console.error("Failed to initialize sync service:", error);
-          new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_enable_failed") || "Failed to enable sync");
-          syncToggle.checked = false;
-          this.plugin.settings.syncUserEnabled = false;
-          this.plugin.settings.syncEnabled = false;
-          await this.plugin.saveSettings();
-        }
-      } else {
-        try {
-          if ((_a6 = this.plugin.syncService) == null ? void 0 : _a6.isInitialized) {
-            await this.plugin.syncService.close();
+    syncToggle.addEventListener("change", () => {
+      void (async () => {
+        var _a6;
+        const enabled = syncToggle.checked;
+        this.plugin.settings.syncUserEnabled = enabled;
+        this.plugin.settings.syncEnabled = enabled;
+        await this.plugin.saveSettings();
+        if (enabled) {
+          try {
+            await this.plugin.initializeSyncService();
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_enabled_success") || "Sync enabled");
+            this.display();
+          } catch (error) {
+            console.error("Failed to initialize sync service:", error);
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_enable_failed") || "Failed to enable sync");
+            syncToggle.checked = false;
+            this.plugin.settings.syncUserEnabled = false;
+            this.plugin.settings.syncEnabled = false;
+            await this.plugin.saveSettings();
           }
-          new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_disabled_success") || "Sync disabled");
-          this.display();
-        } catch (error) {
-          console.error("Failed to close sync service:", error);
+        } else {
+          try {
+            if ((_a6 = this.plugin.syncService) == null ? void 0 : _a6.isInitialized) {
+              await this.plugin.syncService.close();
+            }
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_disabled_success") || "Sync disabled");
+            this.display();
+          } catch (error) {
+            console.error("Failed to close sync service:", error);
+          }
         }
-      }
+      })();
     });
     if (!this.plugin.settings.syncUserEnabled) {
       const enableMessage = syncContentContainer.createDiv("friday-sync-enable-message");
@@ -37665,11 +37679,11 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       return;
     }
     const securityContainer = syncContentContainer.createDiv("friday-security-container");
-    new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.security")).setHeading();
+    new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.security")).setHeading();
     let passwordVisible = false;
     const encryptionPassphrase = this.plugin.settings.encryptionPassphrase;
     if (this.firstTimeSync && encryptionPassphrase) {
-      new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_enabled")).addText((text) => {
+      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_enabled")).addText((text) => {
         text.inputEl.type = "password";
         text.inputEl.readOnly = true;
         text.setValue(encryptionPassphrase);
@@ -37687,7 +37701,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         });
       });
     } else {
-      new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_password_desc")).addText((text) => {
+      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_password_desc")).addText((text) => {
         text.inputEl.type = "password";
         text.inputEl.placeholder = this.plugin.i18n.t("settings.encryption_password_placeholder");
         text.setValue(encryptionPassphrase || "");
@@ -37711,7 +37725,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       });
     }
     if (this.firstTimeSync) {
-      new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_first_time_title")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
+      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_first_time_title")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.upload_local_to_cloud")).setCta().onClick(async () => {
           var _a6;
           button.setButtonText(this.plugin.i18n.t("settings.sync_uploading"));
@@ -37724,22 +37738,22 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
             if ((_a6 = this.plugin.settings.syncConfig) == null ? void 0 : _a6.syncOnStart) {
               await this.plugin.syncService.startSync(true);
             }
-            new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_upload_success"));
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_upload_success"));
             this.firstTimeSync = false;
             this.display();
           } catch (error) {
-            new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_operation_failed"));
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_operation_failed"));
             button.setButtonText(this.plugin.i18n.t("settings.upload_local_to_cloud"));
             button.setDisabled(false);
           }
         });
       });
     } else {
-      new import_obsidian8.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_data_available")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
+      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_data_available")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.download_from_cloud")).setCta().onClick(async () => {
           var _a6;
           if (!this.plugin.settings.encryptionPassphrase) {
-            new import_obsidian8.Notice(this.plugin.i18n.t("settings.encryption_password_required"));
+            new import_obsidian9.Notice(this.plugin.i18n.t("settings.encryption_password_required"));
             return;
           }
           button.setButtonText(this.plugin.i18n.t("settings.sync_downloading"));
@@ -37752,14 +37766,14 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
             await this.plugin.initializeSyncService();
             if (this.plugin.syncService.isInitialized) {
               await this.plugin.syncService.fetchFromServer();
-              new import_obsidian8.Notice(this.plugin.i18n.t("settings.sync_download_success"));
+              new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_download_success"));
               this.display();
             } else {
               throw new Error("Sync service initialization failed");
             }
           } catch (error) {
             console.error("Download failed:", error);
-            new import_obsidian8.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error.message || error}`);
+            new import_obsidian9.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error.message || error}`);
             button.setButtonText(this.plugin.i18n.t("settings.download_from_cloud"));
             button.setDisabled(false);
           }
@@ -37781,7 +37795,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       };
     }
     const selectiveSync = this.plugin.settings.syncConfig.selectiveSync;
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_images")).setDesc(this.plugin.i18n.t("settings.sync_images_desc")).addToggle((toggle) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_images")).setDesc(this.plugin.i18n.t("settings.sync_images_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncImages) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37790,7 +37804,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_audio")).setDesc(this.plugin.i18n.t("settings.sync_audio_desc")).addToggle((toggle) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_audio")).setDesc(this.plugin.i18n.t("settings.sync_audio_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncAudio) != null ? _a6 : false);
       toggle.onChange(async (value) => {
@@ -37799,7 +37813,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_video")).setDesc(this.plugin.i18n.t("settings.sync_video_desc")).addToggle((toggle) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_video")).setDesc(this.plugin.i18n.t("settings.sync_video_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncVideo) != null ? _a6 : false);
       toggle.onChange(async (value) => {
@@ -37808,7 +37822,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_pdf")).setDesc(this.plugin.i18n.t("settings.sync_pdf_desc")).addToggle((toggle) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_pdf")).setDesc(this.plugin.i18n.t("settings.sync_pdf_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncPdf) != null ? _a6 : false);
       toggle.onChange(async (value) => {
@@ -37817,7 +37831,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_themes")).setDesc(this.plugin.i18n.t("settings.sync_themes_desc")).addToggle((toggle) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_themes")).setDesc(this.plugin.i18n.t("settings.sync_themes_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncThemes) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37826,7 +37840,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_snippets")).setDesc(this.plugin.i18n.t("settings.sync_snippets_desc")).addToggle((toggle) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_snippets")).setDesc(this.plugin.i18n.t("settings.sync_snippets_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncSnippets) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37835,7 +37849,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_plugins")).setDesc(this.plugin.i18n.t("settings.sync_plugins_desc")).addToggle((toggle) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_plugins")).setDesc(this.plugin.i18n.t("settings.sync_plugins_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncPlugins) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37863,18 +37877,18 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       }
     };
     const createPatternRow = (pattern = "") => {
-      const setting = new import_obsidian8.Setting(patternsListContainer).setDesc(this.plugin.i18n.t("settings.ignore_patterns_custom_rule")).addText((text) => {
+      const setting = new import_obsidian9.Setting(patternsListContainer).setDesc(this.plugin.i18n.t("settings.ignore_patterns_custom_rule")).addText((text) => {
         text.setPlaceholder(this.plugin.i18n.t("settings.ignore_patterns_placeholder"));
         text.setValue(pattern);
         text.onChange(() => savePatterns());
       }).addExtraButton((button) => {
         button.setIcon("trash-2").setTooltip(this.plugin.i18n.t("settings.ignore_patterns_delete")).onClick(() => {
           setting.settingEl.remove();
-          savePatterns();
+          void savePatterns();
         });
       });
     };
-    new import_obsidian8.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.ignore_patterns")).setDesc(this.plugin.i18n.t("settings.ignore_patterns_desc")).addButton((button) => {
+    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.ignore_patterns")).setDesc(this.plugin.i18n.t("settings.ignore_patterns_desc")).addButton((button) => {
       button.setButtonText(this.plugin.i18n.t("settings.ignore_patterns_add")).onClick(() => {
         createPatternRow("");
       });
@@ -37937,10 +37951,10 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
    */
   renderDangerZone(containerEl) {
     const dangerZone = containerEl.createDiv("friday-danger-zone");
-    new import_obsidian8.Setting(dangerZone).setName(this.plugin.i18n.t("settings.danger_zone")).setHeading().settingEl.addClass("friday-danger-zone-title");
+    new import_obsidian9.Setting(dangerZone).setName(this.plugin.i18n.t("settings.danger_zone")).setHeading().settingEl.addClass("friday-danger-zone-title");
     let resetInput = "";
     let resetButton;
-    new import_obsidian8.Setting(dangerZone).setName(this.plugin.i18n.t("settings.reset_sync_title")).setDesc(this.plugin.i18n.t("settings.reset_sync_message")).addText((text) => {
+    new import_obsidian9.Setting(dangerZone).setName(this.plugin.i18n.t("settings.reset_sync_title")).setDesc(this.plugin.i18n.t("settings.reset_sync_message")).addText((text) => {
       text.inputEl.placeholder = this.plugin.i18n.t("settings.reset_input_placeholder");
       text.onChange((value) => {
         resetInput = value;
@@ -37952,17 +37966,19 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setWarning();
       resetButton = button.buttonEl;
       resetButton.disabled = true;
-      resetButton.addEventListener("click", async () => {
-        if (resetInput === "RESET" && !resetButton.disabled) {
-          resetButton.disabled = true;
-          resetButton.textContent = this.plugin.i18n.t("settings.sync_resetting");
-          try {
-            await this.performReset();
-          } catch (error) {
-            resetButton.disabled = false;
-            resetButton.textContent = this.plugin.i18n.t("settings.reset_sync_button");
+      resetButton.addEventListener("click", () => {
+        void (async () => {
+          if (resetInput === "RESET" && !resetButton.disabled) {
+            resetButton.disabled = true;
+            resetButton.textContent = this.plugin.i18n.t("settings.sync_resetting");
+            try {
+              await this.performReset();
+            } catch (error) {
+              resetButton.disabled = false;
+              resetButton.textContent = this.plugin.i18n.t("settings.reset_sync_button");
+            }
           }
-        }
+        })();
       });
     });
   }
@@ -37993,11 +38009,11 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
       await this.plugin.saveSettings();
       await this.plugin.initializeSyncService();
       this.firstTimeSync = true;
-      new import_obsidian8.Notice(this.plugin.i18n.t("settings.reset_sync_success"));
+      new import_obsidian9.Notice(this.plugin.i18n.t("settings.reset_sync_success"));
       this.display();
     } catch (error) {
       console.error("Reset failed:", error);
-      new import_obsidian8.Notice(this.plugin.i18n.t("settings.reset_sync_failed", {
+      new import_obsidian9.Notice(this.plugin.i18n.t("settings.reset_sync_failed", {
         error: error instanceof Error ? error.message : String(error)
       }));
     }
@@ -38089,7 +38105,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian8.PluginSettingTab {
 };
 
 // src/http.ts
-var import_obsidian9 = require("obsidian");
+var import_obsidian10 = require("obsidian");
 var http = __toESM(require("http"), 1);
 var https = __toESM(require("https"), 1);
 var ObsidianIdentityHttpClient = class {
@@ -38097,7 +38113,7 @@ var ObsidianIdentityHttpClient = class {
    * POST JSON data
    */
   async post(url, data, headers) {
-    const response = await (0, import_obsidian9.requestUrl)({
+    const response = await (0, import_obsidian10.requestUrl)({
       url,
       method: "POST",
       headers: {
@@ -38122,7 +38138,7 @@ var ObsidianIdentityHttpClient = class {
    */
   async postForm(url, data) {
     const formBody = Object.entries(data).map(([key2, value]) => `${encodeURIComponent(key2)}=${encodeURIComponent(value)}`).join("&");
-    const response = await (0, import_obsidian9.requestUrl)({
+    const response = await (0, import_obsidian10.requestUrl)({
       url,
       method: "POST",
       headers: {
@@ -38151,7 +38167,7 @@ var ObsidianIdentityHttpClient = class {
     }
     const boundary = "----WebKitFormBoundary" + Math.random().toString(36).substring(2, 9);
     const arrayBufferBody = await this.formDataToArrayBufferFromFormData(formData, boundary);
-    const response = await (0, import_obsidian9.requestUrl)({
+    const response = await (0, import_obsidian10.requestUrl)({
       url,
       method: "POST",
       headers: {
@@ -38173,7 +38189,7 @@ var ObsidianIdentityHttpClient = class {
     if (headers) {
       request.headers = headers;
     }
-    const response = await (0, import_obsidian9.requestUrl)(request);
+    const response = await (0, import_obsidian10.requestUrl)(request);
     return this.adaptResponse(response);
   }
   /**
@@ -38756,7 +38772,7 @@ function GetBaseUrl(settings) {
   }
   return API_URL_PRO;
 }
-var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
+var MdfridaySyncPlugin = class extends import_obsidian14.Plugin {
   constructor() {
     super(...arguments);
     this.syncStatusDisplay = null;
@@ -38765,9 +38781,9 @@ var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
     this.pluginDir = `${this.manifest.dir}`;
     await this.loadSettings();
     await this.initCore();
-    if (import_obsidian13.Platform.isDesktop) {
+    if (import_obsidian14.Platform.isDesktop) {
       const adapter = this.app.vault.adapter;
-      if (adapter instanceof import_obsidian13.FileSystemAdapter) {
+      if (adapter instanceof import_obsidian14.FileSystemAdapter) {
         const basePath = adapter.getBasePath();
         this.vaultBasePath = basePath;
         this.absWorkspacePath = nodePath2.join(basePath, this.pluginDir, "workspace");
@@ -38776,7 +38792,7 @@ var MdfridaySyncPlugin = class extends import_obsidian13.Plugin {
     } else {
       this.absWorkspacePath = joinVaultPath(this.pluginDir, "workspace");
       const adapter = this.app.vault.adapter;
-      if (adapter instanceof import_obsidian13.FileSystemAdapter) {
+      if (adapter instanceof import_obsidian14.FileSystemAdapter) {
         this.vaultBasePath = adapter.getBasePath();
       }
       await this.initMobileFeatures();

@@ -144,7 +144,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 			// Make plan badge clickable to refresh license info
 			planBadge.title = this.plugin.i18n.t('settings.click_to_refresh_license_info') || 'Click to refresh license info';
 			
-			planBadge.addEventListener('click', async () => {
+			planBadge.addEventListener('click', () => { void (async () => {
 				// Check 5 second cooldown
 				const now = Date.now();
 				if (this.isRefreshingLicenseInfo || (now - this.lastLicenseInfoRefresh < 5000)) {
@@ -189,7 +189,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 				} finally {
 					this.isRefreshingLicenseInfo = false;
 				}
-			});
+			})(); });
 
 			// Add "Pricing Details" button next to the Plan Badge (only for Free plan)
 			if (licenseInfo.plan.toLowerCase() === 'free') {
@@ -437,7 +437,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 		syncContentContainer.style.display = this.plugin.settings.syncUserEnabled ? 'block' : 'none';
 		
 		// Handle toggle change
-		syncToggle.addEventListener('change', async () => {
+		syncToggle.addEventListener('change', () => { void (async () => {
 			const enabled = syncToggle.checked;
 			this.plugin.settings.syncUserEnabled = enabled;
 			this.plugin.settings.syncEnabled = enabled;
@@ -471,10 +471,10 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 				} catch (error) {
 					console.error('Failed to close sync service:', error);
 				}
-			}
-		});
-		
-		// If sync is not enabled, show a message and return
+                        }
+                })(); });
+
+                // If sync is not enabled, show a message and return
 		if (!this.plugin.settings.syncUserEnabled) {
 			const enableMessage = syncContentContainer.createDiv('friday-sync-enable-message');
 			enableMessage.createEl('p', {
@@ -784,7 +784,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 						.setTooltip(this.plugin.i18n.t('settings.ignore_patterns_delete'))
 						.onClick(() => {
 							setting.settingEl.remove();
-							savePatterns();
+							void savePatterns();
 						});
 				});
 		};
@@ -912,7 +912,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 				resetButton.disabled = true;
 				
 				// Add click handler directly to the button element
-				resetButton.addEventListener('click', async () => {
+				resetButton.addEventListener('click', () => { void (async () => {
 					if (resetInput === 'RESET' && !resetButton.disabled) {
 						resetButton.disabled = true;
 						resetButton.textContent = this.plugin.i18n.t('settings.sync_resetting');
@@ -923,7 +923,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 							resetButton.textContent = this.plugin.i18n.t('settings.reset_sync_button');
 						}
 					}
-				});
+				})(); });
 			});
 	}
 

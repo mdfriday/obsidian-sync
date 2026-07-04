@@ -42,7 +42,7 @@ export class LiveSyncManagers {
         if (options.networkManager) {
             this.networkManager = options.networkManager;
         } else {
-            if ("navigator" in globalThis) {
+            if ("navigator" in window) {
                 this.networkManager = new NetworkManagerBrowser();
             } else {
                 throw new LiveSyncError("No NetworkManager available");

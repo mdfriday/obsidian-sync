@@ -56,7 +56,7 @@ export class FridayOfflineTracker {
 
         if (wasOffline && !offline) {
             // Just came online - persist changes before sync
-            this.persistChanges();
+            void this.persistChanges();
             Logger(`Came online with ${this.pendingChanges.size} pending changes`, LOG_LEVEL_INFO);
         }
 
@@ -81,7 +81,7 @@ export class FridayOfflineTracker {
         Logger(`Tracked offline change: ${type} ${path}`, LOG_LEVEL_VERBOSE);
 
         // Persist immediately for safety
-        this.persistChanges();
+        void this.persistChanges();
     }
 
     /**

@@ -4,7 +4,7 @@
  * Implements the minimum required services for CouchDB synchronization
  */
 
-import { Platform, TFile, TFolder } from "obsidian";
+import { Platform, TFile, TFolder, requestUrl } from "obsidian";
 import { ServiceHub, type ServiceInstances } from "./core/services/ServiceHub";
 import {
     type APIService,
@@ -78,13 +78,19 @@ class FridayAPIService extends ServiceBase implements APIService {
     }
 
     getCustomFetchHandler(): FetchHttpHandler {
-        // Return a basic fetch handler
+        // Return a basic fetch handler that uses Obsidian's requestUrl
         return {
             handle: async (request: any) => {
-                const response = await fetch(request.url, {
+                const result = await requestUrl({
+                    url: request.url,
                     method: request.method,
-                    headers: request.headers,
+                    headers: request.headers as Record<string, string>,
                     body: request.body,
+                });
+                // Wrap requestUrl result as a Fetch-API-compatible Response
+                const response = new Response(result.arrayBuffer, {
+                    status: result.status,
+                    headers: result.headers,
                 });
                 return { response };
             },
@@ -568,13 +574,11 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
         // Store parent folder reference before deletion
         const dir = file.parent;
         
-        // Delete the file/folder
-        if (settings.trashInsteadDelete) {
-            await vault.trash(file, false);
-        } else {
-            await vault.delete(file);
-        }
-        
+        const fileManager = this.core.app.fileManager;
+
+        // Delete the file/folder using FileManager to respect the user's deletion preference
+        await fileManager.trashFile(file);
+
         Logger(`xxx <- STORAGE (deleted) ${file.path}`, LOG_LEVEL_VERBOSE);
         
         // Check if parent folder is now empty
@@ -633,7 +637,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
         if (queuedCount > 0 && this.core.onFileProgress) {
             // 取消之前的完成定时器（因为有新任务到达）
             if (this.completeTimer) {
-                clearTimeout(this.completeTimer);
+                window.clearTimeout(this.completeTimer);
                 this.completeTimer = undefined;
             }
             
@@ -650,7 +654,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
 
         // Start processing queue if not already processing
         if (!this.isProcessing) {
-            this.processQueue();
+            void this.processQueue();
         }
     }
     
@@ -703,7 +707,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
     private scheduleComplete(): void {
         // 清除之前的定时器
         if (this.completeTimer) {
-            clearTimeout(this.completeTimer);
+            window.clearTimeout(this.completeTimer);
         }
         
         // 设置新的定时器：2秒后发送完成事件
@@ -952,28 +956,31 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
                         headers.append("Authorization", `Basic ${credentials}`);
                     }
                     
-                    // 🔧 Add timeout for HTTP requests
-                    // ChunkFetcher batches requests (100 chunks per batch)
-                    // Each batch should complete within this timeout
+                    // 🔧 Add timeout for HTTP requests via Promise.race
                     const DEFAULT_HTTP_TIMEOUT = 30000; // 30 seconds per batch
-                    const controller = new AbortController();
-                    const timeoutId = window.setTimeout(() => controller.abort(), DEFAULT_HTTP_TIMEOUT);
-                    
+                    const timeoutPromise = new Promise<never>((_, reject) =>
+                        window.setTimeout(() => reject(new Error(`Request timeout after ${DEFAULT_HTTP_TIMEOUT}ms`)), DEFAULT_HTTP_TIMEOUT)
+                    );
+
                     try {
-                        const response = await fetch(url, { 
-                            ...opts, 
-                            headers,
-                            signal: controller.signal 
+                        const headersRecord: Record<string, string> = {};
+                        headers.forEach((value, key) => { headersRecord[key] = value; });
+                        const result = await Promise.race([
+                            requestUrl({
+                                url: typeof url === 'string' ? url : url.url,
+                                method: (opts.method as string) || "GET",
+                                headers: headersRecord,
+                                body: opts.body as string | ArrayBuffer | undefined,
+                            }),
+                            timeoutPromise,
+                        ]);
+                        // Wrap requestUrl result as Fetch-API-compatible Response for PouchDB
+                        return new Response(result.arrayBuffer, {
+                            status: result.status,
+                            headers: result.headers,
                         });
-                        clearTimeout(timeoutId);
-                        return response;
                     } catch (ex: any) {
-                        clearTimeout(timeoutId);
-                        if (ex.name === 'AbortError') {
-                            console.error("[Friday Sync] Request timeout after", DEFAULT_HTTP_TIMEOUT, "ms:", url);
-                            throw new Error(`Request timeout after ${DEFAULT_HTTP_TIMEOUT}ms`);
-                        }
-                        console.error("[Friday Sync] Fetch error:", ex);
+                        console.error("[Friday Sync] Request error:", ex);
                         throw ex;
                     }
                 },

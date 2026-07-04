@@ -56,7 +56,7 @@ function withTimeout<T>(proc: Promise<T>, timeout: number, onTimedOut: () => T):
         proc.then(resolve)
             .catch(reject)
             .finally(() => {
-                clearTimeout(timer);
+                window.clearTimeout(timer);
             });
     });
 }

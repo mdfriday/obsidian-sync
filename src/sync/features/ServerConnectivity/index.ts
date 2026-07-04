@@ -1,3 +1,4 @@
+import { requestUrl } from 'obsidian';
 /**
  * ServerConnectivityChecker - Lightweight server connectivity checking
  * 
@@ -120,20 +121,18 @@ export class ServerConnectivityChecker {
                 return { ok: false, error: "No server URI configured" };
             }
 
-            const controller = new AbortController();
-            const timeoutId = window.setTimeout(() => controller.abort(), 10000); // 10s timeout
+            const timeoutPromise = new Promise<never>((_, reject) =>
+                window.setTimeout(() => reject(new Error('Server connectivity check timed out')), 10000)
+            );
+            const response = await Promise.race([
+                requestUrl({ url: uri, method: "GET", headers: this.getAuthHeaders(setting) as Record<string, string> }),
+                timeoutPromise,
+            ]);
 
-            const response = await fetch(uri, {
-                method: "GET",
-                signal: controller.signal,
-                headers: this.getAuthHeaders(setting),
-            });
-
-            clearTimeout(timeoutId);
 
             // Server is reachable if we get any response (even auth errors)
             // 401/403 means server is there but auth failed - still "reachable"
-            if (response.ok || response.status === 401 || response.status === 403) {
+            if (response.status < 400 || response.status === 401 || response.status === 403) {
                 return { ok: true };
             } else if (response.status === 404) {
                 // 404 could mean database doesn't exist but server is up

@@ -39,7 +39,7 @@ export class Menu {
     }
     waitingForClose?: PromiseWithResolvers<void>;
     showAtPosition(pos: { x: number; y: number }) {
-        const el = document.createElement("div");
+        const el = activeDocument.createElement("div");
         if (this.waitingForClose) {
             this.waitingForClose.resolve();
         }
@@ -56,7 +56,7 @@ export class Menu {
                 y: pos.y,
             },
         });
-        document.body.appendChild(el);
+        activeDocument.body.appendChild(el);
         void this.waitingForClose.promise.finally(() => {
             el.remove();
         });

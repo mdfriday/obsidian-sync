@@ -252,18 +252,18 @@ export class FridayStorageEventManager {
         this.watchVaultDelete = this.watchVaultDelete.bind(this);
         this.watchVaultRename = this.watchVaultRename.bind(this);
         
-        // Register vault events
+        // Register vault events (arrow wrappers ensure correct `this` binding)
         this.plugin.registerEvent(
-            this.plugin.app.vault.on("create", this.watchVaultCreate)
+            this.plugin.app.vault.on("create", (f) => this.watchVaultCreate(f))
         );
         this.plugin.registerEvent(
-            this.plugin.app.vault.on("modify", this.watchVaultChange)
+            this.plugin.app.vault.on("modify", (f) => this.watchVaultChange(f))
         );
         this.plugin.registerEvent(
-            this.plugin.app.vault.on("delete", this.watchVaultDelete)
+            this.plugin.app.vault.on("delete", (f) => this.watchVaultDelete(f))
         );
         this.plugin.registerEvent(
-            this.plugin.app.vault.on("rename", this.watchVaultRename)
+            this.plugin.app.vault.on("rename", (f, old) => this.watchVaultRename(f, old))
         );
         
         // Register raw event for hidden file sync (.obsidian files)
@@ -295,7 +295,7 @@ export class FridayStorageEventManager {
         this._isWatching = false;
         // Clear any pending debounce timers
         for (const timer of this.debounceTimers.values()) {
-            clearTimeout(timer);
+            window.clearTimeout(timer);
         }
         this.debounceTimers.clear();
         Logger("Storage event manager stopped", LOG_LEVEL_VERBOSE);
@@ -347,6 +347,7 @@ export class FridayStorageEventManager {
         }
         
         if (file instanceof TFolder) return;
+        if (!(file instanceof TFile)) return;
         if (this.isFileProcessing(file.path)) {
             Logger(`File create skipped (being processed): ${file.path}`, LOG_LEVEL_VERBOSE);
             return;
@@ -355,9 +356,9 @@ export class FridayStorageEventManager {
         this.enqueueEvent({
             type: "CREATE",
             path: file.path as FilePath,
-            file: file as TFile,
-            mtime: (file as TFile).stat.mtime,
-            size: (file as TFile).stat.size,
+            file: file,
+            mtime: file.stat.mtime,
+            size: file.stat.size,
         });
     }
     
@@ -369,6 +370,7 @@ export class FridayStorageEventManager {
         }
         
         if (file instanceof TFolder) return;
+        if (!(file instanceof TFile)) return;
         if (this.isFileProcessing(file.path)) {
             Logger(`File change skipped (being processed): ${file.path}`, LOG_LEVEL_VERBOSE);
             return;
@@ -378,9 +380,9 @@ export class FridayStorageEventManager {
         this.debouncedEnqueue({
             type: "CHANGED",
             path: file.path as FilePath,
-            file: file as TFile,
-            mtime: (file as TFile).stat.mtime,
-            size: (file as TFile).stat.size,
+            file: file,
+            mtime: file.stat.mtime,
+            size: file.stat.size,
         });
     }
     
@@ -399,7 +401,7 @@ export class FridayStorageEventManager {
         // Cancel any pending debounce for this file
         const existingTimer = this.debounceTimers.get(file.path);
         if (existingTimer) {
-            clearTimeout(existingTimer);
+            window.clearTimeout(existingTimer);
             this.debounceTimers.delete(file.path);
         }
         // Note: LiveSync does NOT call unmarkChanges here
@@ -418,6 +420,7 @@ export class FridayStorageEventManager {
         }
         
         if (file instanceof TFolder) return;
+        if (!(file instanceof TFile)) return;
         // Note: LiveSync does NOT call unmarkChanges here
         // Rename is handled as DELETE old + CREATE new
         this.enqueueEvent({
@@ -427,9 +430,9 @@ export class FridayStorageEventManager {
         this.enqueueEvent({
             type: "CREATE",
             path: file.path as FilePath,
-            file: file as TFile,
-            mtime: (file as TFile).stat.mtime,
-            size: (file as TFile).stat.size,
+            file: file,
+            mtime: file.stat.mtime,
+            size: file.stat.size,
         });
     }
     
@@ -441,7 +444,7 @@ export class FridayStorageEventManager {
         // Clear existing timer for this file
         const existingTimer = this.debounceTimers.get(path);
         if (existingTimer) {
-            clearTimeout(existingTimer);
+            window.clearTimeout(existingTimer);
         }
         
         // Set new timer
@@ -631,13 +634,14 @@ export class FridayStorageEventManager {
 						);
 
 					switch (freshnessResult) {
-						case "EVEN":
+						case "EVEN": {
 							Logger(`File mtimes are equivalent (marked or same), skip: ${path}`, LOG_LEVEL_VERBOSE);
 							// Update mtime cache
 							const cacheKey = `${event.type}-${path}`;
 							this.lastProcessedMtime.set(cacheKey, file.stat.mtime);
-							return true;
-						case "BASE_IS_NEW":
+                                                        return true;
+                                                }
+                                                case "BASE_IS_NEW":
 						case "TARGET_IS_NEW":
 							shouldUpdate = true;
 							break;

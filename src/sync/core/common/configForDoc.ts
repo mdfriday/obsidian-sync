@@ -190,7 +190,7 @@ export function checkUnsuitableValues(
         rules: {},
     };
     for (const key in regulation.rules) {
-        if (!regulation.rules.hasOwnProperty(key)) continue;
+        if (!Object.prototype.hasOwnProperty.call(regulation.rules, key)) continue;
         const rule = regulation.rules[key as keyof OriginalSettings];
         if (!rule) continue;
 

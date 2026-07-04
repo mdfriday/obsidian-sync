@@ -24,7 +24,7 @@ export const _requestToCouchDBFetch = async (
     method?: string
 ) => {
     const utf8str = String.fromCharCode.apply(null, [...writeString(`${username}:${password}`)]);
-    const encoded = globalThis.btoa(utf8str);
+    const encoded = window.btoa(utf8str);
     const authHeader = "Basic " + encoded;
     const transformedHeaders: Record<string, string> = {
         authorization: authHeader,

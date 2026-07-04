@@ -291,7 +291,7 @@ export class LicenseStateManager {
 	 * Get sync configuration
 	 * Returns sync config from authStatus if available
 	 */
-	getSyncConfig(): any | null {
+	getSyncConfig(): import('../foundry/types').ObsidianSyncConfig | null {
 		if (!this.authStatus?.hasSyncConfig || !this.authStatus?.syncConfig) {
 			return null;
 		}

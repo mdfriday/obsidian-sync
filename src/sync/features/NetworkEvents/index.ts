@@ -3,7 +3,7 @@
  * 
  * Registers and handles browser network events:
  * - window.online / window.offline
- * - document.visibilitychange
+ * - activeDocument.visibilitychange
  * - window.focus / window.blur
  * 
  * Source: livesync ModuleObsidianEvents.ts lines 77-141
@@ -50,7 +50,7 @@ export class FridayNetworkEvents {
         // Register DOM events through Obsidian's event system for proper cleanup
         this.plugin.registerDomEvent(window, "online", this.boundHandlers.online);
         this.plugin.registerDomEvent(window, "offline", this.boundHandlers.offline);
-        this.plugin.registerDomEvent(document, "visibilitychange", this.boundHandlers.visibilityChange);
+        this.plugin.registerDomEvent(activeDocument, "visibilitychange", this.boundHandlers.visibilityChange);
         this.plugin.registerDomEvent(window, "focus", this.boundHandlers.focus);
         this.plugin.registerDomEvent(window, "blur", this.boundHandlers.blur);
 
@@ -119,7 +119,7 @@ export class FridayNetworkEvents {
             return;
         }
 
-        const isHidden = document.hidden;
+        const isHidden = activeDocument.hidden;
         if (this.isLastHidden === isHidden) {
             return;
         }

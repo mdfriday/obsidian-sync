@@ -15,7 +15,7 @@ function displayMessageBox<T, U extends string[]>(
     title: string,
     commit: (ret: U[number]) => T
 ): Promise<T> {
-    const el = document.createElement("div");
+    const el = activeDocument.createElement("div");
     const p = promiseWithResolver<T>();
     mount(MessageBox, {
         target: el,
@@ -29,7 +29,7 @@ function displayMessageBox<T, U extends string[]>(
             },
         },
     });
-    document.body.appendChild(el);
+    activeDocument.body.appendChild(el);
     void p.promise.finally(() => {
         el.remove();
     });
@@ -41,7 +41,7 @@ function promptForInput(
     placeholder: string,
     isPassword?: boolean
 ): Promise<string | false> {
-    const el = document.createElement("div");
+    const el = activeDocument.createElement("div");
     const p = promiseWithResolver<string | false>();
     mount(TextInputBox, {
         target: el,
@@ -55,7 +55,7 @@ function promptForInput(
             },
         },
     });
-    document.body.appendChild(el);
+    activeDocument.body.appendChild(el);
     void p.promise.finally(() => {
         el.remove();
     });

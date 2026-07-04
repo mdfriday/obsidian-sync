@@ -5,7 +5,7 @@
  * to enable full CouchDB synchronization functionality.
  */
 
-import {Plugin} from "obsidian";
+import {Plugin, requestUrl} from "obsidian";
 import {reactiveSource, type ReactiveSource} from "octagonal-wheels/dataobject/reactive";
 
 // Import file progress types
@@ -489,7 +489,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
     private setupStatusMonitoring() {
         // Monitor replicationStat changes by polling
         // This helps debug LiveSync status issues (verbose level - console only)
-        setInterval(() => {
+        window.setInterval(() => {
             const currentStatus = this.replicationStat.value.syncStatus;
             if (currentStatus !== this._lastLoggedStatus) {
                 // Use VERBOSE level - only shows in console, not in UI
@@ -2141,7 +2141,8 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
             
             const credentials = btoa(`${this._settings.couchDB_USER}:${this._settings.couchDB_PASSWORD}`);
             
-            const response = await fetch(dbUrl, {
+            const response = await requestUrl({
+                url: dbUrl,
                 method: "GET",
                 headers: {
                     "Authorization": `Basic ${credentials}`,
@@ -2149,16 +2150,16 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 },
             });
 
-            if (response.ok) {
-                const data = await response.json();
+            if (response.status >= 200 && response.status < 300) {
+                const data = response.json as Record<string, unknown>;
                 return { 
                     success: true, 
-                    message: `Connected to ${data.db_name}, docs: ${data.doc_count}` 
+                    message: `Connected to ${data["db_name"]}, docs: ${data["doc_count"]}` 
                 };
             } else if (response.status === 404) {
                 return { success: false, message: "Database not found. Please create it first." };
             } else {
-                return { success: false, message: `Connection failed: ${response.statusText}` };
+                return { success: false, message: `Connection failed: HTTP ${response.status}` };
             }
         } catch (error) {
             return { success: false, message: `Connection error: ${error}` };

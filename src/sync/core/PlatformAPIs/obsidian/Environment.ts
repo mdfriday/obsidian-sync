@@ -9,8 +9,8 @@ export function getWebCrypto() {
     if (webcrypto) {
         return Promise.resolve(webcrypto);
     }
-    if (globalThis.crypto) {
-        webcrypto = globalThis.crypto;
+    if (window.crypto) {
+        webcrypto = window.crypto;
         return Promise.resolve(webcrypto);
     } else {
         throw new Error("WebCrypto not available");

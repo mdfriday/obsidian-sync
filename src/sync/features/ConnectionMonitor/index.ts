@@ -13,8 +13,8 @@ import type { FridaySyncCore } from "../../FridaySyncCore";
 
 export class FridayConnectionMonitor {
     private core: FridaySyncCore;
-    private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
-    private healthCheckTimer: ReturnType<typeof setInterval> | null = null;
+    private reconnectTimer: number | null = null;
+    private healthCheckTimer: number | null = null;
     private isMonitoring: boolean = false;
     private healthCheckInterval: number = 60000; // 1 minute
     private _pausedForManualOperation: boolean = false;
@@ -31,8 +31,8 @@ export class FridayConnectionMonitor {
         this.isMonitoring = true;
 
         // Periodic health check
-        this.healthCheckTimer = setInterval(() => {
-            this.performHealthCheck();
+        this.healthCheckTimer = window.setInterval(() => {
+            void this.performHealthCheck();
         }, this.healthCheckInterval);
 
         Logger("Connection monitoring started", LOG_LEVEL_VERBOSE);
@@ -46,7 +46,7 @@ export class FridayConnectionMonitor {
         this.cancelReconnect();
 
         if (this.healthCheckTimer) {
-            clearInterval(this.healthCheckTimer);
+            window.clearInterval(this.healthCheckTimer);
             this.healthCheckTimer = null;
         }
 
@@ -90,7 +90,7 @@ export class FridayConnectionMonitor {
      */
     cancelReconnect(): void {
         if (this.reconnectTimer) {
-            clearTimeout(this.reconnectTimer);
+            window.clearTimeout(this.reconnectTimer);
             this.reconnectTimer = null;
         }
     }

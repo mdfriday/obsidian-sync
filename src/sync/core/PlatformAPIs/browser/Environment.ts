@@ -8,8 +8,8 @@ export async function getWebCrypto() {
     if (webcrypto) {
         return webcrypto;
     }
-    if (globalThis.crypto) {
-        webcrypto = globalThis.crypto;
+    if (window.crypto) {
+        webcrypto = window.crypto;
         return webcrypto;
     } else {
         const module = await import("node:crypto");

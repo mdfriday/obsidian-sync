@@ -3,12 +3,9 @@ export async function getWebCrypto() {
     if (webcrypto) {
         return webcrypto;
     }
-    if (globalThis.crypto) {
-        webcrypto = globalThis.crypto;
-        return webcrypto;
-    } else {
-        const module = await import("crypto");
-        webcrypto = module.webcrypto as Crypto;
+    if (window.crypto) {
+        webcrypto = window.crypto;
         return webcrypto;
     }
+    throw new Error("Web Crypto API is not available in this environment");
 }
