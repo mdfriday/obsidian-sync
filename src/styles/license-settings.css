@@ -1,24 +1,24 @@
 /* License Settings Styles - Obsidian Native Design */
 
-/* Section Title Styling - Make section headers more prominent */
-/* Applied to Setting.settingEl via .addClass('friday-section-title') */
-.friday-section-title {
-    margin-top: 40px !important;
-    margin-bottom: 20px !important;
-    padding-bottom: 12px !important;
-    border-bottom: 2px solid var(--background-modifier-border) !important;
+/* Section Title Styling - Applied to Setting.settingEl (.setting-item-heading) via .addClass('friday-section-title') */
+/* Use compound selector for higher specificity instead of !important */
+.setting-item-heading.friday-section-title {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--background-modifier-border);
 }
 
-.friday-section-title .setting-item-name {
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    color: var(--text-normal) !important;
-    letter-spacing: 0.02em !important;
+.setting-item-heading.friday-section-title .setting-item-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-normal);
+    letter-spacing: 0.02em;
 }
 
 /* First section title should have no top margin */
-.friday-section-title:first-child {
-    margin-top: 0 !important;
+.setting-item-heading.friday-section-title:first-child {
+    margin-top: 0;
 }
 
 /* Full-width text input */
@@ -87,35 +87,35 @@
 .friday-plan-badge.free {
     background: linear-gradient(135deg, #9CA3AF, #6B7280);
     color: white;
-    padding-top: 6px !important;
+
 }
 
 /* Starter Plan - Blue (入门版) */
 .friday-plan-badge.starter {
     background: linear-gradient(135deg, #3B82F6, #2563EB);
     color: white;
-    padding-top: 6px !important;
+
 }
 
 /* Enjoy Plan - Cyan/Teal (享受版 - 轻松愉快) */
 .friday-plan-badge.enjoy {
     background: linear-gradient(135deg, #06B6D4, #0891B2);
     color: white;
-    padding-top: 6px !important;
+
 }
 
 /* Creator Plan - Purple/Pink (创作者版 - 创意艺术) */
 .friday-plan-badge.creator {
     background: linear-gradient(135deg, #EC4899, #D946EF);
     color: white;
-    padding-top: 6px !important;
+
 }
 
 /* Pro Plan - Gold (专业版 - 金色尊贵) */
 .friday-plan-badge.pro {
     background: linear-gradient(135deg, #FFD700, #FFA500);
     color: #1a1a1a;
-    padding-top: 6px !important;
+
 }
 
 /* Enterprise Plan - Black Gold (企业版 - 黑金高端) */
@@ -123,7 +123,7 @@
     background: linear-gradient(135deg, #1F2937, #374151);
     color: #FFD700;
     border: 1px solid #FFD700;
-    padding-top: 6px !important;
+
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
@@ -131,7 +131,7 @@
 .friday-plan-badge.team {
     background: linear-gradient(135deg, #9333EA, #7C3AED);
     color: white;
-    padding-top: 6px !important;
+
 }
 
 /* Device Count */
@@ -262,6 +262,7 @@
 }
 
 /* Premium Pricing Button with Rainbow Gradient Border */
+/* Uses background-clip technique instead of CSS masks for broader compatibility */
 .friday-premium-btn {
     position: relative;
     display: inline-flex;
@@ -271,45 +272,21 @@
     border-radius: 10px;
     font-size: 13px;
     font-weight: 500;
-    background: var(--background-primary);
     color: var(--text-normal);
     border: 2px solid transparent;
-    background-clip: padding-box;
+    background:
+        linear-gradient(var(--background-primary), var(--background-primary)) padding-box,
+        linear-gradient(120deg, #ff6a6a, #ffb86c, #f1fa8c, #50fa7b, #8be9fd, #bd93f9) border-box;
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: 32px;
     margin-left: 8px;
-    z-index: 0;
-}
-
-.friday-premium-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 10px;
-    padding: 2px;
-    background: linear-gradient(
-        120deg,
-        #ff6a6a,
-        #ffb86c,
-        #f1fa8c,
-        #50fa7b,
-        #8be9fd,
-        #bd93f9
-    );
-    mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-    z-index: -1;
 }
 
 .friday-premium-btn:hover {
-    background: var(--background-modifier-hover);
+    background:
+        linear-gradient(var(--background-modifier-hover), var(--background-modifier-hover)) padding-box,
+        linear-gradient(120deg, #ff6a6a, #ffb86c, #f1fa8c, #50fa7b, #8be9fd, #bd93f9) border-box;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
     transform: translateY(-1px);
 }
@@ -330,20 +307,20 @@
     border-bottom: 2px solid var(--background-modifier-border);
 }
 
-.friday-sync-header-container .friday-section-title {
-    border-bottom: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+.friday-sync-header-container .setting-item-heading.friday-section-title {
+    border-bottom: none;
+    margin: 0;
+    padding: 0;
     flex: 1;
-    background: transparent !important;
+    background: transparent;
 }
 
-.friday-sync-header-container .friday-section-title .setting-item-name {
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    color: var(--text-normal) !important;
-    letter-spacing: 0.02em !important;
-    margin: 0 0 0 16px !important;
+.friday-sync-header-container .setting-item-heading.friday-section-title .setting-item-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-normal);
+    letter-spacing: 0.02em;
+    margin: 0 0 0 16px;
 }
 
 .friday-sync-toggle-container {

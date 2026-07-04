@@ -1,18 +1,18 @@
 /* src/styles/license-settings.css */
-.friday-section-title {
-  margin-top: 40px !important;
-  margin-bottom: 20px !important;
-  padding-bottom: 12px !important;
-  border-bottom: 2px solid var(--background-modifier-border) !important;
+.setting-item-heading.friday-section-title {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--background-modifier-border);
 }
-.friday-section-title .setting-item-name {
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  color: var(--text-normal) !important;
-  letter-spacing: 0.02em !important;
+.setting-item-heading.friday-section-title .setting-item-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-normal);
+  letter-spacing: 0.02em;
 }
-.friday-section-title:first-child {
-  margin-top: 0 !important;
+.setting-item-heading.friday-section-title:first-child {
+  margin-top: 0;
 }
 .friday-input-full-width {
   width: 100%;
@@ -67,7 +67,6 @@
       #9CA3AF,
       #6B7280);
   color: white;
-  padding-top: 6px !important;
 }
 .friday-plan-badge.starter {
   background:
@@ -76,7 +75,6 @@
       #3B82F6,
       #2563EB);
   color: white;
-  padding-top: 6px !important;
 }
 .friday-plan-badge.enjoy {
   background:
@@ -85,7 +83,6 @@
       #06B6D4,
       #0891B2);
   color: white;
-  padding-top: 6px !important;
 }
 .friday-plan-badge.creator {
   background:
@@ -94,7 +91,6 @@
       #EC4899,
       #D946EF);
   color: white;
-  padding-top: 6px !important;
 }
 .friday-plan-badge.pro {
   background:
@@ -103,7 +99,6 @@
       #FFD700,
       #FFA500);
   color: #1a1a1a;
-  padding-top: 6px !important;
 }
 .friday-plan-badge.enterprise {
   background:
@@ -113,7 +108,6 @@
       #374151);
   color: #FFD700;
   border: 1px solid #FFD700;
-  padding-top: 6px !important;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 .friday-plan-badge.team {
@@ -123,7 +117,6 @@
       #9333EA,
       #7C3AED);
   color: white;
-  padding-top: 6px !important;
 }
 .friday-device-count {
   font-size: 14px;
@@ -236,23 +229,10 @@
   border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
-  background: var(--background-primary);
   color: var(--text-normal);
   border: 2px solid transparent;
-  background-clip: padding-box;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 32px;
-  margin-left: 8px;
-  z-index: 0;
-}
-.friday-premium-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
-  padding: 2px;
   background:
+    linear-gradient(var(--background-primary), var(--background-primary)) padding-box,
     linear-gradient(
       120deg,
       #ff6a6a,
@@ -260,15 +240,23 @@
       #f1fa8c,
       #50fa7b,
       #8be9fd,
-      #bd93f9);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask-composite: xor;
-  z-index: -1;
+      #bd93f9) border-box;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 32px;
+  margin-left: 8px;
 }
 .friday-premium-btn:hover {
-  background: var(--background-modifier-hover);
+  background:
+    linear-gradient(var(--background-modifier-hover), var(--background-modifier-hover)) padding-box,
+    linear-gradient(
+      120deg,
+      #ff6a6a,
+      #ffb86c,
+      #f1fa8c,
+      #50fa7b,
+      #8be9fd,
+      #bd93f9) border-box;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
 }
@@ -285,19 +273,19 @@
   padding-bottom: 12px;
   border-bottom: 2px solid var(--background-modifier-border);
 }
-.friday-sync-header-container .friday-section-title {
-  border-bottom: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
+.friday-sync-header-container .setting-item-heading.friday-section-title {
+  border-bottom: none;
+  margin: 0;
+  padding: 0;
   flex: 1;
-  background: transparent !important;
+  background: transparent;
 }
-.friday-sync-header-container .friday-section-title .setting-item-name {
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  color: var(--text-normal) !important;
-  letter-spacing: 0.02em !important;
-  margin: 0 0 0 16px !important;
+.friday-sync-header-container .setting-item-heading.friday-section-title .setting-item-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-normal);
+  letter-spacing: 0.02em;
+  margin: 0 0 0 16px;
 }
 .friday-sync-toggle-container {
   display: flex;
@@ -454,23 +442,25 @@ div.workspace-leaf-content[data-type=bases] .livesync-status {
   margin-left: auto;
   pointer-events: none;
   user-select: none;
-  opacity: 1 !important;
-  -webkit-filter: none !important;
-  filter: none !important;
+}
+.livesync-status div.livesync-status-progressbar {
+  opacity: 1;
+  -webkit-filter: none;
+  filter: none;
 }
 .livesync-status-progressbar.active {
   display: block;
 }
-.livesync-status-progressbar livesync-progressbar-track {
-  opacity: 1 !important;
-  -webkit-filter: none !important;
-  filter: none !important;
+.livesync-status-progressbar .livesync-progressbar-track {
+  opacity: 1;
+  -webkit-filter: none;
+  filter: none;
 }
 .livesync-progressbar-track {
   width: 100%;
   height: 4px;
   background-color: var(--background-modifier-border);
-  opacity: 0.3 !important;
+  opacity: 0.3;
   border-radius: 2px;
   overflow: hidden;
   position: relative;
@@ -483,7 +473,7 @@ div.workspace-leaf-content[data-type=bases] .livesync-status {
   min-width: 0%;
 }
 .livesync-progressbar-fill.indeterminate {
-  width: 30% !important;
+  width: 30%;
   background:
     linear-gradient(
       90deg,
