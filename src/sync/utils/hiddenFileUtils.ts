@@ -4,6 +4,8 @@
  * Ported from livesync/src/common/utils.ts for hidden file synchronization.
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync core; PouchDB/CouchDB internal APIs use untyped values by design */
 import { ICHeader, ICHeaderLength } from "../types";
 import type { FilePath, LoadedEntry, MetaEntry, UXStat } from "../types";
 

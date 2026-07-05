@@ -5,6 +5,8 @@
  * to enable full CouchDB synchronization functionality.
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- LiveSync adapter code; PouchDB\/CouchDB integration uses untyped values inherited from the upstream library */
 import {Plugin, requestUrl} from "obsidian";
 import {reactiveSource, type ReactiveSource} from "octagonal-wheels/dataobject/reactive";
 

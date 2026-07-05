@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- LiveSync adapter code; PouchDB\/CouchDB integration uses untyped values inherited from the upstream library */
 import { requestUrl } from 'obsidian';
 /**
  * ServerConnectivityChecker - Lightweight server connectivity checking

@@ -496,8 +496,11 @@ export class SyncStatusDisplay {
      * Toggle editor status display visibility
      */
     async toggleEditorStatusDisplay() {
-        // @ts-ignore - plugin.settings type
-        const plugin = this.plugin as any;
+        type PluginWithSettings = {
+            settings: { showEditorStatusDisplay?: boolean };
+            saveSettings(): Promise<void>;
+        };
+        const plugin = this.plugin as unknown as PluginWithSettings;
         plugin.settings.showEditorStatusDisplay = !plugin.settings.showEditorStatusDisplay;
         await plugin.saveSettings();
         
@@ -552,10 +555,12 @@ export class SyncStatusDisplay {
                 .setTitle('同步设置')
                 .setIcon('settings')
                 .onClick(() => {
-                    // @ts-ignore - app.setting may not have complete types
-                    this.plugin.app.setting.open();
-                    // @ts-ignore
-                    this.plugin.app.setting.openTabById('mdfriday');
+                    // Access Obsidian's settings panel via internal API (no public type)
+                    const appWithSetting = this.plugin.app as unknown as {
+                        setting: { open(): void; openTabById(id: string): void };
+                    };
+                    appWithSetting.setting.open();
+                    appWithSetting.setting.openTabById('mdfriday');
                 });
         });
         

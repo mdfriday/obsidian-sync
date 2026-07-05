@@ -1,4 +1,6 @@
 // @ts-types="npm:@types/pouchdb"
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync core; PouchDB/CouchDB internal APIs use untyped values by design */
 import PouchDB from "pouchdb-core";
 import HttpPouch from "pouchdb-adapter-http";
 import mapreduce from "pouchdb-mapreduce";

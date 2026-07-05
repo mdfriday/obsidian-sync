@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync core; PouchDB/CouchDB internal APIs use untyped values by design */
 import { LRUCache } from "octagonal-wheels/memory/LRUCache";
 import { isPlainText } from "../string_and_binary/path.ts";
 import { Semaphore } from "octagonal-wheels/concurrency/semaphore";

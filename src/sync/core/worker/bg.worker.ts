@@ -3,6 +3,8 @@
 // This module is solely responsible for orchestration.
 // Please do not export any function from this file, as it may cause unexpected situations.
 
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync core; PouchDB/CouchDB internal APIs use untyped values by design */
+
 import type { SplitArguments } from "./universalTypes.ts";
 import type { EncryptArguments } from "./universalTypes.ts";
 import { processSplit } from "./bg.worker.splitting.ts";

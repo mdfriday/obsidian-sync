@@ -2785,7 +2785,11 @@ async function loadUserData(workspacePath) {
 async function saveUserData(workspacePath, patch) {
   const existing = await loadUserData(workspacePath) || {};
   const merged = { ...existing, ...patch };
-  Object.keys(merged).forEach((k) => merged[k] === void 0 && delete merged[k]);
+  Object.keys(merged).forEach((k) => {
+    if (merged[k] === void 0) {
+      delete merged[k];
+    }
+  });
   await writeJsonFile(userDataPath(workspacePath), merged);
 }
 function getApiUrl(userData) {
@@ -2899,8 +2903,9 @@ function setNested(obj, key2, value) {
   const parts = key2.split(".");
   let cur = obj;
   for (let i = 0; i < parts.length - 1; i++) {
-    if (typeof cur[parts[i]] !== "object" || cur[parts[i]] === null) cur[parts[i]] = {};
-    cur = cur[parts[i]];
+    const part = parts[i];
+    if (typeof cur[part] !== "object" || cur[part] === null) cur[part] = {};
+    cur = cur[part];
   }
   cur[parts[parts.length - 1]] = value;
 }
@@ -3024,7 +3029,7 @@ var init_foundry = __esm({
         }
       }
       async activateLicense(workspacePath, licenseKey) {
-        var _a5, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d, _e, _f;
         try {
           const ud = await loadUserData(workspacePath);
           const token = ud == null ? void 0 : ud.token;
@@ -3038,9 +3043,9 @@ var init_foundry = __esm({
             { "Authorization": `Bearer ${token}` }
           );
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Activation failed: ${res2.status}`);
-          const raw = ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) || res2.data;
+          const raw = (_c = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) != null ? _c : res2.data;
           if (!(raw == null ? void 0 : raw.success)) throw new Error("License activation unsuccessful");
-          const userDir = ((_c = raw.user) == null ? void 0 : _c.user_dir) || "";
+          const userDir = ((_d = raw.user) == null ? void 0 : _d.user_dir) || "";
           const info3 = buildLicenseInfoFromActivation(raw, userDir);
           const licenseToStore = {
             key: raw.license_key,
@@ -3048,8 +3053,8 @@ var init_foundry = __esm({
             expiresAt: raw.expires_at || 0,
             features: info3.features,
             activatedAt: Date.now(),
-            activated: (_d = raw.activated) != null ? _d : true,
-            firstTime: (_e = raw.first_time) != null ? _e : false,
+            activated: (_e = raw.activated) != null ? _e : true,
+            firstTime: (_f = raw.first_time) != null ? _f : false,
             user: info3.user,
             activation: info3.activation,
             sync: info3.sync
@@ -3097,7 +3102,7 @@ var init_foundry = __esm({
         }
       }
       async getLicenseUsage(workspacePath) {
-        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
         try {
           const ud = await loadUserData(workspacePath);
           const token = ud == null ? void 0 : ud.token;
@@ -3114,16 +3119,16 @@ var init_foundry = __esm({
           const raw = (_c = (_b2 = res2.data) == null ? void 0 : _b2.data) == null ? void 0 : _c[0];
           if (!raw) throw new Error("Invalid usage response");
           const usage = {
-            licenseKey: raw.license_key,
-            plan: raw.plan,
-            devices: { count: ((_d = raw.devices) == null ? void 0 : _d.count) || 0, max: ((_e = raw.features) == null ? void 0 : _e.max_devices) || 1, list: (((_f = raw.devices) == null ? void 0 : _f.devices) || []).map((d) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
-            ips: { count: ((_g = raw.ips) == null ? void 0 : _g.count) || 0, max: ((_h = raw.features) == null ? void 0 : _h.max_ips) || 1, list: (((_i = raw.ips) == null ? void 0 : _i.ips) || []).map((ip) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
+            licenseKey: (_d = raw.license_key) != null ? _d : "",
+            plan: (_e = raw.plan) != null ? _e : "Free",
+            devices: { count: (_g = (_f = raw.devices) == null ? void 0 : _f.count) != null ? _g : 0, max: (_i = (_h = raw.features) == null ? void 0 : _h.max_devices) != null ? _i : 1, list: ((_k = (_j = raw.devices) == null ? void 0 : _j.devices) != null ? _k : []).map((d) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
+            ips: { count: (_m = (_l = raw.ips) == null ? void 0 : _l.count) != null ? _m : 0, max: (_o = (_n = raw.features) == null ? void 0 : _n.max_ips) != null ? _o : 1, list: ((_q = (_p = raw.ips) == null ? void 0 : _p.ips) != null ? _q : []).map((ip) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
             disk: {
-              syncUsage: Number((_j = raw.disks) == null ? void 0 : _j.sync_disk_usage) || 0,
-              publishUsage: Number((_k = raw.disks) == null ? void 0 : _k.publish_disk_usage) || 0,
-              totalUsage: Number((_l = raw.disks) == null ? void 0 : _l.total_disk_usage) || 0,
-              maxStorage: ((_m = raw.features) == null ? void 0 : _m.max_storage) || 1024,
-              unit: ((_n = raw.disks) == null ? void 0 : _n.unit) || "MB"
+              syncUsage: Number((_r = raw.disks) == null ? void 0 : _r.sync_disk_usage) || 0,
+              publishUsage: Number((_s = raw.disks) == null ? void 0 : _s.publish_disk_usage) || 0,
+              totalUsage: Number((_t = raw.disks) == null ? void 0 : _t.total_disk_usage) || 0,
+              maxStorage: (_v = (_u = raw.features) == null ? void 0 : _u.max_storage) != null ? _v : 1024,
+              unit: (_x = (_w = raw.disks) == null ? void 0 : _w.unit) != null ? _x : "MB"
             }
           };
           return { success: true, data: usage };
@@ -3790,8 +3795,8 @@ function getDeviceInfo2() {
   return { deviceName: name, deviceType };
 }
 function buildLicenseInfoFromActivation2(data, userDir) {
-  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
-  const f3 = data.features || {};
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+  const f3 = (_a5 = data.features) != null ? _a5 : {};
   const expiresAt = data.expires_at || 0;
   const daysRemaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 864e5));
   const expires = new Date(expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -3804,19 +3809,19 @@ function buildLicenseInfoFromActivation2(data, userDir) {
     daysRemaining,
     isTrial: (data.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a5 = f3.max_devices) != null ? _a5 : 1,
-      maxIps: (_b2 = f3.max_ips) != null ? _b2 : 1,
-      syncEnabled: (_c = f3.sync_enabled) != null ? _c : false,
-      syncQuota: (_d = f3.sync_quota) != null ? _d : 0,
-      publishEnabled: (_e = f3.publish_enabled) != null ? _e : false,
-      maxSites: (_f = f3.max_sites) != null ? _f : 1,
-      maxStorage: (_g = f3.max_storage) != null ? _g : 1024,
-      customDomain: (_h = f3.custom_domain) != null ? _h : false,
-      customSubDomain: (_i = f3.custom_sub_domain) != null ? _i : false,
-      validityDays: (_j = f3.validity_days) != null ? _j : 365
+      maxDevices: (_b2 = f3.max_devices) != null ? _b2 : 1,
+      maxIps: (_c = f3.max_ips) != null ? _c : 1,
+      syncEnabled: (_d = f3.sync_enabled) != null ? _d : false,
+      syncQuota: (_e = f3.sync_quota) != null ? _e : 0,
+      publishEnabled: (_f = f3.publish_enabled) != null ? _f : false,
+      maxSites: (_g = f3.max_sites) != null ? _g : 1,
+      maxStorage: (_h = f3.max_storage) != null ? _h : 1024,
+      customDomain: (_i = f3.custom_domain) != null ? _i : false,
+      customSubDomain: (_j = f3.custom_sub_domain) != null ? _j : false,
+      validityDays: (_k = f3.validity_days) != null ? _k : 365
     },
-    user: { email: ((_k = data.user) == null ? void 0 : _k.email) || "", userDir },
-    activation: { activated: (_l = data.activated) != null ? _l : true, firstTime: (_m = data.first_time) != null ? _m : false }
+    user: { email: ((_l = data.user) == null ? void 0 : _l.email) || "", userDir },
+    activation: { activated: (_m = data.activated) != null ? _m : true, firstTime: (_n = data.first_time) != null ? _n : false }
   };
   if (data.sync && f3.sync_enabled) {
     info3.sync = {
@@ -3832,11 +3837,11 @@ function buildLicenseInfoFromActivation2(data, userDir) {
   return info3;
 }
 function buildLicenseInfoFromStored2(stored) {
-  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j;
-  const expiresAt = stored.expiresAt || 0;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+  const expiresAt = (_a5 = stored.expiresAt) != null ? _a5 : 0;
   const daysRemaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 864e5));
   const expires = new Date(expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-  const f3 = stored.features || {};
+  const f3 = (_b2 = stored.features) != null ? _b2 : {};
   return {
     key: stored.key || "",
     plan: stored.plan || "Free",
@@ -3846,16 +3851,16 @@ function buildLicenseInfoFromStored2(stored) {
     daysRemaining,
     isTrial: (stored.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a5 = f3.maxDevices) != null ? _a5 : 1,
-      maxIps: (_b2 = f3.maxIps) != null ? _b2 : 1,
-      syncEnabled: (_c = f3.syncEnabled) != null ? _c : false,
-      syncQuota: (_d = f3.syncQuota) != null ? _d : 0,
-      publishEnabled: (_e = f3.publishEnabled) != null ? _e : false,
-      maxSites: (_f = f3.maxSites) != null ? _f : 1,
-      maxStorage: (_g = f3.maxStorage) != null ? _g : 1024,
-      customDomain: (_h = f3.customDomain) != null ? _h : false,
-      customSubDomain: (_i = f3.customSubDomain) != null ? _i : false,
-      validityDays: (_j = f3.validityDays) != null ? _j : 365
+      maxDevices: (_c = f3.maxDevices) != null ? _c : 1,
+      maxIps: (_d = f3.maxIps) != null ? _d : 1,
+      syncEnabled: (_e = f3.syncEnabled) != null ? _e : false,
+      syncQuota: (_f = f3.syncQuota) != null ? _f : 0,
+      publishEnabled: (_g = f3.publishEnabled) != null ? _g : false,
+      maxSites: (_h = f3.maxSites) != null ? _h : 1,
+      maxStorage: (_i = f3.maxStorage) != null ? _i : 1024,
+      customDomain: (_j = f3.customDomain) != null ? _j : false,
+      customSubDomain: (_k = f3.customSubDomain) != null ? _k : false,
+      validityDays: (_l = f3.validityDays) != null ? _l : 365
     },
     user: stored.user,
     activation: stored.activation,
@@ -3872,7 +3877,7 @@ function setNested2(obj, key2, value) {
   cur[parts[parts.length - 1]] = value;
 }
 function getNested2(obj, key2) {
-  return key2.split(".").reduce((cur, p) => cur == null ? void 0 : cur[p], obj);
+  return key2.split(".").reduce((cur, p) => cur == null || typeof cur !== "object" ? void 0 : cur[p], obj);
 }
 function extractVaultAndDir(config) {
   var _a5;
@@ -3999,7 +4004,7 @@ var init_mobile = __esm({
         }
       }
       async activateLicense(workspacePath, licenseKey) {
-        var _a5, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d, _e, _f;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const token = ud == null ? void 0 : ud.token;
@@ -4013,11 +4018,11 @@ var init_mobile = __esm({
             { "Authorization": `Bearer ${token}` }
           );
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Activation failed: ${res2.status}`);
-          const raw = ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) || res2.data;
+          const raw = (_c = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) != null ? _c : res2.data;
           if (!(raw == null ? void 0 : raw.success)) throw new Error("License activation unsuccessful");
-          const userDir = ((_c = raw.user) == null ? void 0 : _c.user_dir) || "";
+          const userDir = ((_d = raw.user) == null ? void 0 : _d.user_dir) || "";
           const info3 = buildLicenseInfoFromActivation2(raw, userDir);
-          const licenseToStore = { key: raw.license_key, plan: info3.plan, expiresAt: raw.expires_at || 0, features: info3.features, activatedAt: Date.now(), activated: (_d = raw.activated) != null ? _d : true, firstTime: (_e = raw.first_time) != null ? _e : false, user: info3.user, activation: info3.activation, sync: info3.sync };
+          const licenseToStore = { key: raw.license_key, plan: info3.plan, expiresAt: raw.expires_at || 0, features: info3.features, activatedAt: Date.now(), activated: (_e = raw.activated) != null ? _e : true, firstTime: (_f = raw.first_time) != null ? _f : false, user: info3.user, activation: info3.activation, sync: info3.sync };
           const syncToStore = info3.sync ? { dbEndpoint: info3.sync.dbEndpoint, dbName: info3.sync.dbName, email: info3.sync.email, dbPassword: info3.sync.dbPassword, userDir, status: info3.sync.status } : ud == null ? void 0 : ud.syncConfig;
           await saveUserData2(this.vault, this.pluginDir, { license: licenseToStore, syncConfig: syncToStore });
           return { success: true, data: info3 };
@@ -4048,7 +4053,7 @@ var init_mobile = __esm({
         }
       }
       async getLicenseUsage(workspacePath) {
-        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           if (!(ud == null ? void 0 : ud.token) || !((_a5 = ud == null ? void 0 : ud.license) == null ? void 0 : _a5.key)) throw new Error("Not authenticated");
@@ -4060,11 +4065,11 @@ var init_mobile = __esm({
           const raw = (_c = (_b2 = res2.data) == null ? void 0 : _b2.data) == null ? void 0 : _c[0];
           if (!raw) throw new Error("Invalid usage response");
           return { success: true, data: {
-            licenseKey: raw.license_key,
-            plan: raw.plan,
-            devices: { count: ((_d = raw.devices) == null ? void 0 : _d.count) || 0, max: ((_e = raw.features) == null ? void 0 : _e.max_devices) || 1, list: [] },
-            ips: { count: ((_f = raw.ips) == null ? void 0 : _f.count) || 0, max: ((_g = raw.features) == null ? void 0 : _g.max_ips) || 1, list: [] },
-            disk: { syncUsage: Number((_h = raw.disks) == null ? void 0 : _h.sync_disk_usage) || 0, publishUsage: Number((_i = raw.disks) == null ? void 0 : _i.publish_disk_usage) || 0, totalUsage: Number((_j = raw.disks) == null ? void 0 : _j.total_disk_usage) || 0, maxStorage: ((_k = raw.features) == null ? void 0 : _k.max_storage) || 1024, unit: ((_l = raw.disks) == null ? void 0 : _l.unit) || "MB" }
+            licenseKey: (_d = raw.license_key) != null ? _d : "",
+            plan: (_e = raw.plan) != null ? _e : "Free",
+            devices: { count: (_g = (_f = raw.devices) == null ? void 0 : _f.count) != null ? _g : 0, max: (_i = (_h = raw.features) == null ? void 0 : _h.max_devices) != null ? _i : 1, list: [] },
+            ips: { count: (_k = (_j = raw.ips) == null ? void 0 : _j.count) != null ? _k : 0, max: (_m = (_l = raw.features) == null ? void 0 : _l.max_ips) != null ? _m : 1, list: [] },
+            disk: { syncUsage: Number((_n = raw.disks) == null ? void 0 : _n.sync_disk_usage) || 0, publishUsage: Number((_o = raw.disks) == null ? void 0 : _o.publish_disk_usage) || 0, totalUsage: Number((_p = raw.disks) == null ? void 0 : _p.total_disk_usage) || 0, maxStorage: (_r = (_q = raw.features) == null ? void 0 : _q.max_storage) != null ? _r : 1024, unit: (_t = (_s = raw.disks) == null ? void 0 : _s.unit) != null ? _t : "MB" }
           } };
         } catch (e2) {
           return { success: false, error: e2.message };
@@ -37268,8 +37273,9 @@ var SyncStatusDisplay = class {
     }
     menu.addItem((item) => {
       item.setTitle("\u540C\u6B65\u8BBE\u7F6E").setIcon("settings").onClick(() => {
-        this.plugin.app.setting.open();
-        this.plugin.app.setting.openTabById("mdfriday");
+        const appWithSetting = this.plugin.app;
+        appWithSetting.setting.open();
+        appWithSetting.setting.openTabById("mdfriday");
       });
     });
     menu.showAtMouseEvent(event);
@@ -37773,7 +37779,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
             }
           } catch (error) {
             console.error("Download failed:", error);
-            new import_obsidian9.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error.message || error}`);
+            new import_obsidian9.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error.message || String(error)}`);
             button.setButtonText(this.plugin.i18n.t("settings.download_from_cloud"));
             button.setDisabled(false);
           }

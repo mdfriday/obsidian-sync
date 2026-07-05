@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync core; PouchDB/CouchDB internal APIs use untyped values by design */
 import { serialized } from "octagonal-wheels/concurrency/lock";
 import { Logger } from "../common/logger";
 import { LOG_LEVEL_VERBOSE } from "../common/types";

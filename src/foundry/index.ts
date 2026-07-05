@@ -117,8 +117,12 @@ async function loadUserData(workspacePath: string): Promise<UserData | null> {
 async function saveUserData(workspacePath: string, patch: Partial<UserData>): Promise<void> {
   const existing = (await loadUserData(workspacePath)) || {};
   const merged: UserData = { ...existing, ...patch };
-  // Remove undefined values
-  Object.keys(merged).forEach(k => (merged as any)[k] === undefined && delete (merged as any)[k]);
+  // Remove undefined values using type-safe Record cast
+  Object.keys(merged).forEach(k => {
+    if ((merged as Record<string, unknown>)[k] === undefined) {
+      delete (merged as Record<string, unknown>)[k];
+    }
+  });
   await writeJsonFile(userDataPath(workspacePath), merged);
 }
 
@@ -163,6 +167,39 @@ function getDeviceInfo() {
 // API response shapes (typed to replace `any` parameter patterns)
 // ─────────────────────────────────────────────────────────────────────────────
 
+interface TrialResponseItem {
+  license_key: string;
+  email: string;
+  password: string;
+  validity_days: number;
+}
+
+interface DeviceItem {
+  id: string;
+  device_name: string;
+  device_type: string;
+  status: string;
+  last_seen_at: string;
+}
+
+interface IpItem {
+  ip_address: string;
+  city: string;
+  region: string;
+  country: string;
+  status: string;
+  last_seen_at: string;
+}
+
+interface UsageResponseRaw {
+  license_key?: string;
+  plan?: string;
+  features?: { max_devices?: number; max_ips?: number; max_storage?: number };
+  devices?: { count?: number; devices?: DeviceItem[] };
+  ips?: { count?: number; ips?: IpItem[] };
+  disks?: { sync_disk_usage?: string | number; publish_disk_usage?: string | number; total_disk_usage?: string | number; unit?: string };
+}
+
 interface ActivationApiFeatures {
   max_devices?: number;
   max_ips?: number;
@@ -183,7 +220,8 @@ interface ActivationApiResponse {
   plan?: string;
   activated?: boolean;
   first_time?: boolean;
-  user?: { email?: string };
+  success?: boolean;
+  user?: { email?: string; user_dir?: string };
   sync?: {
     status?: string;
     db_endpoint?: string;
@@ -368,7 +406,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       const url = `${getApiUrl(ud)}/api/license/trial`;
       const res = await this.http.postMultipart(url, { email });
       if (res.status !== 200 && res.status !== 201) throw new Error('Trial request failed');
-      const d = res.data?.data?.[0];
+      const d = res.data?.data?.[0] as TrialResponseItem | undefined;
       if (!d?.license_key) throw new Error('Invalid trial response');
       return { success: true, data: { email: d.email, licenseKey: d.license_key, password: d.password, validityDays: d.validity_days } };
     } catch (e) {
@@ -386,7 +424,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       const res = await this.http.postForm(`${apiUrl}/api/login`, { email, password });
       if (res.status !== 201) throw new Error(`Login failed: ${res.status}`);
 
-      const token = res.data?.data?.[0];
+      const token = res.data?.data?.[0] as string | undefined;
       if (!token) throw new Error('No token in login response');
 
       await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
@@ -413,7 +451,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       );
       if (res.status !== 200 && res.status !== 201) throw new Error(`Activation failed: ${res.status}`);
 
-      const raw = res.data?.data?.[0] || res.data;
+      const raw = (res.data?.data?.[0] ?? res.data) as ActivationApiResponse | undefined;
       if (!raw?.success) throw new Error('License activation unsuccessful');
 
       const userDir = raw.user?.user_dir || '';
@@ -464,7 +502,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
           { 'Authorization': `Bearer ${token}`, 'Cache-Control': 'no-cache' }
         );
         if (res.status === 200 && res.data?.data?.[0]) {
-          const raw = res.data.data[0];
+          const raw = res.data.data[0] as ActivationApiResponse;
           const userDir = String(ud.syncConfig?.userDir ?? ud.license?.user?.userDir ?? '');
           const info = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || '', user_dir: userDir } }, userDir);
           // update stored license
@@ -494,19 +532,19 @@ class LightweightLicenseService implements ObsidianLicenseService {
         { 'Authorization': `Bearer ${token}`, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
       );
       if (res.status !== 200) throw new Error(`Usage fetch failed: ${res.status}`);
-      const raw = res.data?.data?.[0];
+      const raw = res.data?.data?.[0] as UsageResponseRaw | undefined;
       if (!raw) throw new Error('Invalid usage response');
       const usage: ObsidianLicenseUsage = {
-        licenseKey: raw.license_key,
-        plan:       raw.plan,
-        devices:    { count: raw.devices?.count || 0, max: raw.features?.max_devices || 1, list: (raw.devices?.devices || []).map((d: any) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
-        ips:        { count: raw.ips?.count || 0, max: raw.features?.max_ips || 1, list: (raw.ips?.ips || []).map((ip: any) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
+        licenseKey: raw.license_key ?? '',
+        plan:       raw.plan ?? 'Free',
+        devices:    { count: raw.devices?.count ?? 0, max: raw.features?.max_devices ?? 1, list: (raw.devices?.devices ?? []).map((d) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
+        ips:        { count: raw.ips?.count ?? 0, max: raw.features?.max_ips ?? 1, list: (raw.ips?.ips ?? []).map((ip) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
         disk: {
           syncUsage:    Number(raw.disks?.sync_disk_usage) || 0,
           publishUsage: Number(raw.disks?.publish_disk_usage) || 0,
           totalUsage:   Number(raw.disks?.total_disk_usage) || 0,
-          maxStorage:   raw.features?.max_storage || 1024,
-          unit:         raw.disks?.unit || 'MB',
+          maxStorage:   raw.features?.max_storage ?? 1024,
+          unit:         raw.disks?.unit ?? 'MB',
         },
       };
       return { success: true, data: usage };
@@ -606,22 +644,23 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
 // Global Config Service (dot-notation key → nested JSON)
 // ─────────────────────────────────────────────────────────────────────────────
 
-function setNested(obj: any, key: string, value: any): void {
+function setNested(obj: Record<string, unknown>, key: string, value: unknown): void {
   const parts = key.split('.');
-  let cur = obj;
+  let cur: Record<string, unknown> = obj;
   for (let i = 0; i < parts.length - 1; i++) {
-    if (typeof cur[parts[i]] !== 'object' || cur[parts[i]] === null) cur[parts[i]] = {};
-    cur = cur[parts[i]];
+    const part = parts[i];
+    if (typeof cur[part] !== 'object' || cur[part] === null) cur[part] = {};
+    cur = cur[part] as Record<string, unknown>;
   }
   cur[parts[parts.length - 1]] = value;
 }
 
-function getNested(obj: any, key: string): any {
+function getNested(obj: Record<string, unknown>, key: string): unknown {
   const parts = key.split('.');
-  let cur = obj;
+  let cur: unknown = obj;
   for (const p of parts) {
     if (cur == null || typeof cur !== 'object') return undefined;
-    cur = cur[p];
+    cur = (cur as Record<string, unknown>)[p];
   }
   return cur;
 }

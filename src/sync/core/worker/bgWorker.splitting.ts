@@ -1,5 +1,7 @@
 // Foreground part of Content-Splitter
 
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync core; PouchDB/CouchDB internal APIs use untyped values by design */
+
 import { LOG_LEVEL_VERBOSE, Logger } from "../common/logger.ts";
 import { startWorker } from "./bgWorker.ts";
 import { type SplitProcessItem } from "./universalTypes";

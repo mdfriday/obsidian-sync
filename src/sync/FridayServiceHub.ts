@@ -4,6 +4,8 @@
  * Implements the minimum required services for CouchDB synchronization
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- LiveSync adapter code; PouchDB\/CouchDB integration uses untyped values inherited from the upstream library */
 import { Platform, TFile, TFolder, requestUrl } from "obsidian";
 import { ServiceHub, type ServiceInstances } from "./core/services/ServiceHub";
 import {

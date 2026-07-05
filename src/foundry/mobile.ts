@@ -7,6 +7,15 @@
 
 import { Platform } from 'obsidian';
 import type { Vault } from 'obsidian';
+// ─── Shared API response shape interfaces ────────────────────────────────────
+interface ActivationApiFeatures { max_devices?: number; max_ips?: number; sync_enabled?: boolean; sync_quota?: number; publish_enabled?: boolean; max_sites?: number; max_storage?: number; custom_domain?: boolean; custom_sub_domain?: boolean; validity_days?: number; }
+interface ActivationApiResponse { features?: ActivationApiFeatures; expires_at?: number; license_key?: string; plan?: string; activated?: boolean; first_time?: boolean; success?: boolean; user?: { email?: string; user_dir?: string }; sync?: { status?: string; db_endpoint?: string; db_name?: string; email?: string; db_password?: string }; }
+interface StoredLicenseShape { key?: string; plan?: string; expiresAt?: number; features?: { maxDevices?: number; maxIps?: number; syncEnabled?: boolean; syncQuota?: number; publishEnabled?: boolean; maxSites?: number; maxStorage?: number; customDomain?: boolean; customSubDomain?: boolean; validityDays?: number }; user?: ObsidianLicenseInfo['user']; activation?: ObsidianLicenseInfo['activation']; sync?: ObsidianLicenseInfo['sync']; }
+interface TrialResponseItem { license_key: string; email: string; password: string; validity_days: number; }
+interface DeviceItem { id: string; device_name: string; device_type: string; status: string; last_seen_at: string; }
+interface IpItem { ip_address: string; city: string; region: string; country: string; status: string; last_seen_at: string; }
+interface UsageResponseRaw { license_key?: string; plan?: string; features?: { max_devices?: number; max_ips?: number; max_storage?: number }; devices?: { count?: number; devices?: DeviceItem[] }; ips?: { count?: number; ips?: IpItem[] }; disks?: { sync_disk_usage?: string | number; publish_disk_usage?: string | number; total_disk_usage?: string | number; unit?: string }; }
+// ─────────────────────────────────────────────────────────────────────────────
 import type {
   IdentityHttpClient,
   ObsidianAuthResult,
@@ -171,8 +180,8 @@ function getDeviceInfo(): { deviceName: string; deviceType: 'desktop' | 'mobile'
 // Build license info (shared helper, same as Desktop)
 // ─────────────────────────────────────────────────────────────────────────────
 
-function buildLicenseInfoFromActivation(data: any, userDir: string): ObsidianLicenseInfo {
-  const f = data.features || {};
+function buildLicenseInfoFromActivation(data: ActivationApiResponse, userDir: string): ObsidianLicenseInfo {
+  const f: ActivationApiFeatures = data.features ?? {};
   const expiresAt: number = data.expires_at || 0;
   const daysRemaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
   const expires = new Date(expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
@@ -204,11 +213,11 @@ function buildLicenseInfoFromActivation(data: any, userDir: string): ObsidianLic
   return info;
 }
 
-function buildLicenseInfoFromStored(stored: any): ObsidianLicenseInfo {
-  const expiresAt: number = stored.expiresAt || 0;
+function buildLicenseInfoFromStored(stored: StoredLicenseShape): ObsidianLicenseInfo {
+  const expiresAt: number = stored.expiresAt ?? 0;
   const daysRemaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
   const expires = new Date(expiresAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
-  const f = stored.features || {};
+  const f = stored.features ?? {};
   return {
     key: stored.key || '', plan: stored.plan || 'Free',
     isExpired: Date.now() > expiresAt, expires, expiresAt, daysRemaining,
@@ -285,7 +294,7 @@ class MobileLicenseService implements ObsidianLicenseService {
       const ud  = await loadUserData(this.vault, this.pluginDir);
       const res = await this.http.postMultipart(`${getApiUrl(ud)}/api/license/trial`, { email });
       if (res.status !== 200 && res.status !== 201) throw new Error('Trial request failed');
-      const d = res.data?.data?.[0];
+      const d = res.data?.data?.[0] as TrialResponseItem | undefined;
       if (!d?.license_key) throw new Error('Invalid trial response');
       return { success: true, data: { email: d.email, licenseKey: d.license_key, password: d.password, validityDays: d.validity_days } };
     } catch (e) {
@@ -301,7 +310,7 @@ class MobileLicenseService implements ObsidianLicenseService {
       const pass   = licenseToPassword(licenseKey);
       const res    = await this.http.postForm(`${apiUrl}/api/login`, { email, password: pass });
       if (res.status !== 201) throw new Error(`Login failed: ${res.status}`);
-      const token = res.data?.data?.[0];
+      const token = res.data?.data?.[0] as string | undefined;
       if (!token) throw new Error('No token in login response');
       await saveUserData(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
       return { success: true, data: {} as object };
@@ -324,7 +333,7 @@ class MobileLicenseService implements ObsidianLicenseService {
         { 'Authorization': `Bearer ${token}` }
       );
       if (res.status !== 200 && res.status !== 201) throw new Error(`Activation failed: ${res.status}`);
-      const raw = res.data?.data?.[0] || res.data;
+      const raw = (res.data?.data?.[0] ?? res.data) as ActivationApiResponse | undefined;
       if (!raw?.success) throw new Error('License activation unsuccessful');
       const userDir = raw.user?.user_dir || '';
       const info    = buildLicenseInfoFromActivation(raw, userDir);
@@ -347,7 +356,7 @@ class MobileLicenseService implements ObsidianLicenseService {
           { 'Authorization': `Bearer ${ud.token}`, 'Cache-Control': 'no-cache' }
         );
         if (res.status === 200 && res.data?.data?.[0]) {
-          const raw  = res.data.data[0];
+          const raw  = res.data.data[0] as ActivationApiResponse;
           const info = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || '', user_dir: ud.syncConfig?.userDir || '' } }, ud.syncConfig?.userDir || '');
           await saveUserData(this.vault, this.pluginDir, { license: { ...ud.license, plan: info.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info.features } });
           return { success: true, data: info };
@@ -368,13 +377,13 @@ class MobileLicenseService implements ObsidianLicenseService {
         { 'Authorization': `Bearer ${ud.token}`, 'Cache-Control': 'no-cache' }
       );
       if (res.status !== 200) throw new Error(`Usage fetch failed: ${res.status}`);
-      const raw = res.data?.data?.[0];
+      const raw = res.data?.data?.[0] as UsageResponseRaw | undefined;
       if (!raw) throw new Error('Invalid usage response');
       return { success: true, data: {
-        licenseKey: raw.license_key, plan: raw.plan,
-        devices: { count: raw.devices?.count || 0, max: raw.features?.max_devices || 1, list: [] },
-        ips:     { count: raw.ips?.count || 0,     max: raw.features?.max_ips || 1,     list: [] },
-        disk: { syncUsage: Number(raw.disks?.sync_disk_usage) || 0, publishUsage: Number(raw.disks?.publish_disk_usage) || 0, totalUsage: Number(raw.disks?.total_disk_usage) || 0, maxStorage: raw.features?.max_storage || 1024, unit: raw.disks?.unit || 'MB' },
+        licenseKey: raw.license_key ?? '', plan: raw.plan ?? 'Free',
+        devices: { count: raw.devices?.count ?? 0, max: raw.features?.max_devices ?? 1, list: [] },
+        ips:     { count: raw.ips?.count ?? 0,     max: raw.features?.max_ips ?? 1,     list: [] },
+        disk: { syncUsage: Number(raw.disks?.sync_disk_usage) || 0, publishUsage: Number(raw.disks?.publish_disk_usage) || 0, totalUsage: Number(raw.disks?.total_disk_usage) || 0, maxStorage: raw.features?.max_storage ?? 1024, unit: raw.disks?.unit ?? 'MB' },
       }};
     } catch (e) {
       return { success: false, error: (e as Error).message };
@@ -435,18 +444,18 @@ class MobileWorkspaceService implements ObsidianWorkspaceService {
 // Mobile Config Service
 // ─────────────────────────────────────────────────────────────────────────────
 
-function setNested(obj: any, key: string, value: any): void {
+function setNested(obj: Record<string, unknown>, key: string, value: unknown): void {
   const parts = key.split('.');
-  let cur = obj;
+  let cur: Record<string, unknown> = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     if (typeof cur[parts[i]] !== 'object' || cur[parts[i]] === null) cur[parts[i]] = {};
-    cur = cur[parts[i]];
+    cur = cur[parts[i]] as Record<string, unknown>;
   }
   cur[parts[parts.length - 1]] = value;
 }
 
-function getNested(obj: any, key: string): any {
-  return key.split('.').reduce((cur, p) => cur == null ? undefined : cur[p], obj);
+function getNested(obj: Record<string, unknown>, key: string): unknown {
+  return key.split('.').reduce<unknown>((cur, p) => cur == null || typeof cur !== 'object' ? undefined : (cur as Record<string, unknown>)[p], obj);
 }
 
 class MobileConfigService implements ObsidianGlobalConfigService {

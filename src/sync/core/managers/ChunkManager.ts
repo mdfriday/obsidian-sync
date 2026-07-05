@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync core; PouchDB/CouchDB internal APIs use untyped values by design */
 import {FallbackWeakRef} from "octagonal-wheels/common/polyfill";
 import {LOG_LEVEL_VERBOSE, Logger} from "../common/logger.ts";
 import {promiseWithResolver, type PromiseWithResolvers} from "octagonal-wheels/promises";
