@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { Logger, LOG_LEVEL_NOTICE, LOG_LEVEL_VERBOSE } from "../common/logger";
 import {
     type EntryDoc,
@@ -574,3 +575,4 @@ export function shouldDecryptEdenHKDF(doc: AnyEntry | EntryLeaf): doc is AnyEntr
     }
     return false;
 }
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { LRUCache } from "octagonal-wheels/memory/LRUCache";
 import { isPlainText } from "../string_and_binary/path.ts";
 import { Semaphore } from "octagonal-wheels/concurrency/semaphore";
@@ -791,3 +792,4 @@ export function pickP2PSyncSettings(setting: Partial<ObsidianLiveSyncSettings> &
         P2P_turnCredential: setting.P2P_turnCredential,
     };
 }
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

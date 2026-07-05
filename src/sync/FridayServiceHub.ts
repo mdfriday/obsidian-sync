@@ -4,6 +4,8 @@
  * Implements the minimum required services for CouchDB synchronization
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { Platform, TFile, TFolder, requestUrl } from "obsidian";
 import { ServiceHub, type ServiceInstances } from "./core/services/ServiceHub";
 import {
@@ -1167,4 +1169,4 @@ class FridayUIService extends HubService implements UIService {
     async promptCopyToClipboard(title: string, value: string): Promise<boolean> { return false; }
     async showMarkdownDialog<T extends string[]>(title: string, contentMD: string, buttons: T): Promise<(typeof buttons)[number] | false> { return false; }
 }
-
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

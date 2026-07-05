@@ -2,6 +2,8 @@
  * The API for manipulating files stored in the CouchDB by Self-hosted LiveSync or its families.
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { addPrefix, id2path_base, path2id_base, stripAllPrefixes } from "../string_and_binary/path.ts";
 import {
     type DocumentID,
@@ -549,3 +551,4 @@ export class DirectFileManipulator implements LiveSyncLocalDBEnv {
         return this.since;
     }
 }
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

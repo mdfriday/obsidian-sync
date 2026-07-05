@@ -1,4 +1,5 @@
 // Foreground part of offloaded encryptions
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 
 import { startWorker, tasks } from "./bgWorker.ts";
 import { type EncryptHKDFProcessItem } from "./universalTypes.ts";
@@ -53,3 +54,4 @@ export function handleTaskEncrypt(process: EncryptProcessItem | EncryptHKDFProce
     }
     tasks.delete(key);
 }
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { Logger, LOG_LEVEL_NOTICE, LOG_LEVEL_VERBOSE } from "../common/logger";
 import type { CouchDBConnection, EntryLeaf } from "../common/types";
 import { QueueProcessor } from "octagonal-wheels/concurrency/processor";
@@ -337,3 +338,4 @@ export async function purgeChunksRemote(setting: CouchDBConnection, docs: { id: 
         return;
     });
 }
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

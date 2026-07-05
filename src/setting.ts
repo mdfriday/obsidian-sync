@@ -625,7 +625,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 								}
 							} catch (error) {
 								console.error('Download failed:', error);
-								new Notice(`${this.plugin.i18n.t('settings.sync_operation_failed')}: ${error.message || error}`);
+                                                            new Notice(`${this.plugin.i18n.t('settings.sync_operation_failed')}: ${(error as Error).message || String(error)}`);
 								button.setButtonText(this.plugin.i18n.t('settings.download_from_cloud'));
 								button.setDisabled(false);
 							}

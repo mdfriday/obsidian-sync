@@ -1,4 +1,5 @@
 // Foreground part of Worker-off-loaded functions
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 
 import { promiseWithResolver } from "octagonal-wheels/promises.js";
 import { eventHub } from "../hub/hub.ts";
@@ -165,3 +166,4 @@ for (const inst of workers) {
 eventHub.on(EVENT_PLATFORM_UNLOADED, () => {
     terminateWorker();
 });
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

@@ -13,7 +13,7 @@ import {
 	type StoredUserData
 } from "./license";
 import {MdfridaySyncSettingTab} from "./setting";
-import type {ObsidianEnvironmentConfig as ObsidianMobileEnvironmentConfig} from './foundry/types';
+import type {ObsidianEnvironmentConfig as ObsidianMobileEnvironmentConfig, ObsidianAuthService, ObsidianLicenseService, ObsidianGlobalConfigService} from './foundry/types';
 import {createObsidianIdentityHttpClient} from './http';
 import {LicenseServiceManager} from './services/license';
 import {LicenseStateManager} from './services/licenseState';
@@ -76,9 +76,9 @@ export default class MdfridaySyncPlugin extends Plugin {
 	syncStatusDisplay: SyncStatusDisplay | null = null;
 
 	// Foundry services
-	foundryAuthService?: any;
-	foundryLicenseService?: any;
-	foundryGlobalConfigService?: any;
+	foundryAuthService?: ObsidianAuthService;
+	foundryLicenseService?: ObsidianLicenseService;
+	foundryGlobalConfigService?: ObsidianGlobalConfigService;
 	licenseServiceManager?: LicenseServiceManager | null;
 	licenseState?: LicenseStateManager | null;
 

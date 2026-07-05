@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 interface ErrorWithCause extends Error {
     cause?: unknown;
 }
@@ -81,3 +82,4 @@ export class LiveSyncError extends Error implements ErrorWithCause {
 }
 
 export class LiveSyncFatalError extends LiveSyncError {}
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

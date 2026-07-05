@@ -5,6 +5,8 @@
  * to enable full CouchDB synchronization functionality.
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import {Plugin, requestUrl} from "obsidian";
 import {reactiveSource, type ReactiveSource} from "octagonal-wheels/dataobject/reactive";
 
@@ -2276,4 +2278,4 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         return true;
     }
 }
-
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

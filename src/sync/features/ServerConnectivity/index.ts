@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { requestUrl } from 'obsidian';
 /**
  * ServerConnectivityChecker - Lightweight server connectivity checking
@@ -185,4 +186,4 @@ export class ServerConnectivityChecker {
         this._lastError = error;
     }
 }
-
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

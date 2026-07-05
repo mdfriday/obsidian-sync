@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import {
     type EntryDoc,
     type EntryMilestoneInfo,
@@ -1651,3 +1652,4 @@ export class LiveSyncCouchDBReplicator extends LiveSyncAbstractReplicator {
         return { node_info: nodeInfo, accepted_nodes: acceptedNodes };
     }
 }
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

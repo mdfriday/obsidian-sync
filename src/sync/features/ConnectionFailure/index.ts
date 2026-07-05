@@ -12,6 +12,8 @@
  * Source: Simplified from livesync ModuleResolveMismatchedTweaks.ts
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { Logger } from "../../core/common/logger";
 import { LOG_LEVEL_INFO, LOG_LEVEL_NOTICE, LOG_LEVEL_VERBOSE } from "../../core/common/types";
 import { $msg } from "../../core/common/i18n";
@@ -176,4 +178,4 @@ export class FridayConnectionFailureHandler {
         this._lastFailureNotified = 0;
     }
 }
-
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

@@ -12,6 +12,8 @@
  * - Integration with livesync's database format (i: prefix for internal files)
  */
 
+
+/* eslint-disable @typescript-eslint/no-unsafe-member-access -- Adapted from Self-hosted LiveSync; PouchDB/CouchDB internal APIs use untyped values by design */
 import { type Plugin, type ListedFiles } from "obsidian";
 import { serialized, skipIfDuplicated } from "octagonal-wheels/concurrency/lock";
 import { Semaphore } from "octagonal-wheels/concurrency/semaphore";
@@ -1318,4 +1320,4 @@ export class FridayHiddenFileSync {
         }
     }
 }
-
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */

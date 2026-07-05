@@ -59,8 +59,9 @@ export class ObsidianHttpClient implements PublishHttpClient {
       if (key === 'asset' && typeof value === 'object' && 
           'data' in value && 'filename' in value && 'contentType' in value) {
         // Handle special 'asset' field format: {data: Uint8Array, filename: string, contentType: string}
-        const blob = new Blob([value.data], { type: value.contentType || 'application/octet-stream' });
-        form.append(key, blob, value.filename);
+        const asset = value as { data: BlobPart; filename: string; contentType?: string };
+        const blob = new Blob([asset.data], { type: asset.contentType || 'application/octet-stream' });
+        form.append(key, blob, asset.filename);
       } else if (typeof value === 'string' || typeof value === 'number') {
         // Handle string and number values
         form.append(key, value.toString());
@@ -180,7 +181,7 @@ export class ObsidianHttpClient implements PublishHttpClient {
         bodyParts.push(`Content-Disposition: form-data; name="${key}"\r\n\r\n${value}\r\n`);
       } else if (value instanceof Blob) {
         // 处理 Blob 值（文件上传）
-        const blobName = (value as any).name || 'file';
+        const blobName = (value as Blob & { name?: string }).name || 'file';
         bodyParts.push(
           `Content-Disposition: form-data; name="${key}"; filename="${blobName}"\r\n`
         );
@@ -233,7 +234,7 @@ export class ObsidianHttpClient implements PublishHttpClient {
         bodyParts.push(`Content-Disposition: form-data; name="${key}"\r\n\r\n${value}\r\n`);
       } else if (value instanceof Blob) {
         // 处理 Blob 值（文件上传）
-        const blobName = (value as any).name || 'file';
+        const blobName = (value as Blob & { name?: string }).name || 'file';
         bodyParts.push(
           `Content-Disposition: form-data; name="${key}"; filename="${blobName}"\r\n` +
           `Content-Type: ${value.type || 'application/octet-stream'}\r\n\r\n`
@@ -469,7 +470,7 @@ export class ObsidianIdentityHttpClient implements IdentityHttpClient {
         bodyParts.push(`Content-Disposition: form-data; name="${key}"\r\n\r\n${value}\r\n`);
       } else if (value instanceof Blob) {
         // 处理 Blob 值（文件上传）
-        const blobName = (value as any).name || 'file';
+        const blobName = (value as Blob & { name?: string }).name || 'file';
         bodyParts.push(
           `Content-Disposition: form-data; name="${key}"; filename="${blobName}"\r\n`
         );
@@ -522,7 +523,7 @@ export class ObsidianIdentityHttpClient implements IdentityHttpClient {
         bodyParts.push(`Content-Disposition: form-data; name="${key}"\r\n\r\n${value}\r\n`);
       } else if (value instanceof Blob) {
         // 处理 Blob 值（文件上传）
-        const blobName = (value as any).name || 'file';
+        const blobName = (value as Blob & { name?: string }).name || 'file';
         bodyParts.push(
           `Content-Disposition: form-data; name="${key}"; filename="${blobName}"\r\n` +
           `Content-Type: ${value.type || 'application/octet-stream'}\r\n\r\n`
