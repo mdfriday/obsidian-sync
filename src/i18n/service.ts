@@ -10,7 +10,7 @@ import {
 import { en } from './locales/en';
 import { zhCn } from './locales/zh-cn';
 import type FridayPlugin from '../main';
-import { setLang as setSyncLang, type I18N_LANGS } from '../sync/core/common/i18n';
+import { setLang as setSyncLang, type I18N_LANGS } from '../sync/sync-core/src/core/common/i18n';
 
 /**
  * Map main i18n language codes to sync module language codes

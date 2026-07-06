@@ -19,7 +19,7 @@ export class FridayConnectionMonitor {
     private healthCheckInterval: number = 60000; // 1 minute
     private _pausedForManualOperation: boolean = false;
 
-    constructor(core: FridaySyncCore) {
+    constructor(core: ISyncCore) {
         this.core = core;
     }
 

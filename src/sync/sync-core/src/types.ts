@@ -5,11 +5,11 @@
  */
 
 // Re-export all types from core
-export * from "./sync-core/src/core/common/types";
+export * from "./core/common/types";
 
 // ==================== Hidden File Sync Types ====================
 
-import type { FilePath } from "./sync-core/src/core/common/types";
+import type { FilePath } from "./core/common/types";
 
 // Internal file document prefix constants (matching livesync)
 export const ICHeader = "i:";
@@ -71,43 +71,43 @@ export type {
     LiveSyncReplicatorEnv, 
     ReplicationStat,
     ReplicationCallback,
-} from "./sync-core/src/core/replication/LiveSyncAbstractReplicator";
+} from "./core/replication/LiveSyncAbstractReplicator";
 
 export type { 
     LiveSyncCouchDBReplicatorEnv 
-} from "./sync-core/src/core/replication/couchdb/LiveSyncReplicator";
+} from "./core/replication/couchdb/LiveSyncReplicator";
 
 export { 
     LiveSyncCouchDBReplicator 
-} from "./sync-core/src/core/replication/couchdb/LiveSyncReplicator";
+} from "./core/replication/couchdb/LiveSyncReplicator";
 
 // Re-export local database types
 export type { 
     LiveSyncLocalDBEnv,
     ChunkRetrievalResult,
-} from "./sync-core/src/core/pouchdb/LiveSyncLocalDB";
+} from "./core/pouchdb/LiveSyncLocalDB";
 
 export { 
     LiveSyncLocalDB 
-} from "./sync-core/src/core/pouchdb/LiveSyncLocalDB";
+} from "./core/pouchdb/LiveSyncLocalDB";
 
 // Re-export service types
-export type { ServiceHub } from "./sync-core/src/core/services/ServiceHub";
+export type { ServiceHub } from "./core/services/ServiceHub";
 
 // Re-export encryption utilities
 export { 
     encryptString, 
     decryptString, 
     tryDecryptString 
-} from "./sync-core/src/core/encryption/stringEncryption";
+} from "./core/encryption/stringEncryption";
 
 // Re-export i18n
-export { $msg, setLang } from "./sync-core/src/core/common/i18n";
+export { $msg, setLang } from "./core/common/i18n";
 
 // Re-export logger
-export { Logger } from "./sync-core/src/core/common/logger";
+export { Logger } from "./core/common/logger";
 
 // Re-export utilities
 export { 
     isCloudantURI 
-} from "./sync-core/src/core/pouchdb/utils_couchdb";
+} from "./core/pouchdb/utils_couchdb";

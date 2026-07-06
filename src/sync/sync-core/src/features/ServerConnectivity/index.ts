@@ -1,4 +1,4 @@
-import { requestUrl } from 'obsidian';
+import type { IHttpClient } from "../../interfaces/IPluginAdapters";
 /**
  * ServerConnectivityChecker - Lightweight server connectivity checking
  * 
@@ -21,10 +21,15 @@ export interface ConnectivityCheckResult {
 }
 
 export class ServerConnectivityChecker {
+    private http: IHttpClient;
     private _lastCheckTime: number = 0;
     private _lastStatus: ServerStatus = "UNKNOWN";
     private _checkCooldown: number = 5000; // 5 seconds
     private _lastError: string | undefined = undefined;
+
+    constructor(http: IHttpClient) {
+        this.http = http;
+    }
 
     /**
      * Current server status based on last check
@@ -125,7 +130,7 @@ export class ServerConnectivityChecker {
                 window.setTimeout(() => reject(new Error('Server connectivity check timed out')), 10000)
             );
             const response = await Promise.race([
-                requestUrl({ url: uri, method: "GET", headers: this.getAuthHeaders(setting) as Record<string, string> }),
+                this.http.request({ url: uri, method: "GET", headers: this.getAuthHeaders(setting) as Record<string, string>, throw: false }),
                 timeoutPromise,
             ]);
 

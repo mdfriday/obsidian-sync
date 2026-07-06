@@ -18,7 +18,7 @@ export { SyncStatusDisplay } from "./SyncStatusDisplay";
 export { FridayStorageEventManager, type FileEvent, type FileEventType } from "./FridayStorageEventManager";
 
 // Export the hidden file sync module (for .obsidian synchronization)
-export { FridayHiddenFileSync } from "./features/HiddenFileSync";
+export { FridayHiddenFileSync } from "./sync-core/src/features/HiddenFileSync";
 
 // Export hidden file utilities
 export { 
@@ -28,10 +28,10 @@ export {
 } from "./utils/hiddenFileUtils";
 
 // Export utilities for cache management
-export { clearHandlers as clearSyncHandlerCache } from "./core/replication/SyncParamsHandler";
+export { clearHandlers as clearSyncHandlerCache } from "./sync-core/src/core/replication/SyncParamsHandler";
 
 // Export ignore pattern utilities (livesync compatible gitignore matching)
-export { isAccepted, isAcceptedAll } from "./core/string_and_binary/path";
+export { isAccepted, isAcceptedAll } from "./sync-core/src/core/string_and_binary/path";
 
 // Export types from the core library
 export * from "./types";

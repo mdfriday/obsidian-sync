@@ -12,7 +12,7 @@
  */
 
 import { PersistentMap } from "octagonal-wheels/dataobject/PersistentMap";
-import { Logger, LOG_LEVEL_VERBOSE } from "../sync-core/src/core/common/logger";
+import { Logger, LOG_LEVEL_VERBOSE } from "../core/common/logger";
 import type { AnyEntry, MetaEntry } from "../core/common/types";
 
 /**

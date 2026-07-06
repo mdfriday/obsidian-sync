@@ -24,7 +24,7 @@ export class FridayConnectionFailureHandler {
     private _lastFailureNotified: number = 0;
     private _failureNotificationCooldown: number = 30000; // 30 seconds
 
-    constructor(core: FridaySyncCore) {
+    constructor(core: ISyncCore) {
         this.core = core;
     }
 

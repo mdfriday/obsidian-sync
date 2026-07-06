@@ -5,7 +5,7 @@
  */
 
 import { Platform, TFile, TFolder, requestUrl } from "obsidian";
-import { ServiceHub, type ServiceInstances } from "./core/services/ServiceHub";
+import { ServiceHub, type ServiceInstances } from "./sync-core/src/core/services/ServiceHub";
 import {
     type APIService,
     type PathService,
@@ -24,8 +24,8 @@ import {
     type UIService,
     ServiceBase,
     HubService,
-} from "./core/services/Services";
-import { ServiceBackend } from "./core/services/ServiceBackend";
+} from "./sync-core/src/core/services/Services";
+import { ServiceBackend } from "./sync-core/src/core/services/ServiceBackend";
 import type { FridaySyncCore } from "./FridaySyncCore";
 import type { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { Logger, type LOG_LEVEL, LOG_LEVEL_INFO, LOG_LEVEL_NOTICE, LOG_LEVEL_VERBOSE } from "octagonal-wheels/common/logger";
@@ -46,15 +46,15 @@ import type {
     UXFileInfoStub,
     AUTO_MERGED,
     MISSING_OR_ERROR,
-} from "./core/common/types";
-import type { LiveSyncLocalDB } from "./core/pouchdb/LiveSyncLocalDB";
-import type { LiveSyncAbstractReplicator } from "./core/replication/LiveSyncAbstractReplicator";
+} from "./sync-core/src/core/common/types";
+import type { LiveSyncLocalDB } from "./sync-core/src/core/pouchdb/LiveSyncLocalDB";
+import type { LiveSyncAbstractReplicator } from "./sync-core/src/core/replication/LiveSyncAbstractReplicator";
 import type { SimpleStore } from "octagonal-wheels/databases/SimpleStoreBase";
-import type { SvelteDialogManagerBase } from "./core/UI/svelteDialog";
-import { readContent, isTextDocument, isDocContentSame } from "./core/common/utils";
-import { enableEncryption, disableEncryption } from "./core/pouchdb/encryption";
-import { replicationFilter } from "./core/pouchdb/compress";
-import { E2EEAlgorithms } from "./core/common/types";
+import type { SvelteDialogManagerBase } from "./sync-core/src/core/UI/svelteDialog";
+import { readContent, isTextDocument, isDocContentSame } from "./sync-core/src/core/common/utils";
+import { enableEncryption, disableEncryption } from "./sync-core/src/core/pouchdb/encryption";
+import { replicationFilter } from "./sync-core/src/core/pouchdb/compress";
+import { E2EEAlgorithms } from "./sync-core/src/core/common/types";
 
 // Import hidden file utilities
 import { isInternalMetadata } from "./utils/hiddenFileUtils";
@@ -64,7 +64,7 @@ import { compareFileFreshness } from "./FridayStorageEventManager";
 import { markChangesAreSame, unmarkChanges } from "./utils/sameChangePairs";
 
 // PouchDB imports - use the configured PouchDB with transform-pouch plugin
-import { PouchDB } from "./core/pouchdb/pouchdb-browser";
+import { PouchDB } from "./sync-core/src/core/pouchdb/pouchdb-browser";
 
 /**
  * Stub API Service

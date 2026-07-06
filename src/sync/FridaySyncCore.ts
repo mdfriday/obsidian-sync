@@ -8,6 +8,11 @@
 import {Plugin, requestUrl} from "obsidian";
 import {reactiveSource, type ReactiveSource} from "octagonal-wheels/dataobject/reactive";
 
+// Obsidian adapters — wrap platform APIs for sync-core features
+import { ObsidianDomEventRegistrar } from "./adapters/ObsidianDomEventRegistrar";
+import { ObsidianVaultFileLister } from "./adapters/ObsidianVaultFileLister";
+import { ObsidianHttpClient } from "./adapters/ObsidianHttpClient";
+
 // Import file progress types
 import type { FileProgressCallback } from "./types/FileProgressEvents";
 
@@ -27,21 +32,21 @@ import {
 	type ObsidianLiveSyncSettings,
 	REMOTE_COUCHDB,
 	type RemoteDBSettings,
-} from "./core/common/types";
+} from "./sync-core/src/core/common/types";
 
 // Import core components
-import {LiveSyncLocalDB, type LiveSyncLocalDBEnv} from "./core/pouchdb/LiveSyncLocalDB";
+import {LiveSyncLocalDB, type LiveSyncLocalDBEnv} from "./sync-core/src/core/pouchdb/LiveSyncLocalDB";
 import {
 	LiveSyncCouchDBReplicator,
 	type LiveSyncCouchDBReplicatorEnv
-} from "./core/replication/couchdb/LiveSyncReplicator";
-import {type ReplicationStat} from "./core/replication/LiveSyncAbstractReplicator";
-import {LiveSyncManagers} from "./core/managers/LiveSyncManagers";
-import {type KeyValueDatabase} from "./core/interfaces/KeyValueDatabase";
+} from "./sync-core/src/core/replication/couchdb/LiveSyncReplicator";
+import {type ReplicationStat} from "./sync-core/src/core/replication/LiveSyncAbstractReplicator";
+import {LiveSyncManagers} from "./sync-core/src/core/managers/LiveSyncManagers";
+import {type KeyValueDatabase} from "./sync-core/src/core/interfaces/KeyValueDatabase";
 import {type SimpleStore} from "octagonal-wheels/databases/SimpleStoreBase";
-import {Logger, setGlobalLogFunction} from "./core/common/logger";
-import {isTextDocument, readContent} from "./core/common/utils";
-import {$msg} from "./core/common/i18n";
+import {Logger, setGlobalLogFunction} from "./sync-core/src/core/common/logger";
+import {isTextDocument, readContent} from "./sync-core/src/core/common/utils";
+import {$msg} from "./sync-core/src/core/common/i18n";
 
 // Import services
 import {FridayServiceHub} from "./FridayServiceHub";
@@ -51,29 +56,29 @@ import { initializeSameChangePairs } from "./utils/sameChangePairs";
 import type { SyncStatusDisplay } from "./SyncStatusDisplay";
 
 // Import HiddenFileSync module
-import {FridayHiddenFileSync} from "./features/HiddenFileSync";
+import {FridayHiddenFileSync} from "./sync-core/src/features/HiddenFileSync";
 import {DEFAULT_INTERNAL_IGNORE_PATTERNS} from "./types";
 
 // Import network error handling modules
-import {FridayNetworkEvents} from "./features/NetworkEvents";
-import {FridayConnectionMonitor} from "./features/ConnectionMonitor";
-import {FridayConnectionFailureHandler} from "./features/ConnectionFailure";
-import {FridayOfflineTracker} from "./features/OfflineTracker";
-import {ServerConnectivityChecker, type ServerStatus} from "./features/ServerConnectivity";
+import {FridayNetworkEvents} from "./sync-core/src/features/NetworkEvents";
+import {FridayConnectionMonitor} from "./sync-core/src/features/ConnectionMonitor";
+import {FridayConnectionFailureHandler} from "./sync-core/src/features/ConnectionFailure";
+import {FridayOfflineTracker} from "./sync-core/src/features/OfflineTracker";
+import {ServerConnectivityChecker, type ServerStatus} from "./sync-core/src/features/ServerConnectivity";
 
 // Import hidden file utilities
 import {isInternalMetadata} from "./utils/hiddenFileUtils";
 
 // PouchDB imports - use the configured PouchDB with all plugins (including transform-pouch)
-import {PouchDB} from "./core/pouchdb/pouchdb-browser";
+import {PouchDB} from "./sync-core/src/core/pouchdb/pouchdb-browser";
 
 // Import encryption utilities for local database
-import {disableEncryption, enableEncryption} from "./core/pouchdb/encryption";
-import {replicationFilter} from "./core/pouchdb/compress";
-import {clearHandlers as clearSyncParamsHandlerCache} from "./core/replication/SyncParamsHandler";
+import {disableEncryption, enableEncryption} from "./sync-core/src/core/pouchdb/encryption";
+import {replicationFilter} from "./sync-core/src/core/pouchdb/compress";
+import {clearHandlers as clearSyncParamsHandlerCache} from "./sync-core/src/core/replication/SyncParamsHandler";
 
 // Import path utilities for correct document ID generation
-import {id2path_base, path2id_base, isAccepted} from "./core/string_and_binary/path";
+import {id2path_base, path2id_base, isAccepted} from "./sync-core/src/core/string_and_binary/path";
 
 /**
  * Simple KeyValue Database implementation using localStorage
@@ -639,20 +644,26 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
             // Initialize hidden file sync module (for .obsidian synchronization)
             // Default: enabled with Obsidian official sync best practices
             if (this._settings.syncInternalFiles !== false) {
-                this._hiddenFileSync = new FridayHiddenFileSync(this.plugin, this);
+                this._hiddenFileSync = new FridayHiddenFileSync(
+                    new ObsidianVaultFileLister(this.plugin),
+                    this
+                );
                 await this._hiddenFileSync.onload();
                 Logger("Hidden file sync module initialized", LOG_LEVEL_INFO);
             }
 
             // Initialize network error handling modules
-            this._networkEvents = new FridayNetworkEvents(this.plugin, this);
+            this._networkEvents = new FridayNetworkEvents(
+                new ObsidianDomEventRegistrar(this.plugin),
+                this
+            );
             this._connectionMonitor = new FridayConnectionMonitor(this);
             this._connectionFailureHandler = new FridayConnectionFailureHandler(this);
             this._offlineTracker = new FridayOfflineTracker(this);
             
             // Initialize server connectivity checker (for pre-sync validation)
-            this._serverChecker = new ServerConnectivityChecker();
-            
+            this._serverChecker = new ServerConnectivityChecker(new ObsidianHttpClient());
+
             await this._offlineTracker.initialize();
             
             // NOTE: Network event listeners and connection monitoring are NOT started here

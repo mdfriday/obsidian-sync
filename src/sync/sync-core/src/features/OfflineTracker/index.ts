@@ -23,12 +23,12 @@ export interface OfflineChange {
 const OFFLINE_CHANGES_KEY = "friday-offline-changes";
 
 export class FridayOfflineTracker {
-    private core: FridaySyncCore;
+    private core: ISyncCore;
     private kvDB: KeyValueDatabase;
     private pendingChanges: Map<string, OfflineChange> = new Map();
     private _isOffline: boolean = false;
 
-    constructor(core: FridaySyncCore) {
+    constructor(core: ISyncCore) {
         this.core = core;
         this.kvDB = core.kvDB;
     }

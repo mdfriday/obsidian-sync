@@ -12,12 +12,12 @@
  * - Integration with livesync's database format (i: prefix for internal files)
  */
 
-import { type Plugin, type ListedFiles } from "obsidian";
+import type { IVaultFileLister } from "../../interfaces/IPluginAdapters";
 import { serialized, skipIfDuplicated } from "octagonal-wheels/concurrency/lock";
 import { Semaphore } from "octagonal-wheels/concurrency/semaphore";
 import { QueueProcessor } from "octagonal-wheels/concurrency/processor";
 
-import type { FridaySyncCore } from "src/sync";
+import type { ISyncCore } from "../../interfaces/ISyncCore";
 import {
     type FilePath,
     type FilePathWithPrefix,
@@ -34,8 +34,8 @@ import {
     ICHeaderLength,
     DEFAULT_INTERNAL_IGNORE_PATTERNS,
     type InternalFileInfo,
-} from "src/sync";
-import { $msg } from "src/sync/core/common/i18n";
+} from "../../types";
+import { $msg } from "../../core/common/i18n";
 
 /**
  * Conflict information for resolution processing
@@ -48,8 +48,8 @@ interface ConflictInfo {
     doc: MetaEntry;
 }
 import { Logger } from "../../core/common/logger";
-import { isDocContentSame, readContent, createBlob, readAsBlob } from "@lib/common/utils.ts";
-import { addPrefix, stripAllPrefixes, isPlainText } from "@lib/string_and_binary/path.ts";
+import { isDocContentSame, readContent, createBlob, readAsBlob } from "../../core/common/utils";
+import { addPrefix, stripAllPrefixes, isPlainText } from "../../core/string_and_binary/path";
 import {
     isInternalMetadata,
     stripInternalMetadataPrefix,
@@ -66,7 +66,7 @@ import {
     TARGET_IS_NEW,
     BASE_IS_NEW,
     EVEN,
-} from "../../utils/hiddenFileUtils";
+} from "./hiddenFileUtils";
 
 /**
  * UXFileInfo interface for file with content
@@ -84,9 +84,9 @@ interface UXFileInfo {
  * FridayHiddenFileSync - Main hidden file sync module
  */
 export class FridayHiddenFileSync {
-    private plugin: Plugin;
-    private core: FridaySyncCore;
-    
+    private fileLister: IVaultFileLister;
+    private core: ISyncCore;
+
     // Cache management for tracking processed files
     private _fileInfoLastProcessed: Map<string, string> = new Map();
     private _fileInfoLastKnown: Map<string, number> = new Map();
@@ -107,8 +107,8 @@ export class FridayHiddenFileSync {
     // Conflict resolution queue processor
     private conflictResolutionProcessor!: QueueProcessor<FilePathWithPrefix[], ConflictInfo[]>;
 
-    constructor(plugin: Plugin, core: FridaySyncCore) {
-        this.plugin = plugin;
+    constructor(fileLister: IVaultFileLister, core: ISyncCore) {
+        this.fileLister = fileLister;
         this.core = core;
         this.initConflictResolutionProcessor();
     }
@@ -123,11 +123,9 @@ export class FridayHiddenFileSync {
         return this._enabled && (settings.syncInternalFiles ?? true);
     }
 
-    /**
-     * Get the vault adapter for file operations
-     */
-    private get adapter() {
-        return this.plugin.app.vault.adapter;
+    /** Vault file lister — replaces plugin.app.vault.adapter */
+    private get adapter(): IVaultFileLister {
+        return this.fileLister;
     }
 
     /**

@@ -2724,12 +2724,12 @@ var require_transform_pouch = __commonJS({
 function joinVaultPath(basePath, ...segments) {
   const allParts = [basePath, ...segments].filter(Boolean);
   const joined = allParts.join("/");
-  return (0, import_obsidian11.normalizePath)(joined);
+  return (0, import_obsidian9.normalizePath)(joined);
 }
-var import_obsidian11;
+var import_obsidian9;
 var init_path = __esm({
   "src/utils/path.ts"() {
-    import_obsidian11 = require("obsidian");
+    import_obsidian9 = require("obsidian");
   }
 });
 
@@ -2796,7 +2796,7 @@ async function getDeviceId() {
   try {
     if (typeof crypto !== "undefined" && crypto.subtle) {
       const components = [
-        import_obsidian12.Platform.isMobile ? "mobile" : "desktop",
+        import_obsidian10.Platform.isMobile ? "mobile" : "desktop",
         typeof navigator !== "undefined" ? navigator.language : "",
         (/* @__PURE__ */ new Date()).getTimezoneOffset().toString()
       ].join("|");
@@ -2809,13 +2809,13 @@ async function getDeviceId() {
   return Math.random().toString(36).slice(2, 18);
 }
 function getDeviceInfo() {
-  const deviceType = import_obsidian12.Platform.isMobile ? "mobile" : "desktop";
+  const deviceType = import_obsidian10.Platform.isMobile ? "mobile" : "desktop";
   let deviceName = "MDFriday Sync";
-  if (import_obsidian12.Platform.isIosApp) deviceName = "MDFriday Sync on iOS";
-  else if (import_obsidian12.Platform.isAndroidApp) deviceName = "MDFriday Sync on Android";
-  else if (import_obsidian12.Platform.isMacOS) deviceName = "MDFriday Sync on macOS";
-  else if (import_obsidian12.Platform.isWin) deviceName = "MDFriday Sync on Windows";
-  else if (import_obsidian12.Platform.isLinux) deviceName = "MDFriday Sync on Linux";
+  if (import_obsidian10.Platform.isIosApp) deviceName = "MDFriday Sync on iOS";
+  else if (import_obsidian10.Platform.isAndroidApp) deviceName = "MDFriday Sync on Android";
+  else if (import_obsidian10.Platform.isMacOS) deviceName = "MDFriday Sync on macOS";
+  else if (import_obsidian10.Platform.isWin) deviceName = "MDFriday Sync on Windows";
+  else if (import_obsidian10.Platform.isLinux) deviceName = "MDFriday Sync on Linux";
   return { deviceName, deviceType };
 }
 function buildLicenseInfoFromActivation(data, userDir) {
@@ -2925,10 +2925,10 @@ function createObsidianLicenseService(httpClient) {
 function createObsidianGlobalConfigService() {
   return new LightweightGlobalConfigService();
 }
-var import_obsidian12, fs, nodePath, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
+var import_obsidian10, fs, nodePath, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
 var init_foundry = __esm({
   "src/foundry/index.ts"() {
-    import_obsidian12 = require("obsidian");
+    import_obsidian10 = require("obsidian");
     fs = __toESM(require("fs"), 1);
     nodePath = __toESM(require("path"), 1);
     MDFRIDAY_DIR = ".mdfriday";
@@ -3773,7 +3773,7 @@ async function getDeviceId2() {
   try {
     if (typeof crypto !== "undefined" && crypto.subtle) {
       const data = new TextEncoder().encode(
-        [import_obsidian13.Platform.isMobile ? "mobile" : "desktop", (/* @__PURE__ */ new Date()).getTimezoneOffset()].join("|")
+        [import_obsidian11.Platform.isMobile ? "mobile" : "desktop", (/* @__PURE__ */ new Date()).getTimezoneOffset()].join("|")
       );
       const buf = await crypto.subtle.digest("SHA-256", data);
       return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
@@ -3783,10 +3783,10 @@ async function getDeviceId2() {
   return Math.random().toString(36).slice(2, 18);
 }
 function getDeviceInfo2() {
-  const deviceType = import_obsidian13.Platform.isMobile ? "mobile" : "desktop";
-  let name = import_obsidian13.Platform.isMobile ? "MDFriday Sync Mobile" : "MDFriday Sync Desktop";
-  if (import_obsidian13.Platform.isIosApp) name = "MDFriday Sync on iOS";
-  else if (import_obsidian13.Platform.isAndroidApp) name = "MDFriday Sync on Android";
+  const deviceType = import_obsidian11.Platform.isMobile ? "mobile" : "desktop";
+  let name = import_obsidian11.Platform.isMobile ? "MDFriday Sync Mobile" : "MDFriday Sync Desktop";
+  if (import_obsidian11.Platform.isIosApp) name = "MDFriday Sync on iOS";
+  else if (import_obsidian11.Platform.isAndroidApp) name = "MDFriday Sync on Android";
   return { deviceName: name, deviceType };
 }
 function buildLicenseInfoFromActivation2(data, userDir) {
@@ -3898,10 +3898,10 @@ function createObsidianGlobalConfigService2(config) {
   const { vault, pluginDir } = extractVaultAndDir(config);
   return new MobileConfigService(vault, pluginDir);
 }
-var import_obsidian13, MDFRIDAY_DIR3, USER_DATA_FILE2, WORKSPACE_FILE3, CONFIG_FILE2, DEFAULT_API_URL2, MobileAuthService, MobileLicenseService, MobileWorkspaceService, MobileConfigService;
+var import_obsidian11, MDFRIDAY_DIR3, USER_DATA_FILE2, WORKSPACE_FILE3, CONFIG_FILE2, DEFAULT_API_URL2, MobileAuthService, MobileLicenseService, MobileWorkspaceService, MobileConfigService;
 var init_mobile = __esm({
   "src/foundry/mobile.ts"() {
-    import_obsidian13 = require("obsidian");
+    import_obsidian11 = require("obsidian");
     init_obsidian_mobile_repositories();
     MDFRIDAY_DIR3 = ".mdfriday";
     USER_DATA_FILE2 = "user-data.json";
@@ -4168,7 +4168,7 @@ __export(main_exports, {
   default: () => MdfridaySyncPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian14 = require("obsidian");
+var import_obsidian12 = require("obsidian");
 var nodePath2 = __toESM(require("path"), 1);
 
 // src/i18n/utils.ts
@@ -5508,7 +5508,7 @@ function info(message, flagsOrKey, key2) {
   __logger(message, LEVEL_INFO, flagsOrKey, key2);
 }
 
-// src/sync/core/common/messagesJson/en.json
+// src/sync/sync-core/src/core/common/messagesJson/en.json
 var en_default = {
   "(BETA) Always overwrite with a newer file": "(BETA) Always overwrite with a newer file",
   "(Beta) Use ignore files": "(Beta) Use ignore files",
@@ -6147,12 +6147,12 @@ var en_default = {
   "fridaySync.progress.syncCompleted": "Sync completed \u2713"
 };
 
-// src/sync/core/common/messages/def.ts
+// src/sync/sync-core/src/core/common/messages/def.ts
 var PartialMessages = {
   def: en_default
 };
 
-// src/sync/core/common/messagesJson/es.json
+// src/sync/sync-core/src/core/common/messagesJson/es.json
 var es_default = {
   "(BETA) Always overwrite with a newer file": "(BETA) Sobrescribir siempre con archivo m\xE1s nuevo",
   "(Beta) Use ignore files": "(Beta) Usar archivos de ignorar",
@@ -6579,12 +6579,12 @@ var es_default = {
   "Write logs into the file": "Escribir logs en archivo"
 };
 
-// src/sync/core/common/messages/es.ts
+// src/sync/sync-core/src/core/common/messages/es.ts
 var PartialMessages2 = {
   es: es_default
 };
 
-// src/sync/core/common/messagesJson/ja.json
+// src/sync/sync-core/src/core/common/messagesJson/ja.json
 var ja_default = {
   "(BETA) Always overwrite with a newer file": "(\u30D9\u30FC\u30BF\u6A5F\u80FD) \u5E38\u306B\u65B0\u3057\u3044\u30D5\u30A1\u30A4\u30EB\u3067\u4E0A\u66F8\u304D\u3059\u308B",
   "(Beta) Use ignore files": "(\u30D9\u30FC\u30BF\u6A5F\u80FD) \u7121\u8996\u30D5\u30A1\u30A4\u30EB(ignore)\u306E\u4F7F\u7528",
@@ -6684,12 +6684,12 @@ var ja_default = {
   "Write logs into the file": "\u30D5\u30A1\u30A4\u30EB\u306B\u30ED\u30B0\u3092\u8A18\u9332"
 };
 
-// src/sync/core/common/messages/ja.ts
+// src/sync/sync-core/src/core/common/messages/ja.ts
 var PartialMessages3 = {
   ja: ja_default
 };
 
-// src/sync/core/common/messagesJson/ko.json
+// src/sync/sync-core/src/core/common/messagesJson/ko.json
 var ko_default = {
   "(BETA) Always overwrite with a newer file": "(\uBCA0\uD0C0) \uD56D\uC0C1 \uC0C8\uB85C\uC6B4 \uD30C\uC77C\uB85C \uB36E\uC5B4\uC4F0\uAE30",
   "(Beta) Use ignore files": "(\uBCA0\uD0C0) \uC81C\uC678 \uADDC\uCE59 \uD30C\uC77C \uC0AC\uC6A9",
@@ -7212,20 +7212,20 @@ var ko_default = {
   "Write logs into the file": "\uD30C\uC77C\uC5D0 \uB85C\uADF8 \uAE30\uB85D"
 };
 
-// src/sync/core/common/messages/ko.ts
+// src/sync/sync-core/src/core/common/messages/ko.ts
 var PartialMessages4 = {
   ko: ko_default
 };
 
-// src/sync/core/common/messagesJson/ru.json
+// src/sync/sync-core/src/core/common/messagesJson/ru.json
 var ru_default = {};
 
-// src/sync/core/common/messages/ru.ts
+// src/sync/sync-core/src/core/common/messages/ru.ts
 var PartialMessages5 = {
   ru: ru_default
 };
 
-// src/sync/core/common/messagesJson/zh.json
+// src/sync/sync-core/src/core/common/messagesJson/zh.json
 var zh_default = {
   "(BETA) Always overwrite with a newer file": "\u59CB\u7EC8\u4F7F\u7528\u66F4\u65B0\u7684\u6587\u4EF6\u8986\u76D6\uFF08\u6D4B\u8BD5\u7248\uFF09",
   "(Beta) Use ignore files": "\uFF08\u6D4B\u8BD5\u7248\uFF09\u4F7F\u7528\u5FFD\u7565\u6587\u4EF6",
@@ -7720,20 +7720,20 @@ var zh_default = {
   "fridaySync.progress.syncCompleted": "\u540C\u6B65\u5B8C\u6210 \u2713"
 };
 
-// src/sync/core/common/messages/zh.ts
+// src/sync/sync-core/src/core/common/messages/zh.ts
 var PartialMessages6 = {
   zh: zh_default
 };
 
-// src/sync/core/common/messagesJson/zh-tw.json
+// src/sync/sync-core/src/core/common/messagesJson/zh-tw.json
 var zh_tw_default = {};
 
-// src/sync/core/common/messages/zh-tw.ts
+// src/sync/sync-core/src/core/common/messages/zh-tw.ts
 var PartialMessages7 = {
   "zw-th": zh_tw_default
 };
 
-// src/sync/core/common/messages/combinedMessages.dev.ts
+// src/sync/sync-core/src/core/common/messages/combinedMessages.dev.ts
 var messages = {
   ...PartialMessages,
   ...PartialMessages2,
@@ -7755,7 +7755,7 @@ var _allMessages = w.reduce(
   {}
 );
 
-// src/sync/core/common/rosetta.ts
+// src/sync/sync-core/src/core/common/rosetta.ts
 var expandedMessage = {
   ...expandKeywords(_allMessages, "def"),
   ...expandKeywords(_allMessages, "es"),
@@ -7800,7 +7800,7 @@ function expandKeywords(message, lang, recurseLimit = 10) {
 }
 var allMessages = expandedMessage;
 
-// src/sync/core/common/i18n.ts
+// src/sync/sync-core/src/core/common/i18n.ts
 var currentLang = "";
 var missingTranslations = [];
 var __onMissingTranslations = (key2) => console.warn(key2);
@@ -8006,10 +8006,10 @@ var I18nService = class {
 };
 
 // src/sync/SyncService.ts
-var import_obsidian7 = require("obsidian");
+var import_obsidian5 = require("obsidian");
 
 // src/sync/FridaySyncCore.ts
-var import_obsidian6 = require("obsidian");
+var import_obsidian4 = require("obsidian");
 
 // node_modules/octagonal-wheels/dist/common/polyfill.js
 var _a;
@@ -8244,11 +8244,50 @@ function computed(expression) {
   return () => v.value;
 }
 
+// src/sync/adapters/ObsidianDomEventRegistrar.ts
+var ObsidianDomEventRegistrar = class {
+  constructor(plugin2) {
+    this.plugin = plugin2;
+  }
+  registerDomEvent(el, type, handler) {
+    this.plugin.registerDomEvent(
+      el,
+      type,
+      handler
+    );
+  }
+};
+
+// src/sync/adapters/ObsidianVaultFileLister.ts
+var ObsidianVaultFileLister = class {
+  constructor(plugin2) {
+    this.plugin = plugin2;
+  }
+  async list(path2) {
+    return this.plugin.app.vault.adapter.list(path2);
+  }
+};
+
+// src/sync/adapters/ObsidianHttpClient.ts
+var import_obsidian = require("obsidian");
+var ObsidianHttpClient = class {
+  async request(params) {
+    const result = await (0, import_obsidian.requestUrl)(params);
+    return {
+      status: result.status,
+      text: result.text,
+      json: result.json,
+      arrayBuffer: result.arrayBuffer,
+      headers: result.headers
+    };
+  }
+};
+
 // node_modules/octagonal-wheels/dist/common/const.js
 var RESULT_TIMED_OUT = Symbol("timed out");
 var RESULT_NOT_FOUND = Symbol("NotFound");
 
-// src/sync/core/common/types.ts
+// src/sync/sync-core/src/core/common/types.ts
 var MAX_DOC_SIZE_BIN = 102400;
 var VER = 12;
 var LEAF_WAIT_ONLY_REMOTE = 5e3;
@@ -8878,7 +8917,7 @@ function decodeBinary(src) {
   return base64ToArrayBuffer(src);
 }
 
-// src/sync/core/pouchdb/utils_couchdb.ts
+// src/sync/sync-core/src/core/pouchdb/utils_couchdb.ts
 function isErrorOfMissingDoc(ex) {
   return (ex && (ex == null ? void 0 : ex.status)) == 404;
 }
@@ -8943,7 +8982,7 @@ function cancelableDelay(timeout, cancel = TIMED_OUT_SIGNAL) {
   };
 }
 
-// src/sync/core/common/LSError.ts
+// src/sync/sync-core/src/core/common/LSError.ts
 var LiveSyncError = class _LiveSyncError extends Error {
   /**
    * Constructs a new LiveSyncError instance.
@@ -8951,7 +8990,9 @@ var LiveSyncError = class _LiveSyncError extends Error {
    */
   constructor(message, options) {
     super(message);
-    this.name = this.constructor.name;
+    __publicField(this, "name", this.constructor.name);
+    __publicField(this, "cause");
+    __publicField(this, "overrideStatus");
     if (options == null ? void 0 : options.cause) {
       this.cause = options.cause instanceof Error ? options.cause : new Error(`${options.cause}`);
     }
@@ -9014,25 +9055,26 @@ var LiveSyncError = class _LiveSyncError extends Error {
 var LiveSyncFatalError = class extends LiveSyncError {
 };
 
-// src/sync/core/managers/ChunkFetcher.ts
+// src/sync/sync-core/src/core/managers/ChunkFetcher.ts
 var EVENT_MISSING_CHUNKS = "missingChunks";
 var EVENT_MISSING_CHUNK_REMOTE = "missingChunkRemote";
 var BATCH_SIZE = 100;
 var ChunkFetcher = class {
   constructor(options) {
-    this.queue = [];
-    this.abort = new AbortController();
-    this.onEventHandler = this.onEvent.bind(this);
+    __publicField(this, "options");
+    __publicField(this, "queue", []);
+    __publicField(this, "abort", new AbortController());
+    __publicField(this, "onEventHandler", this.onEvent.bind(this));
     /**
      * Processing requests
      */
-    this.currentProcessing = 0;
+    __publicField(this, "currentProcessing", 0);
     /**
      * Time of the last request to the remote server.
      * This is used to manage the interval between requests.
      * Even if concurrency allows, every start of a request will ensure that the interval is respected.
      */
-    this.previousRequestTime = 0;
+    __publicField(this, "previousRequestTime", 0);
     this.options = options;
     this.chunkManager.addListener(EVENT_MISSING_CHUNKS, this.onEventHandler, {
       signal: this.abort.signal
@@ -9065,9 +9107,10 @@ var ChunkFetcher = class {
       return;
     }
     try {
-      let isValidChunk = function(chunk) {
+      let isValidChunk2 = function(chunk) {
         return chunk && typeof (chunk == null ? void 0 : chunk._id) === "string" && typeof (chunk == null ? void 0 : chunk.data) === "string";
       };
+      var isValidChunk = isValidChunk2;
       this.currentProcessing++;
       const requestIDs = this.queue.splice(0, BATCH_SIZE);
       const now = Date.now();
@@ -9088,14 +9131,14 @@ var ChunkFetcher = class {
         }
         return;
       }
-      const chunks = fetched.filter((chunk) => isValidChunk(chunk));
+      const chunks = fetched.filter((chunk) => isValidChunk2(chunk));
       if (chunks.length !== fetched.length) {
         Logger(
           `Some fetched chunks are invalid and will be ignored: (${fetched.length - chunks.length} / ${fetched.length}).`,
           LOG_LEVEL_VERBOSE
         );
         for (const chunk of fetched) {
-          if (!isValidChunk(chunk)) {
+          if (!isValidChunk2(chunk)) {
             Logger(`Invalid chunk: ${JSON.stringify(chunk)}`, LOG_LEVEL_VERBOSE);
           }
         }
@@ -9146,7 +9189,7 @@ var ChunkFetcher = class {
   }
 };
 
-// src/sync/core/managers/ChunkManager.ts
+// src/sync/sync-core/src/core/managers/ChunkManager.ts
 var DEFAULT_MAX_CACHE_SIZE = 1e5;
 var HotPackProcessResults = {
   OK: true,
@@ -9199,22 +9242,24 @@ function isChunkDoc(doc) {
 var EVENT_CHUNK_FETCHED = "chunkFetched";
 var ChunkManager = class {
   constructor(options) {
-    this.eventTarget = new EventTarget();
-    this.maxCacheSize = DEFAULT_MAX_CACHE_SIZE;
+    __publicField(this, "options");
+    __publicField(this, "eventTarget", new EventTarget());
+    __publicField(this, "maxCacheSize", DEFAULT_MAX_CACHE_SIZE);
     // Maximum cache size
-    this.caches = /* @__PURE__ */ new Map();
-    this.waitingMap = /* @__PURE__ */ new Map();
+    __publicField(this, "caches", /* @__PURE__ */ new Map());
+    __publicField(this, "waitingMap", /* @__PURE__ */ new Map());
     // Queue for pending reads
-    this.allocCount = 0;
+    __publicField(this, "allocCount", 0);
     // Count of allocated chunks
-    this.derefCount = 0;
-    this.onChunkArrivedHandler = this.onChunkArrived.bind(this);
-    this.onChangeHandler = this.onChange.bind(this);
-    this.onMissingChunkRemoteHandler = this.onMissingChunkRemote.bind(this);
-    this.abort = new AbortController();
-    this.initialised = Promise.resolve();
-    this.concurrentTransactions = 0;
-    this.stabilised = Promise.resolve();
+    __publicField(this, "derefCount", 0);
+    __publicField(this, "onChunkArrivedHandler", this.onChunkArrived.bind(this));
+    __publicField(this, "onChangeHandler", this.onChange.bind(this));
+    __publicField(this, "onMissingChunkRemoteHandler", this.onMissingChunkRemote.bind(this));
+    __publicField(this, "abort", new AbortController());
+    __publicField(this, "changeHandler");
+    __publicField(this, "initialised", Promise.resolve());
+    __publicField(this, "concurrentTransactions", 0);
+    __publicField(this, "stabilised", Promise.resolve());
     this.options = options;
     this.caches = /* @__PURE__ */ new Map();
     this.changeHandler = this.changeManager.addCallback(this.onChangeHandler);
@@ -9668,10 +9713,10 @@ var EventHub = class {
   }
 };
 
-// src/sync/core/hub/hub.ts
+// src/sync/sync-core/src/core/hub/hub.ts
 var eventHub = new EventHub();
 
-// src/sync/core/pouchdb/LiveSyncLocalDB.ts
+// src/sync/sync-core/src/core/pouchdb/LiveSyncLocalDB.ts
 var REMOTE_CHUNK_FETCHED = "remote-chunk-fetched";
 function getNoFromRev(rev3) {
   if (!rev3) return 0;
@@ -9679,8 +9724,14 @@ function getNoFromRev(rev3) {
 }
 var LiveSyncLocalDB = class {
   constructor(dbname, env) {
-    this.isReady = false;
-    this.needScanning = false;
+    __publicField(this, "auth");
+    __publicField(this, "dbname");
+    __publicField(this, "settings");
+    __publicField(this, "localDatabase");
+    __publicField(this, "isReady", false);
+    __publicField(this, "needScanning", false);
+    __publicField(this, "env");
+    __publicField(this, "offRemoteChunkFetchedHandler");
     this.auth = {
       username: "",
       password: ""
@@ -11971,7 +12022,7 @@ minimatch.Minimatch = Minimatch;
 minimatch.escape = escape;
 minimatch.unescape = unescape2;
 
-// src/sync/core/mods.ts
+// src/sync/sync-core/src/core/mods.ts
 var webcrypto;
 async function getWebCrypto() {
   if (webcrypto) {
@@ -11984,7 +12035,7 @@ async function getWebCrypto() {
   throw new Error("Web Crypto API is not available in this environment");
 }
 
-// src/sync/core/string_and_binary/path.ts
+// src/sync/sync-core/src/core/string_and_binary/path.ts
 function isFilePath(path2) {
   if (path2.indexOf(":") === -1) return true;
   return false;
@@ -12369,7 +12420,7 @@ function sizeToHumanReadable(size) {
   return size.toFixed(2) + units[i];
 }
 
-// src/sync/core/common/utils.ts
+// src/sync/sync-core/src/core/common/utils.ts
 function resolveWithIgnoreKnownError(p, def) {
   return new Promise((res2, rej) => {
     p.then(res2).catch((ex) => isErrorOfMissingDoc(ex) ? res2(def) : rej(ex));
@@ -12640,6 +12691,9 @@ function parseCustomRegExpList(list, flags, delimiter) {
 }
 var CustomRegExp = class {
   constructor(regexp, flags) {
+    __publicField(this, "regexp");
+    __publicField(this, "negate");
+    __publicField(this, "pattern");
     const [negate, exp] = parseCustomRegExp(regexp);
     this.pattern = exp;
     this.regexp = new RegExp(exp, flags);
@@ -12659,7 +12713,7 @@ function getFileRegExp(settings, key2) {
   return parseCustomRegExpList(regExp, flagCase, "|[]|");
 }
 
-// src/sync/core/pouchdb/negotiation.ts
+// src/sync/sync-core/src/core/pouchdb/negotiation.ts
 var checkRemoteVersion = async (db, migrate, barrier = VER) => {
   try {
     const versionInfo = await db.get(VERSIONING_DOCID);
@@ -12859,15 +12913,15 @@ function inlineWorker(scriptText) {
   return worker;
 }
 
-// src/sync/core/worker/bg.worker.ts?worker
+// src/sync/sync-core/src/core/worker/bg.worker.ts?worker
 function Worker2() {
   return inlineWorker('var C=(e,t)=>(t=Symbol[e])?t:Symbol.for("Symbol."+e),rt=e=>{throw TypeError(e)};var K=function(e,t){this[0]=e,this[1]=t},G=(e,t,n)=>{var r=(i,s,c,y)=>{try{var u=n[i](s),l=(s=u.value)instanceof K,A=u.done;Promise.resolve(l?s[0]:s).then(g=>l?r(i==="return"?i:"next",s[1]?{done:g.done,value:g.value}:g,c,y):c({value:g,done:A})).catch(g=>r("throw",g,c,y))}catch(g){y(g)}},o=i=>a[i]=s=>new Promise((c,y)=>r(i,s,c,y)),a={};return n=n.apply(e,t),a[C("asyncIterator")]=()=>a,o("next"),o("throw"),o("return"),a},S=e=>{var t=e[C("asyncIterator")],n=!1,r,o={};return t==null?(t=e[C("iterator")](),r=a=>o[a]=i=>t[a](i)):(t=t.call(e),r=a=>o[a]=i=>{if(n){if(n=!1,a==="throw")throw i;return i}return n=!0,{done:!1,value:new K(new Promise(s=>{var c=t[a](i);c instanceof Object||rt("Object expected"),s(c)}),1)}}),o[C("iterator")]=()=>o,r("next"),"throw"in t?r("throw"):o.throw=a=>{throw a},"return"in t&&r("return"),o},Q=(e,t,n)=>(t=e[C("asyncIterator")])?t.call(e):(e=e[C("iterator")](),t={},n=(r,o)=>(o=e[r])&&(t[r]=a=>new Promise((i,s,c)=>(a=o.call(e,a),c=a.done,Promise.resolve(a.value).then(y=>i({value:y,done:c}),s)))),n("next"),n("return"),t);var nt={minLogLevel:32},ot=function(t,n=32,r){if(n<nt.minLogLevel)return;let a=new Date().toLocaleString(),i=typeof t=="string"?t:t instanceof Error?`${t.name}:${t.message}`:JSON.stringify(t,null,2),s=`${a}	${n}	${i}`;n&1?console.debug(s):n&4?console.warn(s):n&8?console.error(s):n&2?console.info(s):console.log(s),t instanceof Error&&console.dir(t.stack)},at=ot;function T(e,t,n){at(e,t,n)}var de=typeof Uint8Array!="undefined"&&typeof Uint8Array.prototype.toBase64=="function"&&typeof Uint8Array.fromBase64=="function";function ge(e){if(e.length===0)return new ArrayBuffer(0);try{if(typeof e=="string")return Uint8Array.fromBase64(e).buffer;let t=e.map(a=>Uint8Array.fromBase64(a).buffer),n=t.reduce((a,i)=>a+i.byteLength,0),r=new Uint8Array(n),o=0;return t.forEach(a=>{r.set(new Uint8Array(a),o),o+=a.byteLength}),r.buffer}catch(t){return T("Base64 Decode error",16),T(t,16),new ArrayBuffer(0)}}function he(e){if(typeof e=="string")return O(e);let t=e.map(a=>O(a)),n=t.reduce((a,i)=>a+i.byteLength,0),r=new Uint8Array(n),o=0;return t.forEach(a=>{r.set(new Uint8Array(a),o),o+=a.byteLength}),r.buffer}var v=de?ge:he;function O(e){try{let t=globalThis.atob(e),n=t.length,r=new Uint8Array(n);for(let o=0;o<n;o++)r[o]=t.charCodeAt(o);return r.buffer}catch(t){return T("Base64 Decode error",16),T(t,16),new ArrayBuffer(0)}}var wr=3*5e7;function it(e){return new Promise((t,n)=>{let r=new Blob([e],{type:"application/octet-binary"}),o=new FileReader;o.onload=function(a){var c,y;let i=((y=(c=a.target)==null?void 0:c.result)==null?void 0:y.toString())||"";if(e.byteLength!=0&&(i==""||i=="data:"))return n(new TypeError("Could not parse the encoded string"));let s=i.substring(i.indexOf(",")+1);t(s)},o.readAsDataURL(r)})}async function we(e){let t=e instanceof Uint8Array?e:new Uint8Array(e);return t.byteLength<Ae?btoa(String.fromCharCode.apply(null,[...t])):await it(t)}function me(e){let t=e instanceof Uint8Array?e:new Uint8Array(e);return Promise.resolve(t.toBase64())}var m=de?me:we;var Ae=32768,st=new TextEncoder,ct=new TextDecoder;function E(e){if(e.length>128)return st.encode(e);let t=new Uint8Array(e.length*4),n=e.length,r=0,o=0,a=0;for(;a<n;)o=e.charCodeAt(a++),o<128?t[r++]=o:o<2048?(t[r++]=192|o>>>6,t[r++]=128|o&63):o<55296||o>57343?(t[r++]=224|o>>>12,t[r++]=128|o>>>6&63,t[r++]=128|o&63):(o=(o-55296<<10|e.charCodeAt(a++)-56320)+65536,t[r++]=240|o>>>18,t[r++]=128|o>>>12&63,t[r++]=128|o>>>6&63,t[r++]=128|o&63);return t.slice(0,r)}function b(e){let t=e.length;if(t>128)return ct.decode(e);let n=0,r=t,o="";for(;n<r;){let a=[],i=Math.min(n+Ae,r);for(;n<i;){let s=e[n++];if(s<128)a.push(s);else if((s&224)===192)a.push((s&31)<<6|e[n++]&63);else if((s&240)===224)a.push((s&15)<<12|(e[n++]&63)<<6|e[n++]&63);else if((s&248)===240){let c=(s&7)<<18|(e[n++]&63)<<12|(e[n++]&63)<<6|e[n++]&63;c<65536?a.push(c):(c-=65536,a.push((c>>>10)+55296,(c&1023)+56320))}}o+=String.fromCharCode(...a)}return o}function*Ee(e,t){for(let n=e;n<=t;n++)yield n}var br=1024*1024*30,yt={},be={};[...Ee(192,447)].forEach((e,t)=>{yt[t]=e,be[e]=t});function ee(e){if(e.length==1)return F(e[0]);let t=e.map(a=>F(a)),n=t.reduce((a,i)=>a+i.byteLength,0),r=new Uint8Array(n),o=0;return t.forEach(a=>{r.set(new Uint8Array(a),o),o+=a.byteLength}),r.buffer}function F(e){let t=new Uint8Array(e.length),n=e.length;for(let r=0;r<n;r++){let o=e.charCodeAt(r);o>=38&&o<=126&&o!=58?t[r]=o:t[r]=be[o]}return t.buffer}var Be={},xe={};for(let e=0;e<256;e++)Be[`00${e.toString(16)}`.slice(-2)]=e,xe[e]=`00${e.toString(16)}`.slice(-2);var Se=typeof Uint8Array!="undefined"&&typeof Uint8Array.prototype.toBase64=="function"&&typeof Uint8Array.fromBase64=="function",P=Se?Te:Le;function Te(e){return Uint8Array.fromHex(e)}function Le(e){let t=e.length/2,n=new Uint8Array(t);for(let r=0;r<t;r++)n[r]=Be[e[r*2]+e[r*2+1]];return n}var x=Se?Ke:_e;function _e(e){return[...e].map(t=>xe[t]).join("")}function Ke(e){return e.toHex()}function te(e){if(e.length==0)return new Uint8Array().buffer;if(typeof e=="string"){if(e[0]==="%")return F(e.substring(1))}else if(e[0][0]==="%"){let[t,...n]=e;return ee([t.substring(1),...n])}return v(e)}function M(e){return e.type==="text/plain"}function*pt(e,t){let n="";e:do{let r=e.shift();if(typeof r=="undefined"){yield n;break e}if(r.startsWith("```")||r.startsWith(" ```")||r.startsWith("  ```")||r.startsWith("   ```")){yield n,n=r+(e.length!=0?`\n`:"");t:do{let s=e.shift();if(typeof s=="undefined")break t;n+=s+(e.length!=0?`\n`:"")}while(e.length>0&&!(e[0].startsWith("```")||e[0].startsWith(" ```")||e[0].startsWith("  ```")||e[0].startsWith("   ```")));let o=n.endsWith("="),a=n.length>2048,i=e.shift();if(typeof i!="undefined"&&(n+=i,n+=e.length!=0?`\n`:""),!o&&!a){let s=/(.*?[;,:<])/g,c=n.split(s).filter(y=>y!="");for(let y of c)yield y}else yield n;n=""}else n+=r+(e.length!=0?`\n`:""),(n.length>=t||e.length==0||e[0]=="#"||n[0]=="#")&&(yield n,n="")}while(e.length>0)}var De=10,Ue="Segmenter"in Intl?new Intl.Segmenter(navigator.language,{granularity:"sentence"}):void 0;function*k(e,t){let n=e;do{let r=t,o=n.substring(0,r);n=n.substring(r),yield o}while(n!="")}function*Pe(e,t,n){let r=Ue.segment(e),o="",a="";for(let i of r){let s=i.segment;o==s||a.length<n?(a+=s,o=s):(o=s,a.length>0&&(yield*S(k(a,t))),a=s)}a.length>0&&(yield*S(k(a,t)))}function*dt(e){for(let t of e){let n=-1,r=-1;do{if(r=t.indexOf(`\n`,n),r==-1){yield t.substring(n);break}for(;t[r]==`\n`;)r++;yield t.substring(n,r),n=r}while(r!=-1)}}function gt(e,t,n){let o=dt(typeof e=="string"?[e]:e),a=0,i=!1,s=!1;return function*(){let c=[];for(let y of o)y.startsWith("````")?a==0?(a=4,s=!0):a==4&&(a=0,i=!0):y.startsWith("```")&&(a==0?(a=3,s=!0):a==3&&(a=0,i=!0)),s&&(c.length>0&&(yield*S(Pe(c.join(""),t,n)),c.length=0),s=!1),c.push(y),i&&(c.length>0&&(yield*S(k(c.join(""),t)),c.length=0),i=!1);c.length>0&&(a==0?yield*S(Pe(c.join(""),t,n)):yield*S(k(c.join(""),t)))}}function ht(e,t,n){return function*(){yield*S(k(e,t))}}function wt(e,t,n,r,o){return!o||!Ue?mt(e,t,n,r):n?gt(e,t,r):ht(e,t,r)}function mt(e,t,n,r){let o=typeof e=="string"?[e]:e;return function*(){for(let i of o)if(n){let s=i.split(`\n`),c=pt(s,r);for(let y of c){let u=y;do{let l=t;u.charCodeAt(l-1)!=u.codePointAt(l-1)&&l++,yield u.substring(0,l),u=u.substring(l)}while(u!="")}}else{let s=i;do{let c=t,y=s.substring(0,c);s=s.substring(c),yield y}while(s!="")}}}function*At(e,t,n=25,r){let o="",a=!1,i=t.length;for(let s of e){let c=s.length;if(r&&c>r){yield o+s,a=!1,o="";continue}let y=-1,u=0;e:do{if(y=s.indexOf(t,u),y==-1)break e;o+=s.slice(u,y)+t,o.length>n?(yield o,o="",a=!1):a=!0,u=y+i}while(y<c);(u!=y||u==-1&&y==-1)&&(o+=s.slice(u),a=!0)}a&&(yield o)}function*ve(e,t){let n=e.length;if(n>t){let r=0;do{let o=r+t;if(o>n){yield e.substring(r);break}for(;e.charCodeAt(o-1)!=e.codePointAt(o-1);)o++;yield e.substring(r,o),r=o}while(r<n)}else yield e}function*Et(e,t){for(let n of e)yield*S(ve(n,t))}function*bt(e){for(let t of e)yield t}var Bt=100;async function Ce(e,t,n,r,o,a){if(e.size==0)return function*(){};if(M(e)){let g=await e.text();if(!n){let d=ve(g,t);return function*(){yield*S(d)}}let U=g.length,f=r;for(;U/f>Bt;)f+=r;let B=bt([g]),h=At(B,`\n`,f),p=Et(h,t);return function*(){yield*S(p)}}let i=!1,s=0;o&&o.endsWith(".pdf")?s=47:o&&o.endsWith(".json")&&(i=!0,s=44);let u=Math.max(i?100:1e5,Math.min(1e8,e.size)),l=1,A=u;for(;A>10;)A/=12.5,l++;return r=Math.floor(10**(l-1)),function(){return G(this,null,function*(){let U=e.size,f=0,B=new Uint8Array(yield new K(e.arrayBuffer()));do{let h=f+r,p=f+t,d,w=B.indexOf(s,h);w==-1&&(w=B.indexOf(De,h)),w==-1?d=p:d=w<p?w:p,yield yield new K(m(B.slice(f,d))),f=d}while(f<U)})}}async function Ie(e,t,n,r,o,a){if(M(e))return wt(await e.text(),t,n,r,a!=null?a:!1);let i=0,s=!1;o&&o.endsWith(".pdf")?i=47:o&&o.endsWith(".json")&&(s=!0,i=44);let u=Math.max(s?100:1e5,Math.min(1e8,e.size)),l=1,A=u;for(;A>10;)A/=12.5,l++;return r=Math.floor(10**(l-1)),function(){return G(this,null,function*(){let U=e.size,f=0;do{let B=t,h=new Uint8Array(yield new K(e.slice(f,f+t).arrayBuffer())),p=h.indexOf(i,r);B=p==-1?t:Math.min(t,p),p==-1&&(p=h.indexOf(De,r));let d=h.slice(0,B);f+=d.length,yield yield new K(m(d))}while(f<U)})}}async function Ne(e,t,n,r,o,a){let i=n||M(e),s=i?128:1024*4,c=i?20:12,y=Math.max(s,Math.floor(e.size/c)),u=Math.min(t,y*5),l=Math.min(Math.max(Math.floor(y/4),r),u),A=48,g=y,U=1,f=31,B=1;for(let Z=0;Z<A-1;Z++)B=Math.imul(B,f);let h=new Uint8Array(await e.arrayBuffer()),p=0,d=0,w=0,z=M(e),N=h.length;return function(){return G(this,null,function*(){for(;p<N;){let le=h[p];if(p>=w+A){let H=h[p-A],tt=Math.imul(H,B);d=d-tt|0,d=Math.imul(d,f),d=d+le|0}else d=Math.imul(d,f),d=d+le|0;let pe=p-w+1,q=!1;if(pe>=l&&(d>>>0)%g===U&&(q=!0),pe>=u&&(q=!0),q){let H=!0;z&&p+1<N&&(h[p+1]&192)===128&&(H=!1),H&&(z?yield Promise.resolve(b(h.subarray(w,p+1))):yield yield new K(m(h.subarray(w,p+1))),w=p+1)}p++}w<N&&(z?yield Promise.resolve(b(h.subarray(w,N))):yield yield new K(m(h.subarray(w,N))))})}}function V(e,t,n){self.postMessage({key:e,seq:t,result:n})}function xt(e){let t=e,n=0;return function(r){r===null?(n===0&&V(t,n++,""),V(t,n++,null)):V(t,n++,r)}}async function ke(e){let t=e.key,n=e.dataSrc,r=e.pieceSize,o=e.plainSplit,a=e.minimumChunkSize,i=e.filename,s=e.useSegmenter,y=await(e.splitVersion==3?Ne:e.splitVersion==2?Ce:Ie)(n,r,o,a,i,s),u=xt(t);try{for(var l=Q(y()),A,g,U;A=!(g=await l.next()).done;A=!1){let f=g.value;u(f)}}catch(g){U=[g]}finally{try{A&&(g=l.return)&&await g.call(l)}finally{if(U)throw U[0]}}u(null)}var R=globalThis.crypto,St="fancySyncForYou!",Tt=new TextEncoder().encode(St);var an=new Uint32Array(1),sn=new Uint8Array(12);async function Oe(e){let t=new TextEncoder().encode(e),r=(await R.subtle.digest("SHA-256",new Uint8Array([...t,...Tt]))).slice(0,16),o=await R.subtle.importKey("raw",t,"PBKDF2",!1,["deriveBits","deriveKey"]),a={name:"PBKDF2",hash:"SHA-256",salt:r,iterations:1e5};return await R.subtle.deriveKey(a,o,{name:"AES-GCM",length:256},!1,["decrypt","encrypt"])}var He="",Ge;async function ne(e,t){He!==t&&(Ge=await Oe(t),He=t);let n=e.substring(2,26),r=e.substring(26),o=P(n),a=v(r),i=await R.subtle.decrypt({name:"AES-GCM",iv:o},Ge,a);return b(new Uint8Array(i))}var Lt=Symbol("undefined");function W(e,t,n){if(e<=0)throw new Error("Buffer length must be greater than 0");let r=new Map,o=a=>a.length>0&&typeof a[0]=="string"?a[0]:JSON.stringify(a,(i,s)=>s===void 0?Lt:s);return function(...a){let i=n?n(a):o(a);if(r.has(i)){let c=r.get(i);return r.delete(i),r.set(i,c),c}let s=t(...a);if(r.set(i,s),s.catch(()=>{r.get(i)===s&&r.delete(i)}),r.size>e){let c=r.keys().next().value;c&&r.delete(c)}return s}}var D=globalThis.crypto,I=12,_t=31e4,$=32;var Fe=128,Y="%=";var Kt=W(10,async(e,t)=>{let n=E(e),r=await D.subtle.importKey("raw",n,{name:"PBKDF2",length:256},!1,["deriveKey"]),o=await D.subtle.deriveKey({name:"PBKDF2",salt:t,iterations:_t,hash:"SHA-256"},r,{name:"AES-GCM",length:256},!0,["encrypt","decrypt"]),a=await D.subtle.exportKey("raw",o);return await D.subtle.importKey("raw",a,{name:"HKDF"},!1,["deriveKey"])},([e,t])=>`${e}-${x(t)}`);async function Me(e,t,n){let r=await Kt(e,t);return await D.subtle.deriveKey({name:"HKDF",salt:n,info:new Uint8Array,hash:"SHA-256"},r,{name:"AES-GCM",length:256},!1,["encrypt","decrypt"])}async function Pt(e,t,n){return await D.subtle.encrypt({name:"AES-GCM",iv:t,tagLength:Fe},e,n)}async function Dt(e,t,n){let r=D.getRandomValues(new Uint8Array($)),o=await Me(t,n,r),a=D.getRandomValues(new Uint8Array(I)),i=await Pt(o,a,e),s=new Uint8Array(i);return[a,r,s]}async function Ut(e,t,n){let[r,o,a]=await Dt(e,t,n),i=r.length+o.length+a.length,s=new Uint8Array(i);return s.set(r,0),s.set(o,r.length),s.set(a,r.length+o.length),s}async function Ve(e,t,n){let r=E(e),o=await Ut(r,t,n),a=await m(o);return`${Y}${a}`}async function vt(e,t,n,r,o){let a=await Me(o,t,n),i=await D.subtle.decrypt({name:"AES-GCM",iv:e,tagLength:Fe},a,r);return new Uint8Array(i)}async function Ct(e,t,n){if(e.length<I+$)throw new Error("Invalid binary data length. Expected at least ivLength + saltLength bytes.");let r=e.slice(0,I),o=e.slice(I,I+$),a=e.slice(I+$);return await vt(r,n,o,a,t)}async function Re(e,t,n){if(!e.startsWith(Y))throw new Error(`Invalid input format. Expected input to start with \'${Y}\'.`);let r=Y.length,o=v(e.slice(r)),a=await Ct(new Uint8Array(o),t,n);return b(a)}var An=globalThis.crypto;var We=new Map,j=new Map,ie=100,X,oe=new Uint32Array(1),L=globalThis.crypto;async function Gt(e,t){let n=`${e}-${t}`,r=We.get(n);if(r){if(r.count--,r.count>0)return[r.key,r.salt];r.count--}let o=15-e.length,a=t?(o>0?o:0)*1e3+121-o:1e5,i=new TextEncoder().encode(e),s=await L.subtle.digest({name:"SHA-256"},i),c=await L.subtle.importKey("raw",s,{name:"PBKDF2"},!1,["deriveKey"]),y=L.getRandomValues(new Uint8Array(16)),u=await L.subtle.deriveKey({name:"PBKDF2",salt:y,iterations:a,hash:"SHA-256"},c,{name:"AES-GCM",length:256},!1,["encrypt"]);return We.set(n,{key:u,salt:y,count:ie}),[u,y]}var ae=ie*5,J=0,$e=0;async function Ye(e,t,n){if(ae--,ae<0){ae=ie;let l=(J-$e)/2;for(let[A,g]of j)g.count<l&&j.delete(A),$e=J}J++;let r=e+x(t)+n,o=j.get(r);if(o)return o.count=J,[o.key,o.salt];let a=15-e.length,i=n?(a>0?a:0)*1e3+121-a:1e5,s=new TextEncoder().encode(e),c=await L.subtle.digest({name:"SHA-256"},s),y=await L.subtle.importKey("raw",c,{name:"PBKDF2"},!1,["deriveKey"]),u=await L.subtle.deriveKey({name:"PBKDF2",salt:t,iterations:i,hash:"SHA-256"},y,{name:"AES-GCM",length:256},!1,["decrypt"]);return j.set(r,{key:u,salt:t,count:0}),[u,t]}function je(e){return X!=null&&!e||(X=L.getRandomValues(new Uint8Array(12))),X}function Ot(){return oe[0]++,oe[0]>1e4&&je(!0),oe}async function se(e,t,n){let[r,o]=await Gt(t,n),a=je(),i=Ot(),s=new Uint8Array([...a,...new Uint8Array(i.buffer)]),c=E(e),y=await L.subtle.encrypt({name:"AES-GCM",iv:s},r,c),u=""+await m(new Uint8Array(y));return`%${x(s)}${x(o)}${u}`}async function Ft(e,t,n){try{let r=e.substring(1,33),o=e.substring(33,65),a=e.substring(65),[i]=await Ye(t,P(o),n),s=P(r),c=te(a),y=await L.subtle.decrypt({name:"AES-GCM",iv:s},i,c);return b(new Uint8Array(y))}catch(r){throw T("Couldn\'t decode! You should wrong the passphrases (V2)",16),T(r,16),r}}async function ce(e,t,n){try{if(e[0]=="%")return e[1]==="~"?ne(e,t):Ft(e,t,n);if(!e.startsWith("[")||!e.endsWith("]"))throw new Error("Encrypted data corrupted!");let r=e.substring(1,e.length-1).split(",").map(f=>f[0]==\'"\'?f.substring(1,f.length-1):f),[o,a,i]=r,[s]=await Ye(t,P(i),n),c=P(a),y=atob(o),u=y.length,l=new Uint8Array(u);for(let f=u;f>=0;--f)l[f]=y.charCodeAt(f);let A=await L.subtle.decrypt({name:"AES-GCM",iv:c},s,l),g=b(new Uint8Array(A));return JSON.parse(g)}catch(r){throw T("Couldn\'t decode! You should wrong the passphrases",16),T(r,16),r}}var Dn=new Uint8Array([83,97,108,116,101,100,95,95]);var ye=globalThis.crypto||window.crypto;var Xe=new Uint8Array([1,0,1]);var Je=new Uint8Array([10,244,193]),ze=new Uint8Array([10,244,194]);var et=globalThis.crypto;async function lr(e,t){let n=E(e),r=await et.subtle.importKey("raw",n,{name:"HKDF"},!1,["deriveKey"]);return await et.subtle.deriveKey({name:"HKDF",hash:"SHA-256",salt:t,info:new Uint8Array([])},r,{name:"HMAC",hash:"SHA-256",length:256},!1,["sign"])}var co=W(10,lr,([e,t])=>`${E(e)}-${x(t)}`);async function fe(e){let t=e.key,{type:n,input:r,passphrase:o}=e;try{if(n=="encrypt"){let a=e.autoCalculateIterations,i=await se(r,o,a);self.postMessage({key:t,result:i})}else if(n=="decrypt"){let a=e.autoCalculateIterations,i=await ce(r,o,a);self.postMessage({key:t,result:i})}else if(n=="encryptHKDF"){let a=e.pbkdf2Salt,i=await Ve(r,o,a);self.postMessage({key:t,result:i})}else if(n=="decryptHKDF"){let a=e.pbkdf2Salt,i=await Re(r,o,a);self.postMessage({key:t,result:i})}}catch(a){self.postMessage({key:t,error:a})}}self.onmessage=e=>{let t=e.data.data;if(t.type==="split")return ke(t);if(t.type==="encrypt"||t.type==="decrypt")return fe(t);if(t.type==="encryptHKDF"||t.type==="decryptHKDF")return fe(t);self.postMessage({key:t.key,error:new Error("Invalid type")})};\n/*! Bundled license information:\n\noctagonal-wheels/dist/encryption/asymmetric/common.js:\n  (* istanbul ignore next -- @preserve *)\n*/\n');
 }
 
-// src/sync/core/PlatformAPIs/base/APIBase.ts
+// src/sync/sync-core/src/core/PlatformAPIs/base/APIBase.ts
 var EVENT_PLATFORM_UNLOADED = "platform-unloaded";
 
-// src/sync/core/worker/bgWorker.encryption.ts
+// src/sync/sync-core/src/core/worker/bgWorker.encryption.ts
 function encryptionOnWorker(data) {
   const process2 = startWorker(data);
   return (async () => {
@@ -12899,7 +12953,7 @@ function handleTaskEncrypt(process2, data) {
   tasks.delete(key2);
 }
 
-// src/sync/core/worker/bgWorker.splitting.ts
+// src/sync/sync-core/src/core/worker/bgWorker.splitting.ts
 var SYMBOL_USED = Symbol("used");
 var SYMBOL_END_OF_DATA = Symbol("endOfData");
 var workerStreams = /* @__PURE__ */ new Map();
@@ -12998,7 +13052,7 @@ function handleTaskSplit(process2, data) {
   }
 }
 
-// src/sync/core/worker/bgWorker.ts
+// src/sync/sync-core/src/core/worker/bgWorker.ts
 function splitPieces2Worker(dataSrc, pieceSize, plainSplit, minimumChunkSize, filename, useSegmenter) {
   return _splitPieces2Worker(dataSrc, pieceSize, plainSplit, minimumChunkSize, filename, 1, useSegmenter != null ? useSegmenter : false);
 }
@@ -13095,7 +13149,7 @@ eventHub.on(EVENT_PLATFORM_UNLOADED, () => {
   terminateWorker();
 });
 
-// src/sync/core/pouchdb/encryption.ts
+// src/sync/sync-core/src/core/pouchdb/encryption.ts
 var encrypt = encryptWorker;
 var decrypt = decryptWorker;
 var encryptHKDF = encryptHKDFWorker;
@@ -13527,7 +13581,7 @@ function shouldDecryptEdenHKDF(doc) {
   return false;
 }
 
-// src/sync/core/pouchdb/LiveSyncDBFunctions.ts
+// src/sync/sync-core/src/core/pouchdb/LiveSyncDBFunctions.ts
 async function ensureRemoteIsCompatible(infoSrc, setting, deviceNodeID, currentVersionRange2, nodeDeviceInfo, updateCallback) {
   var _a5, _b2, _c, _d;
   const now = Date.now();
@@ -13647,22 +13701,27 @@ async function ensureDatabaseIsCompatible(db, setting, deviceNodeID, currentVers
   return ret;
 }
 
-// src/sync/core/replication/LiveSyncAbstractReplicator.ts
+// src/sync/sync-core/src/core/replication/LiveSyncAbstractReplicator.ts
 var LiveSyncAbstractReplicator = class {
   constructor(env) {
-    this.syncStatus = "NOT_CONNECTED";
-    this.docArrived = 0;
-    this.docSent = 0;
-    this.lastSyncPullSeq = 0;
-    this.maxPullSeq = 0;
-    this.lastSyncPushSeq = 0;
-    this.maxPushSeq = 0;
-    this.nodeid = "";
-    this.remoteLocked = false;
-    this.remoteCleaned = false;
-    this.remoteLockedAndDeviceNotAccepted = false;
-    this.tweakSettingsMismatched = false;
-    this.updateInfo = () => {
+    __publicField(this, "syncStatus", "NOT_CONNECTED");
+    __publicField(this, "docArrived", 0);
+    __publicField(this, "docSent", 0);
+    __publicField(this, "lastSyncPullSeq", 0);
+    __publicField(this, "maxPullSeq", 0);
+    __publicField(this, "lastSyncPushSeq", 0);
+    __publicField(this, "maxPushSeq", 0);
+    __publicField(this, "controller");
+    // localDatabase: PouchDB.Database<EntryDoc>;
+    __publicField(this, "originalSetting");
+    __publicField(this, "nodeid", "");
+    __publicField(this, "remoteLocked", false);
+    __publicField(this, "remoteCleaned", false);
+    __publicField(this, "remoteLockedAndDeviceNotAccepted", false);
+    __publicField(this, "tweakSettingsMismatched", false);
+    __publicField(this, "preferredTweakValue");
+    __publicField(this, "env");
+    __publicField(this, "updateInfo", () => {
       this.env.replicationStat.value = {
         sent: this.docSent,
         arrived: this.docArrived,
@@ -13672,7 +13731,7 @@ var LiveSyncAbstractReplicator = class {
         lastSyncPushSeq: this.lastSyncPushSeq,
         syncStatus: this.syncStatus
       };
-    };
+    });
     this.env = env;
   }
   async ensurePBKDF2Salt(setting, showMessage = false, useCache = true) {
@@ -14454,7 +14513,7 @@ var Inbox = class extends SyncInbox {
   }
 };
 
-// src/sync/core/replication/SyncParamsHandler.ts
+// src/sync/sync-core/src/core/replication/SyncParamsHandler.ts
 var _handlers = /* @__PURE__ */ new Map();
 function createSyncParamsHanderForServer(key2, options) {
   if (_handlers.has(key2)) {
@@ -14562,7 +14621,7 @@ function createSyncParamsHandler({ put, get: get2, create }) {
   };
 }
 
-// src/sync/core/replication/couchdb/LiveSyncReplicator.ts
+// src/sync/sync-core/src/core/replication/couchdb/LiveSyncReplicator.ts
 var currentVersionRange = {
   min: 0,
   max: 2400,
@@ -14617,22 +14676,26 @@ async function* genReplication(s, signal) {
 var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
   constructor(env) {
     super(env);
-    this.syncStatus = "NOT_CONNECTED";
-    this.docArrived = 0;
-    this.docSent = 0;
+    __publicField(this, "syncStatus", "NOT_CONNECTED");
+    __publicField(this, "docArrived", 0);
+    __publicField(this, "docSent", 0);
     // ✨ 追踪实际文件数（不包括 chunks）
-    this.filesUploaded = 0;
-    this.lastSyncPullSeq = 0;
-    this.maxPullSeq = 0;
-    this.lastSyncPushSeq = 0;
-    this.maxPushSeq = 0;
-    this.nodeid = "";
-    this.remoteLocked = false;
-    this.remoteCleaned = false;
-    this.remoteLockedAndDeviceNotAccepted = false;
+    __publicField(this, "filesUploaded", 0);
+    __publicField(this, "lastSyncPullSeq", 0);
+    __publicField(this, "maxPullSeq", 0);
+    __publicField(this, "lastSyncPushSeq", 0);
+    __publicField(this, "maxPushSeq", 0);
+    __publicField(this, "controller");
+    // localDatabase: PouchDB.Database<EntryDoc>;
+    __publicField(this, "originalSetting");
+    __publicField(this, "nodeid", "");
+    __publicField(this, "remoteLocked", false);
+    __publicField(this, "remoteCleaned", false);
+    __publicField(this, "remoteLockedAndDeviceNotAccepted", false);
+    __publicField(this, "env");
     // Instance-level salt cache (session lifetime)
-    this._saltCache = null;
-    this.updateInfo = () => {
+    __publicField(this, "_saltCache", null);
+    __publicField(this, "updateInfo", () => {
       this.env.replicationStat.value = {
         sent: this.docSent,
         arrived: this.docArrived,
@@ -14642,7 +14705,7 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
         lastSyncPushSeq: this.lastSyncPushSeq,
         syncStatus: this.syncStatus
       };
-    };
+    });
     this.env = env;
     void this.initializeDatabaseForReplication();
     this.env.getDatabase().on("close", () => {
@@ -15828,16 +15891,26 @@ var LiveSyncCouchDBReplicator = class extends LiveSyncAbstractReplicator {
   }
 };
 
-// src/sync/core/ContentSplitter/ContentSplitter.ts
+// src/sync/sync-core/src/core/ContentSplitter/ContentSplitter.ts
 var MAX_CHUNKS_SIZE_ON_UI = 1024;
 
-// src/sync/core/ContentSplitter/ContentSplitterBase.ts
+// src/sync/sync-core/src/core/ContentSplitter/ContentSplitterBase.ts
 var ContentSplitterCore = class {
   /**
    * Constructor for the content splitter core.
    * @param params Content splitter options
    */
   constructor(params) {
+    /**
+     * Options for the content splitter.
+     * These settings include the chunk splitter version and other configurations.
+     */
+    __publicField(this, "options");
+    /**
+     * Task for initialising the content splitter.
+     * This ensures that the splitter is initialised before any operations are performed.
+     */
+    __publicField(this, "initialised");
     this.options = params;
     this.initialised = this.initialise(params);
   }
@@ -15896,7 +15969,7 @@ var ContentSplitterBase = class extends ContentSplitterCore {
   }
 };
 
-// src/sync/core/string_and_binary/chunks.ts
+// src/sync/sync-core/src/core/string_and_binary/chunks.ts
 function isTextBlob2(blob) {
   return blob.type === "text/plain";
 }
@@ -16333,7 +16406,7 @@ async function splitPiecesRabinKarp(dataSrc, absoluteMaxPieceSize, doPlainSplit,
   };
 }
 
-// src/sync/core/ContentSplitter/ContentSplitterRabinKarp.ts
+// src/sync/sync-core/src/core/ContentSplitter/ContentSplitterRabinKarp.ts
 var ContentSplitterRabinKarp = class extends ContentSplitterBase {
   static isAvailableFor(setting) {
     return setting.settings.chunkSplitterVersion === ChunkAlgorithms.RabinKarp;
@@ -16359,7 +16432,7 @@ var ContentSplitterRabinKarp = class extends ContentSplitterBase {
   }
 };
 
-// src/sync/core/ContentSplitter/ContentSplitterV1.ts
+// src/sync/sync-core/src/core/ContentSplitter/ContentSplitterV1.ts
 var ContentSplitterV1 = class extends ContentSplitterBase {
   static isAvailableFor(setting) {
     return setting.settings.chunkSplitterVersion === ChunkAlgorithms.V1 || setting.settings.chunkSplitterVersion === "";
@@ -16387,7 +16460,7 @@ var ContentSplitterV1 = class extends ContentSplitterBase {
   }
 };
 
-// src/sync/core/ContentSplitter/ContentSplitterV2.ts
+// src/sync/sync-core/src/core/ContentSplitter/ContentSplitterV2.ts
 var ContentSplitterV2 = class extends ContentSplitterBase {
   static isAvailableFor(setting) {
     return setting.settings.chunkSplitterVersion === ChunkAlgorithms.V2 || setting.settings.chunkSplitterVersion === ChunkAlgorithms.V2Segmenter;
@@ -16415,11 +16488,12 @@ var ContentSplitterV2 = class extends ContentSplitterBase {
   }
 };
 
-// src/sync/core/ContentSplitter/ContentSplitters.ts
+// src/sync/sync-core/src/core/ContentSplitter/ContentSplitters.ts
 var ContentSplitters = [ContentSplitterV1, ContentSplitterV2, ContentSplitterRabinKarp];
 var ContentSplitter = class extends ContentSplitterCore {
   constructor(options) {
     super(options);
+    __publicField(this, "_activeSplitter");
   }
   initialise(options) {
     for (const Splitter of ContentSplitters) {
@@ -16439,7 +16513,7 @@ var ContentSplitter = class extends ContentSplitterCore {
   }
 };
 
-// src/sync/core/managers/ChangeManager.ts
+// src/sync/sync-core/src/core/managers/ChangeManager.ts
 var ChangeManager = class {
   /**
    * Creates a new instance of the ChangeManager.
@@ -16448,9 +16522,17 @@ var ChangeManager = class {
    */
   constructor(options) {
     /**
+     * The PouchDB database instance being monitored.
+     */
+    __publicField(this, "_database");
+    /**
      * A list of registered callbacks wrapped in WeakRefs to avoid memory leaks.
      */
-    this._callbacks = [];
+    __publicField(this, "_callbacks", []);
+    /**
+     * The PouchDB changes feed instance, if active.
+     */
+    __publicField(this, "_changes");
     this._database = options.database;
     this.setupListener();
   }
@@ -16529,10 +16611,11 @@ var ChangeManager = class {
   }
 };
 
-// src/sync/core/managers/ConflictManager.ts
+// src/sync/sync-core/src/core/managers/ConflictManager.ts
 var import_diff_match_patch = __toESM(require_diff_match_patch(), 1);
 var ConflictManager = class {
   constructor(options) {
+    __publicField(this, "options");
     this.options = options;
   }
   get database() {
@@ -16827,9 +16910,10 @@ var ConflictManager = class {
   }
 };
 
-// src/sync/core/managers/EntryManager/EntryManager.ts
+// src/sync/sync-core/src/core/managers/EntryManager/EntryManager.ts
 var EntryManager = class {
   constructor(options) {
+    __publicField(this, "options");
     this.options = options;
   }
   get localDatabase() {
@@ -17328,7 +17412,7 @@ async function sha1(src) {
 }
 var te2 = new TextEncoder();
 
-// src/sync/core/managers/HashManager/HashManagerCore.ts
+// src/sync/sync-core/src/core/managers/HashManager/HashManagerCore.ts
 var HashEncryptedPrefix = "+";
 var HashManagerCore = class {
   /**
@@ -17338,17 +17422,29 @@ var HashManagerCore = class {
    */
   constructor(options) {
     /**
+     * Remote database settings.
+     */
+    __publicField(this, "settings");
+    /**
      * Indicates whether encryption is enabled for hash computation.
      */
-    this.useEncryption = false;
+    __publicField(this, "useEncryption", false);
     /**
      * Hashed passphrase as a string, used for hash operations.
      */
-    this.hashedPassphrase = "";
+    __publicField(this, "hashedPassphrase", "");
     /**
      * Hashed passphrase as a 32-bit number, used for hash operations.
      */
-    this.hashedPassphrase32 = 0;
+    __publicField(this, "hashedPassphrase32", 0);
+    /**
+     * Options used for initialisation and configuration.
+     */
+    __publicField(this, "options");
+    /**
+     * Task representing the initialisation process.
+     */
+    __publicField(this, "initialiseTask");
     this.options = options;
     this.settings = options.settings;
     this.applyOptions(options);
@@ -17484,7 +17580,7 @@ async function initHashFunc() {
 }
 void initHashFunc();
 
-// src/sync/core/managers/HashManager/XXHashHashManager.ts
+// src/sync/sync-core/src/core/managers/HashManager/XXHashHashManager.ts
 var XXHashHashManager = class extends HashManagerCore {
   /**
    * Constructs a new XXHashHashManager.
@@ -17492,6 +17588,10 @@ var XXHashHashManager = class extends HashManagerCore {
    */
   constructor(options) {
     super(options);
+    /**
+     * Instance of XXHash API used for hashing operations.
+     */
+    __publicField(this, "xxhash");
   }
   /**
    * Initialises the XXHash API instance.
@@ -17584,7 +17684,7 @@ var FallbackWasmHashManager = class extends XXHashHashManager {
   }
 };
 
-// src/sync/core/managers/HashManager/PureJSHashManager.ts
+// src/sync/sync-core/src/core/managers/HashManager/PureJSHashManager.ts
 var PureJSHashManager = class extends HashManagerCore {
   /**
    * Determines whether this manager is available for the specified algorithm.
@@ -17662,7 +17762,7 @@ var FallbackPureJSHashManager = class extends PureJSHashManager {
   }
 };
 
-// src/sync/core/managers/HashManager/HashManager.ts
+// src/sync/sync-core/src/core/managers/HashManager/HashManager.ts
 var HashManagers = [
   XXHash64HashManager,
   XXHash32RawHashManager,
@@ -17683,7 +17783,7 @@ var HashManager = class extends HashManagerCore {
     /**
      * Instance of the hash manager currently in use.
      */
-    this.manager = void 0;
+    __publicField(this, "manager");
   }
   /**
    * Checks whether the specified hash algorithm is available.
@@ -17752,16 +17852,16 @@ var HashManager = class extends HashManagerCore {
   }
 };
 
-// src/sync/core/managers/NetworkManager.ts
+// src/sync/sync-core/src/core/managers/NetworkManager.ts
 var NetworkManager = class {
 };
 var NetworkManagerBrowser = class extends NetworkManager {
   constructor() {
     super(...arguments);
-    this._statusCallbacks = [];
-    this._lastKnownStatus = true;
-    this._consecutiveFailures = 0;
-    this._serverReachable = null;
+    __publicField(this, "_statusCallbacks", []);
+    __publicField(this, "_lastKnownStatus", true);
+    __publicField(this, "_consecutiveFailures", 0);
+    __publicField(this, "_serverReachable", null);
   }
   get isOnline() {
     return navigator.onLine;
@@ -17843,9 +17943,18 @@ var NetworkManagerBrowser = class extends NetworkManager {
   }
 };
 
-// src/sync/core/managers/LiveSyncManagers.ts
+// src/sync/sync-core/src/core/managers/LiveSyncManagers.ts
 var LiveSyncManagers = class {
   constructor(options) {
+    __publicField(this, "hashManager");
+    __publicField(this, "chunkFetcher");
+    __publicField(this, "changeManager");
+    __publicField(this, "chunkManager");
+    __publicField(this, "splitter");
+    __publicField(this, "entryManager");
+    __publicField(this, "conflictManager");
+    __publicField(this, "networkManager");
+    __publicField(this, "options");
     this.options = options;
     if (options.networkManager) {
       this.networkManager = options.networkManager;
@@ -17958,12 +18067,12 @@ var LiveSyncManagers = class {
 };
 
 // src/sync/FridayServiceHub.ts
-var import_obsidian2 = require("obsidian");
+var import_obsidian3 = require("obsidian");
 
-// src/sync/core/services/ServiceHub.ts
+// src/sync/sync-core/src/core/services/ServiceHub.ts
 var ServiceHub = class {
   constructor(services = {}) {
-    this._injected = {};
+    __publicField(this, "_injected", {});
     for (const service of Object.values(services)) {
       service.setServices(this);
     }
@@ -18016,8 +18125,12 @@ var ServiceHub = class {
   }
 };
 
-// src/sync/core/services/Services.ts
+// src/sync/sync-core/src/core/services/Services.ts
 var HubService = class {
+  constructor() {
+    // TODO: Possibly we need weak reference here.
+    __publicField(this, "_services");
+  }
   get services() {
     return this._services;
   }
@@ -18026,6 +18139,11 @@ var HubService = class {
   }
 };
 var ServiceBase = class extends HubService {
+  constructor(hub) {
+    super();
+    __publicField(this, "_backend");
+    this._backend = hub;
+  }
   /**
    * Register a handler that returns all results from the listeners.
    * Means ex-`all`
@@ -18086,18 +18204,14 @@ var ServiceBase = class extends HubService {
   _collectBatch(key2) {
     return this._backend.collectBatch(key2);
   }
-  constructor(hub) {
-    super();
-    this._backend = hub;
-  }
 };
 
-// src/sync/core/services/ServiceBackend.ts
+// src/sync/sync-core/src/core/services/ServiceBackend.ts
 var ChannelBase = class {
   constructor(name) {
     this.name = name;
-    this.handlers = [];
-    this.handlerNames = /* @__PURE__ */ new Map();
+    __publicField(this, "handlers", []);
+    __publicField(this, "handlerNames", /* @__PURE__ */ new Map());
   }
   isAlreadyRegistered(handler) {
     const result = this.handlers.indexOf(handler);
@@ -18231,10 +18345,10 @@ var Broadcaster = class extends ChannelBase {
 };
 var ServiceBackend = class {
   constructor() {
-    this.pipelines = /* @__PURE__ */ new Map();
-    this.switches = /* @__PURE__ */ new Map();
-    this.surveys = /* @__PURE__ */ new Map();
-    this.broadcasters = /* @__PURE__ */ new Map();
+    __publicField(this, "pipelines", /* @__PURE__ */ new Map());
+    __publicField(this, "switches", /* @__PURE__ */ new Map());
+    __publicField(this, "surveys", /* @__PURE__ */ new Map());
+    __publicField(this, "broadcasters", /* @__PURE__ */ new Map());
   }
   getPipeline(name) {
     if (this.pipelines.has(name)) {
@@ -19170,7 +19284,7 @@ try {
 } catch (e2) {
 }
 
-// src/sync/core/pouchdb/compress.ts
+// src/sync/sync-core/src/core/pouchdb/compress.ts
 async function _compressText(text) {
   const converted = tryConvertBase64ToArrayBuffer(text);
   const data = new Uint8Array(
@@ -19256,7 +19370,6 @@ var MARK_SHIFT_COMPRESSED = `${MARK_SHIFT}Z`;
 
 // src/sync/types.ts
 var ICHeader = "i:";
-var ICHeaderEnd = "i;";
 var ICHeaderLength = ICHeader.length;
 function getDefaultInternalIgnorePatterns(configDir) {
   const c = configDir.replace(/\./g, "\\.").replace(/\//g, "\\/");
@@ -19282,91 +19395,12 @@ function getDefaultInternalIgnorePatterns(configDir) {
 var DEFAULT_INTERNAL_IGNORE_PATTERNS = getDefaultInternalIgnorePatterns(".obsidian").join(",");
 
 // src/sync/utils/hiddenFileUtils.ts
-var TARGET_IS_NEW = 1;
-var BASE_IS_NEW = -1;
-var EVEN = 0;
 function isInternalMetadata(id) {
   return id.startsWith(ICHeader);
 }
-function stripInternalMetadataPrefix(id) {
-  if (id.startsWith(ICHeader)) {
-    return id.substring(ICHeaderLength);
-  }
-  return id;
-}
-function compareMTime(baseMTime, targetMTime) {
-  const tolerance = 2e3;
-  const diff = targetMTime - baseMTime;
-  if (diff > tolerance) {
-    return TARGET_IS_NEW;
-  } else if (diff < -tolerance) {
-    return BASE_IS_NEW;
-  }
-  return EVEN;
-}
-var sameChangePairs = /* @__PURE__ */ new Map();
-function markChangesAreSame(path2, mtime1, mtime2) {
-  sameChangePairs.set(path2, [mtime1, mtime2]);
-}
-function unmarkChanges(path2) {
-  sameChangePairs.delete(path2);
-}
-function getComparingMTime(doc, includeDeleted = false) {
-  var _a5, _b2;
-  if (doc === null || doc === false || doc === void 0) return 0;
-  if (!includeDeleted) {
-    if ("deleted" in doc && doc.deleted) return 0;
-    if ("_deleted" in doc && doc._deleted) return 0;
-  }
-  if ("stat" in doc && doc.stat) return (_a5 = doc.stat.mtime) != null ? _a5 : 0;
-  if ("mtime" in doc) return (_b2 = doc.mtime) != null ? _b2 : 0;
-  return 0;
-}
-function onlyInNTimes(n2, fn) {
-  let count = 0;
-  return () => {
-    count++;
-    if (count % n2 === 0) {
-      fn(count);
-    }
-  };
-}
-function statToKey(stat) {
-  var _a5, _b2;
-  return `${(_a5 = stat == null ? void 0 : stat.mtime) != null ? _a5 : 0}-${(_b2 = stat == null ? void 0 : stat.size) != null ? _b2 : 0}`;
-}
-function docToKey(doc) {
-  const deleted = doc._deleted || doc.deleted || false;
-  return `${doc.mtime || 0}-${doc.size || 0}-${doc._rev || ""}-${deleted ? "0" : "1"}`;
-}
-function parsePatterns(patterns) {
-  if (!patterns || patterns.trim() === "") {
-    return [];
-  }
-  return patterns.split(",").map((p) => p.trim()).filter((p) => p.length > 0).map((p) => {
-    try {
-      return new RegExp(p);
-    } catch (e2) {
-      console.warn(`Invalid regex pattern: ${p}`);
-      return null;
-    }
-  }).filter((r) => r !== null);
-}
-function matchesAnyPattern(path2, patterns) {
-  return patterns.some((pattern) => pattern.test(path2));
-}
-function getPath2(entry) {
-  if (entry.path) {
-    return stripInternalMetadataPrefix(entry.path);
-  }
-  if (entry._id) {
-    return stripInternalMetadataPrefix(entry._id);
-  }
-  return "";
-}
 
 // src/sync/FridayStorageEventManager.ts
-var import_obsidian = require("obsidian");
+var import_obsidian2 = require("obsidian");
 
 // node_modules/octagonal-wheels/dist/concurrency/task.js
 function unwrapTaskResult(result) {
@@ -19522,16 +19556,16 @@ var PersistentMap = class {
 };
 
 // src/sync/utils/sameChangePairs.ts
-var sameChangePairs2 = null;
+var sameChangePairs = null;
 function initializeSameChangePairs(vaultName) {
-  sameChangePairs2 = new PersistentMap(`friday-persist-same-changes-${vaultName}`);
+  sameChangePairs = new PersistentMap(`friday-persist-same-changes-${vaultName}`);
   Logger(`sameChangePairs initialized for vault: ${vaultName}`, LOG_LEVEL_VERBOSE);
 }
 function getSameChangePairs() {
-  if (!sameChangePairs2) {
+  if (!sameChangePairs) {
     throw new Error("sameChangePairs not initialized. Call initializeSameChangePairs() first.");
   }
-  return sameChangePairs2;
+  return sameChangePairs;
 }
 function getKey(file) {
   if (typeof file === "string") {
@@ -19542,7 +19576,7 @@ function getKey(file) {
 function stripAllPrefixes2(path2) {
   return path2.replace(/^[hi]:/g, "");
 }
-function markChangesAreSame2(file, mtime1, mtime2) {
+function markChangesAreSame(file, mtime1, mtime2) {
   if (mtime1 === mtime2) return;
   try {
     const store = getSameChangePairs();
@@ -19561,7 +19595,7 @@ function markChangesAreSame2(file, mtime1, mtime2) {
     Logger(`Failed to mark same changes: ${error}`, LOG_LEVEL_VERBOSE);
   }
 }
-function unmarkChanges2(file) {
+function unmarkChanges(file) {
   try {
     const store = getSameChangePairs();
     const key2 = getKey(file);
@@ -19577,16 +19611,16 @@ function isMarkedAsSameChanges(file, mtimes) {
     const key2 = getKey(file);
     const pairs = store.get(key2, []) || [];
     if (mtimes.every((e2) => pairs.indexOf(e2) !== -1)) {
-      return EVEN2;
+      return EVEN;
     }
   } catch (error) {
     Logger(`Failed to check marked changes: ${error}`, LOG_LEVEL_VERBOSE);
   }
   return void 0;
 }
-var BASE_IS_NEW2 = Symbol("base");
-var TARGET_IS_NEW2 = Symbol("target");
-var EVEN2 = Symbol("even");
+var BASE_IS_NEW = Symbol("base");
+var TARGET_IS_NEW = Symbol("target");
+var EVEN = Symbol("even");
 
 // src/sync/FridayStorageEventManager.ts
 var MTIME_RESOLUTION = 2e3;
@@ -19603,7 +19637,7 @@ function compareFileFreshness(baseFile, targetFile) {
   if (targetFile === void 0) return "BASE_IS_NEW";
   const baseMtime = baseFile.mtime;
   const targetMtime = targetFile.mtime;
-  if (baseMtime && targetMtime && isMarkedAsSameChanges(baseFile.path, [baseMtime, targetMtime]) === EVEN2) {
+  if (baseMtime && targetMtime && isMarkedAsSameChanges(baseFile.path, [baseMtime, targetMtime]) === EVEN) {
     Logger(
       `File mtimes marked as same: ${baseFile.path} [${baseMtime}, ${targetMtime}]`,
       LOG_LEVEL_VERBOSE
@@ -19793,8 +19827,8 @@ var FridayStorageEventManager = class {
       Logger(`File create skipped (watching suspended): ${file.path}`, LOG_LEVEL_DEBUG);
       return;
     }
-    if (file instanceof import_obsidian.TFolder) return;
-    if (!(file instanceof import_obsidian.TFile)) return;
+    if (file instanceof import_obsidian2.TFolder) return;
+    if (!(file instanceof import_obsidian2.TFile)) return;
     if (this.isFileProcessing(file.path)) {
       Logger(`File create skipped (being processed): ${file.path}`, LOG_LEVEL_VERBOSE);
       return;
@@ -19812,8 +19846,8 @@ var FridayStorageEventManager = class {
       Logger(`File change skipped (watching suspended): ${file.path}`, LOG_LEVEL_DEBUG);
       return;
     }
-    if (file instanceof import_obsidian.TFolder) return;
-    if (!(file instanceof import_obsidian.TFile)) return;
+    if (file instanceof import_obsidian2.TFolder) return;
+    if (!(file instanceof import_obsidian2.TFile)) return;
     if (this.isFileProcessing(file.path)) {
       Logger(`File change skipped (being processed): ${file.path}`, LOG_LEVEL_VERBOSE);
       return;
@@ -19831,7 +19865,7 @@ var FridayStorageEventManager = class {
       Logger(`File delete skipped (watching suspended): ${file.path}`, LOG_LEVEL_DEBUG);
       return;
     }
-    if (file instanceof import_obsidian.TFolder) return;
+    if (file instanceof import_obsidian2.TFolder) return;
     if (this.isFileProcessing(file.path)) {
       Logger(`File delete skipped (being processed): ${file.path}`, LOG_LEVEL_VERBOSE);
       return;
@@ -19851,8 +19885,8 @@ var FridayStorageEventManager = class {
       Logger(`File rename skipped (watching suspended): ${oldPath} -> ${file.path}`, LOG_LEVEL_DEBUG);
       return;
     }
-    if (file instanceof import_obsidian.TFolder) return;
-    if (!(file instanceof import_obsidian.TFile)) return;
+    if (file instanceof import_obsidian2.TFolder) return;
+    if (!(file instanceof import_obsidian2.TFile)) return;
     this.enqueueEvent({
       type: "DELETE",
       path: oldPath
@@ -19979,7 +20013,7 @@ var FridayStorageEventManager = class {
   async storeFileToDB(event, force = false) {
     const path2 = event.path;
     const file = event.file || this.plugin.app.vault.getAbstractFileByPath(path2);
-    if (!file || !(file instanceof import_obsidian.TFile)) {
+    if (!file || !(file instanceof import_obsidian2.TFile)) {
       Logger(`File not found for storage: ${path2}`, LOG_LEVEL_VERBOSE);
       return false;
     }
@@ -20024,13 +20058,13 @@ var FridayStorageEventManager = class {
               const existingData = getDocDataAsArray(existingEntry.data);
               const isSame = await isDocContentSame(existingData, contentBlob);
               if (isSame) {
-                markChangesAreSame2(path2, file.stat.mtime, existingEntry.mtime);
+                markChangesAreSame(path2, file.stat.mtime, existingEntry.mtime);
                 Logger(`File content unchanged (mtime different), marked as same: ${path2}`, LOG_LEVEL_VERBOSE);
                 const cacheKey = `${event.type}-${path2}`;
                 this.lastProcessedMtime.set(cacheKey, file.stat.mtime);
                 return true;
               } else {
-                unmarkChanges2(path2);
+                unmarkChanges(path2);
               }
             }
           }
@@ -31199,7 +31233,7 @@ plugin.deleteIndex = resolveToCallback(async function(indexDef) {
 });
 var index_browser_es_default3 = plugin;
 
-// src/sync/core/pouchdb/pouchdb-browser.ts
+// src/sync/sync-core/src/core/pouchdb/pouchdb-browser.ts
 var import_transform_pouch = __toESM(require_transform_pouch(), 1);
 index_es_default.plugin(index_es_default2).plugin(index_es_default3).plugin(index_es_default4).plugin(index_browser_es_default2).plugin(index_es_default8).plugin(index_browser_es_default3).plugin(import_transform_pouch.default);
 function appendPurgeSeqs(db, docs) {
@@ -31292,7 +31326,7 @@ var FridayAPIService = class extends ServiceBase {
   getCustomFetchHandler() {
     return {
       handle: async (request) => {
-        const result = await (0, import_obsidian2.requestUrl)({
+        const result = await (0, import_obsidian3.requestUrl)({
           url: request.url,
           method: request.method,
           headers: request.headers,
@@ -31310,7 +31344,7 @@ var FridayAPIService = class extends ServiceBase {
     Logger(`[${key2}] ${message}`, level);
   }
   isMobile() {
-    return import_obsidian2.Platform.isMobile;
+    return import_obsidian3.Platform.isMobile;
   }
   async showWindow(type) {
   }
@@ -31321,7 +31355,7 @@ var FridayAPIService = class extends ServiceBase {
     return false;
   }
   getPlatform() {
-    return import_obsidian2.Platform.isDesktop ? "desktop" : "mobile";
+    return import_obsidian3.Platform.isDesktop ? "desktop" : "mobile";
   }
   getAppVersion() {
     return "1.0.0";
@@ -31482,7 +31516,7 @@ var FridayReplicationService = class extends ServiceBase {
         if (isDeleted2) {
           const vault2 = this.core.app.vault;
           const existingFile2 = vault2.getAbstractFileByPath(path2);
-          if (existingFile2 && (existingFile2 instanceof import_obsidian2.TFile || existingFile2 instanceof import_obsidian2.TFolder)) {
+          if (existingFile2 && (existingFile2 instanceof import_obsidian3.TFile || existingFile2 instanceof import_obsidian3.TFolder)) {
             await this.deleteVaultItem(existingFile2);
           }
           return true;
@@ -31507,7 +31541,7 @@ var FridayReplicationService = class extends ServiceBase {
         const isText = isTextDocument(fullEntry);
         const vault = this.core.app.vault;
         const existingFile = vault.getAbstractFileByPath(path2);
-        if (existingFile && existingFile instanceof import_obsidian2.TFile) {
+        if (existingFile && existingFile instanceof import_obsidian3.TFile) {
           let shouldWrite = false;
           const storageFilePath = path2.startsWith("h:") || path2.startsWith("i:") ? path2.substring(2) : path2;
           const localMtime = existingFile.stat.mtime;
@@ -31535,11 +31569,11 @@ var FridayReplicationService = class extends ServiceBase {
               }
               const isSame = await isDocContentSame(content, localContent);
               if (isSame) {
-                markChangesAreSame2(storageFilePath, localMtime, remoteMtime);
+                markChangesAreSame(storageFilePath, localMtime, remoteMtime);
                 Logger(`Content same, marked and skip write: ${path2}`, LOG_LEVEL_VERBOSE);
                 return true;
               } else {
-                unmarkChanges2(storageFilePath);
+                unmarkChanges(storageFilePath);
               }
             } catch (error) {
               Logger(`Content comparison failed for ${path2}, will write: ${error}`, LOG_LEVEL_VERBOSE);
@@ -31880,7 +31914,7 @@ var FridayRemoteService = class extends ServiceBase {
               headersRecord[key2] = value;
             });
             const result = await Promise.race([
-              (0, import_obsidian2.requestUrl)({
+              (0, import_obsidian3.requestUrl)({
                 url: typeof url === "string" ? url : url.url,
                 method: opts.method || "GET",
                 headers: headersRecord,
@@ -32093,9 +32127,6 @@ var FridayUIService = class extends HubService {
     return false;
   }
 };
-
-// src/sync/features/HiddenFileSync/index.ts
-var import_obsidian3 = require("obsidian");
 
 // node_modules/octagonal-wheels/dist/bureau/PaceMaker.js
 var PaceMaker = class {
@@ -33121,22 +33152,137 @@ var ProcessorStage = class extends TransformStream {
   }
 };
 
-// src/sync/features/HiddenFileSync/index.ts
+// src/sync/sync-core/src/types.ts
+var ICHeader2 = "i:";
+var ICHeaderEnd = "i;";
+var ICHeaderLength2 = ICHeader2.length;
+function getDefaultInternalIgnorePatterns2(configDir) {
+  const c = configDir.replace(/\./g, "\\.").replace(/\//g, "\\/");
+  return [
+    `${c}\\/workspace`,
+    // Workspace layout (device-specific)
+    `${c}\\/workspace\\.json`,
+    // Workspace JSON
+    `${c}\\/workspace-mobile\\.json`,
+    // Mobile workspace
+    `${c}\\/cache`,
+    // Cache directory
+    "\\/node_modules\\/",
+    // Node modules
+    "\\/\\.git\\/",
+    // Git directories (in subdirectories)
+    "^\\.git\\/",
+    // Git directories (at root)
+    "plugins\\/mdfriday"
+    // MDFriday plugin directory (device-specific)
+  ];
+}
+var DEFAULT_INTERNAL_IGNORE_PATTERNS2 = getDefaultInternalIgnorePatterns2(".obsidian").join(",");
+
+// src/sync/sync-core/src/features/HiddenFileSync/hiddenFileUtils.ts
+var TARGET_IS_NEW3 = 1;
+var BASE_IS_NEW3 = -1;
+var EVEN2 = 0;
+function isInternalMetadata2(id) {
+  return id.startsWith(ICHeader2);
+}
+function stripInternalMetadataPrefix(id) {
+  if (id.startsWith(ICHeader2)) {
+    return id.substring(ICHeaderLength2);
+  }
+  return id;
+}
+function compareMTime(baseMTime, targetMTime) {
+  const tolerance = 2e3;
+  const diff = targetMTime - baseMTime;
+  if (diff > tolerance) {
+    return TARGET_IS_NEW3;
+  } else if (diff < -tolerance) {
+    return BASE_IS_NEW3;
+  }
+  return EVEN2;
+}
+var sameChangePairs2 = /* @__PURE__ */ new Map();
+function markChangesAreSame2(path2, mtime1, mtime2) {
+  sameChangePairs2.set(path2, [mtime1, mtime2]);
+}
+function unmarkChanges2(path2) {
+  sameChangePairs2.delete(path2);
+}
+function getComparingMTime(doc, includeDeleted = false) {
+  var _a5, _b2;
+  if (doc === null || doc === false || doc === void 0) return 0;
+  if (!includeDeleted) {
+    if ("deleted" in doc && doc.deleted) return 0;
+    if ("_deleted" in doc && doc._deleted) return 0;
+  }
+  if ("stat" in doc && doc.stat) return (_a5 = doc.stat.mtime) != null ? _a5 : 0;
+  if ("mtime" in doc) return (_b2 = doc.mtime) != null ? _b2 : 0;
+  return 0;
+}
+function onlyInNTimes(n2, fn) {
+  let count = 0;
+  return () => {
+    count++;
+    if (count % n2 === 0) {
+      fn(count);
+    }
+  };
+}
+function statToKey(stat) {
+  var _a5, _b2;
+  return `${(_a5 = stat == null ? void 0 : stat.mtime) != null ? _a5 : 0}-${(_b2 = stat == null ? void 0 : stat.size) != null ? _b2 : 0}`;
+}
+function docToKey(doc) {
+  const deleted = doc._deleted || doc.deleted || false;
+  return `${doc.mtime || 0}-${doc.size || 0}-${doc._rev || ""}-${deleted ? "0" : "1"}`;
+}
+function parsePatterns(patterns) {
+  if (!patterns || patterns.trim() === "") {
+    return [];
+  }
+  return patterns.split(",").map((p) => p.trim()).filter((p) => p.length > 0).map((p) => {
+    try {
+      return new RegExp(p);
+    } catch (e2) {
+      console.warn(`Invalid regex pattern: ${p}`);
+      return null;
+    }
+  }).filter((r) => r !== null);
+}
+function matchesAnyPattern(path2, patterns) {
+  return patterns.some((pattern) => pattern.test(path2));
+}
+function getPath2(entry) {
+  if (entry.path) {
+    return stripInternalMetadataPrefix(entry.path);
+  }
+  if (entry._id) {
+    return stripInternalMetadataPrefix(entry._id);
+  }
+  return "";
+}
+
+// src/sync/sync-core/src/features/HiddenFileSync/index.ts
 var FridayHiddenFileSync = class {
-  constructor(plugin2, core) {
+  constructor(fileLister, core) {
+    __publicField(this, "fileLister");
+    __publicField(this, "core");
     // Cache management for tracking processed files
-    this._fileInfoLastProcessed = /* @__PURE__ */ new Map();
-    this._fileInfoLastKnown = /* @__PURE__ */ new Map();
-    this._databaseInfoLastProcessed = /* @__PURE__ */ new Map();
+    __publicField(this, "_fileInfoLastProcessed", /* @__PURE__ */ new Map());
+    __publicField(this, "_fileInfoLastKnown", /* @__PURE__ */ new Map());
+    __publicField(this, "_databaseInfoLastProcessed", /* @__PURE__ */ new Map());
     // RegExp cache for pattern matching
-    this.cacheFileRegExps = /* @__PURE__ */ new Map();
+    __publicField(this, "cacheFileRegExps", /* @__PURE__ */ new Map());
     // Semaphore for limiting concurrent operations
-    this.semaphore = Semaphore(10);
+    __publicField(this, "semaphore", Semaphore(10));
     // Periodic scan timer
-    this.periodicScanTimer = null;
+    __publicField(this, "periodicScanTimer", null);
     // Module enabled state
-    this._enabled = true;
-    this.plugin = plugin2;
+    __publicField(this, "_enabled", true);
+    // Conflict resolution queue processor
+    __publicField(this, "conflictResolutionProcessor");
+    this.fileLister = fileLister;
     this.core = core;
     this.initConflictResolutionProcessor();
   }
@@ -33149,11 +33295,9 @@ var FridayHiddenFileSync = class {
     const settings = this.core.getSettings();
     return this._enabled && ((_a5 = settings.syncInternalFiles) != null ? _a5 : true);
   }
-  /**
-   * Get the vault adapter for file operations
-   */
+  /** Vault file lister — replaces plugin.app.vault.adapter */
   get adapter() {
-    return this.plugin.app.vault.adapter;
+    return this.fileLister;
   }
   /**
    * Get the config directory (usually .obsidian)
@@ -33169,7 +33313,7 @@ var FridayHiddenFileSync = class {
     const s = this.core.getSettings();
     return {
       syncInternalFiles: (_a5 = s.syncInternalFiles) != null ? _a5 : true,
-      syncInternalFilesIgnorePatterns: s.syncInternalFilesIgnorePatterns ? `${DEFAULT_INTERNAL_IGNORE_PATTERNS},${s.syncInternalFilesIgnorePatterns}` : DEFAULT_INTERNAL_IGNORE_PATTERNS,
+      syncInternalFilesIgnorePatterns: s.syncInternalFilesIgnorePatterns ? `${DEFAULT_INTERNAL_IGNORE_PATTERNS2},${s.syncInternalFilesIgnorePatterns}` : DEFAULT_INTERNAL_IGNORE_PATTERNS2,
       syncInternalFilesTargetPatterns: (_b2 = s.syncInternalFilesTargetPatterns) != null ? _b2 : "",
       syncInternalFileOverwritePatterns: (_c = s.syncInternalFileOverwritePatterns) != null ? _c : "",
       watchInternalFileChanges: (_d = s.watchInternalFileChanges) != null ? _d : true,
@@ -33424,16 +33568,16 @@ var FridayHiddenFileSync = class {
     const dbMTime = getComparingMTime(db);
     const storageMTime = getComparingMTime({ stat });
     if (dbMTime === 0 || storageMTime === 0) {
-      unmarkChanges(path2);
+      unmarkChanges2(path2);
     } else {
-      markChangesAreSame(path2, dbMTime, storageMTime);
+      markChangesAreSame2(path2, dbMTime, storageMTime);
     }
   }
   /**
    * Update processed cache for deletion
    */
   updateLastProcessedDeletion(path2, db) {
-    unmarkChanges(path2);
+    unmarkChanges2(path2);
     if (db) this.updateLastProcessedDatabase(path2, db);
     this.updateLastProcessedFile(path2, statToKey(null));
   }
@@ -33468,7 +33612,7 @@ var FridayHiddenFileSync = class {
   async loadBaseSaveData(file, includeContent = true) {
     const localDB = this.core.localDatabase;
     if (!localDB) return false;
-    const prefixedFileName = addPrefix(file, ICHeader);
+    const prefixedFileName = addPrefix(file, ICHeader2);
     const id = await this.core.path2id(prefixedFileName);
     try {
       const old = includeContent ? await localDB.getDBEntry(prefixedFileName, void 0, false, true) : await localDB.getDBEntryMeta(prefixedFileName, { conflicts: true }, true);
@@ -33502,7 +33646,7 @@ var FridayHiddenFileSync = class {
     const localDB = this.core.localDatabase;
     if (!localDB) return false;
     const storeFilePath = stripAllPrefixes(file.path);
-    const prefixedFileName = addPrefix(storeFilePath, ICHeader);
+    const prefixedFileName = addPrefix(storeFilePath, ICHeader2);
     if (this.core.isIgnoredByIgnoreFile && await this.core.isIgnoredByIgnoreFile(storeFilePath)) {
       return void 0;
     }
@@ -33553,7 +33697,7 @@ var FridayHiddenFileSync = class {
     const localDB = this.core.localDatabase;
     if (!localDB) return false;
     const storeFilePath = filenameSrc;
-    const prefixedFileName = addPrefix(storeFilePath, ICHeader);
+    const prefixedFileName = addPrefix(storeFilePath, ICHeader2);
     const mtime = Date.now();
     if (this.core.isIgnoredByIgnoreFile && await this.core.isIgnoredByIgnoreFile(storeFilePath)) {
       return void 0;
@@ -33601,7 +33745,7 @@ var FridayHiddenFileSync = class {
   async extractInternalFileFromDatabase(storageFilePath, force = false, metaEntry, preventDoubleProcess = true, onlyNew = false, includeDeletion = true) {
     const localDB = this.core.localDatabase;
     if (!localDB) return false;
-    const prefixedFileName = addPrefix(storageFilePath, ICHeader);
+    const prefixedFileName = addPrefix(storageFilePath, ICHeader2);
     if (this.core.isIgnoredByIgnoreFile && await this.core.isIgnoredByIgnoreFile(storageFilePath)) {
       return void 0;
     }
@@ -33612,7 +33756,7 @@ var FridayHiddenFileSync = class {
         if (metaOnDB === false) throw new Error(`File not found on database: ${storageFilePath}`);
         if ((_a5 = metaOnDB._conflicts) == null ? void 0 : _a5.length) {
           Logger(`[HiddenFileSync] ${storageFilePath} has conflicts, queuing resolution`, LOG_LEVEL_INFO);
-          const prefixedPath = addPrefix(storageFilePath, ICHeader);
+          const prefixedPath = addPrefix(storageFilePath, ICHeader2);
           this.queueConflictCheck(prefixedPath);
           return false;
         }
@@ -33628,7 +33772,7 @@ var FridayHiddenFileSync = class {
           const storageMTimeActual = (_b2 = storageStat == null ? void 0 : storageStat.mtime) != null ? _b2 : 0;
           const storageMTime = storageMTimeActual === 0 ? this.getLastProcessedFileMTime(storageFilePath) : storageMTimeActual;
           const diff = compareMTime(storageMTime, dbMTime);
-          if (diff !== TARGET_IS_NEW) {
+          if (diff !== TARGET_IS_NEW3) {
             this.updateLastProcessedDatabase(storageFilePath, metaOnDB);
             if (storageStat) this.updateLastProcessedFile(storageFilePath, {
               mtime: storageStat.mtime,
@@ -33714,7 +33858,7 @@ var FridayHiddenFileSync = class {
   async getAllDatabaseFiles() {
     const localDB = this.core.localDatabase;
     if (!localDB) return [];
-    const allFiles = (await localDB.allDocsRaw({ startkey: ICHeader, endkey: ICHeaderEnd, include_docs: true })).rows.filter((e2) => isInternalMetadata(e2.id)).map((e2) => e2.doc);
+    const allFiles = (await localDB.allDocsRaw({ startkey: ICHeader2, endkey: ICHeaderEnd, include_docs: true })).rows.filter((e2) => isInternalMetadata2(e2.id)).map((e2) => e2.doc);
     const files = [];
     for (const file of allFiles) {
       const path2 = stripAllPrefixes(getPath2(file));
@@ -33832,11 +33976,11 @@ var FridayHiddenFileSync = class {
         const localDB = this.core.localDatabase;
         if (!localDB) return false;
         try {
-          const prefixedPath = addPrefix(path2, ICHeader);
+          const prefixedPath = addPrefix(path2, ICHeader2);
           const docMeta = await localDB.getDBEntryMeta(prefixedPath, { conflicts: true }, true);
           if (docMeta === false) return false;
           if (docMeta._conflicts && docMeta._conflicts.length > 0) {
-            const prefixedPathWithType = addPrefix(path2, ICHeader);
+            const prefixedPathWithType = addPrefix(path2, ICHeader2);
             this.queueConflictCheck(prefixedPathWithType);
             return true;
           }
@@ -33925,7 +34069,7 @@ var FridayHiddenFileSync = class {
         const localDB = this.core.localDatabase;
         if (!localDB) return [];
         try {
-          const prefixedPath = path2.startsWith(ICHeader) ? path2 : addPrefix(path2, ICHeader);
+          const prefixedPath = path2.startsWith(ICHeader2) ? path2 : addPrefix(path2, ICHeader2);
           const id = await this.core.path2id(prefixedPath);
           const doc = await localDB.getRaw(id, { conflicts: true });
           if (!((_a5 = doc._conflicts) == null ? void 0 : _a5.length)) return [];
@@ -34053,12 +34197,12 @@ var FridayHiddenFileSync = class {
     if (!localDB) return;
     Logger("[HiddenFileSync] Scanning for conflicted files...", LOG_LEVEL_INFO);
     try {
-      const conflicted = localDB.findEntries(ICHeader, ICHeaderEnd, { conflicts: true });
+      const conflicted = localDB.findEntries(ICHeader2, ICHeaderEnd, { conflicts: true });
       let conflictCount = 0;
       for await (const doc of conflicted) {
         if (!("_conflicts" in doc)) continue;
         if (!((_a5 = doc._conflicts) == null ? void 0 : _a5.length)) continue;
-        if (isInternalMetadata(doc._id)) {
+        if (isInternalMetadata2(doc._id)) {
           const path2 = doc.path || doc._id;
           this.queueConflictCheck(path2);
           conflictCount++;
@@ -34076,14 +34220,15 @@ var FridayHiddenFileSync = class {
   }
 };
 
-// src/sync/features/NetworkEvents/index.ts
-var import_obsidian4 = require("obsidian");
+// src/sync/sync-core/src/features/NetworkEvents/index.ts
 var FridayNetworkEvents = class {
-  constructor(plugin2, core) {
-    this.hasFocus = true;
-    this.isLastHidden = false;
-    this.boundHandlers = null;
-    this.plugin = plugin2;
+  constructor(eventReg, core) {
+    __publicField(this, "eventReg");
+    __publicField(this, "core");
+    __publicField(this, "hasFocus", true);
+    __publicField(this, "isLastHidden", false);
+    __publicField(this, "boundHandlers", null);
+    this.eventReg = eventReg;
     this.core = core;
   }
   /**
@@ -34098,21 +34243,17 @@ var FridayNetworkEvents = class {
       focus: () => this.setHasFocus(true),
       blur: () => this.setHasFocus(false)
     };
-    this.plugin.registerDomEvent(window, "online", this.boundHandlers.online);
-    this.plugin.registerDomEvent(window, "offline", this.boundHandlers.offline);
-    this.plugin.registerDomEvent(activeDocument, "visibilitychange", this.boundHandlers.visibilityChange);
-    this.plugin.registerDomEvent(window, "focus", this.boundHandlers.focus);
-    this.plugin.registerDomEvent(window, "blur", this.boundHandlers.blur);
+    this.eventReg.registerDomEvent(window, "online", this.boundHandlers.online);
+    this.eventReg.registerDomEvent(window, "offline", this.boundHandlers.offline);
+    this.eventReg.registerDomEvent(activeDocument, "visibilitychange", this.boundHandlers.visibilityChange);
+    this.eventReg.registerDomEvent(window, "focus", this.boundHandlers.focus);
+    this.eventReg.registerDomEvent(window, "blur", this.boundHandlers.blur);
     Logger("Network event listeners registered", LOG_LEVEL_VERBOSE);
   }
   setHasFocus(hasFocus) {
     this.hasFocus = hasFocus;
     this.watchWindowVisibility();
   }
-  /**
-   * Handle online/offline events
-   * Source: livesync ModuleObsidianEvents.watchOnline()
-   */
   watchOnline() {
     scheduleTask("watch-online", 500, () => fireAndForget(() => this.watchOnlineAsync()));
   }
@@ -34137,10 +34278,6 @@ var FridayNetworkEvents = class {
       }
     }
   }
-  /**
-   * Handle visibility changes (tab switching, minimize)
-   * Source: livesync ModuleObsidianEvents.watchWindowVisibility()
-   */
   watchWindowVisibility() {
     scheduleTask(
       "watch-window-visibility",
@@ -34153,13 +34290,9 @@ var FridayNetworkEvents = class {
     const settings = this.core.getSettings();
     if (settings.suspendFileWatching) return;
     if (!settings.isConfigured) return;
-    if (this.isLastHidden && !this.hasFocus) {
-      return;
-    }
+    if (this.isLastHidden && !this.hasFocus) return;
     const isHidden = activeDocument.hidden;
-    if (this.isLastHidden === isHidden) {
-      return;
-    }
+    if (this.isLastHidden === isHidden) return;
     this.isLastHidden = isHidden;
     if (isHidden) {
       Logger("Window hidden, sync continues in background", LOG_LEVEL_VERBOSE);
@@ -34182,25 +34315,22 @@ var FridayNetworkEvents = class {
       }
     }
   }
-  /**
-   * Unload and cleanup event listeners
-   * Note: Events registered via registerDomEvent are auto-cleaned by Obsidian
-   */
   unload() {
     this.boundHandlers = null;
     Logger("Network event listeners unloaded", LOG_LEVEL_VERBOSE);
   }
 };
 
-// src/sync/features/ConnectionMonitor/index.ts
+// src/sync/sync-core/src/features/ConnectionMonitor/index.ts
 var FridayConnectionMonitor = class {
   constructor(core) {
-    this.reconnectTimer = null;
-    this.healthCheckTimer = null;
-    this.isMonitoring = false;
-    this.healthCheckInterval = 6e4;
+    __publicField(this, "core");
+    __publicField(this, "reconnectTimer", null);
+    __publicField(this, "healthCheckTimer", null);
+    __publicField(this, "isMonitoring", false);
+    __publicField(this, "healthCheckInterval", 6e4);
     // 1 minute
-    this._pausedForManualOperation = false;
+    __publicField(this, "_pausedForManualOperation", false);
     this.core = core;
   }
   /**
@@ -34370,12 +34500,13 @@ var FridayConnectionMonitor = class {
   }
 };
 
-// src/sync/features/ConnectionFailure/index.ts
+// src/sync/sync-core/src/features/ConnectionFailure/index.ts
 var FridayConnectionFailureHandler = class {
   // 30 seconds
   constructor(core) {
-    this._lastFailureNotified = 0;
-    this._failureNotificationCooldown = 3e4;
+    __publicField(this, "core");
+    __publicField(this, "_lastFailureNotified", 0);
+    __publicField(this, "_failureNotificationCooldown", 3e4);
     this.core = core;
   }
   /**
@@ -34493,12 +34624,14 @@ var FridayConnectionFailureHandler = class {
   }
 };
 
-// src/sync/features/OfflineTracker/index.ts
+// src/sync/sync-core/src/features/OfflineTracker/index.ts
 var OFFLINE_CHANGES_KEY = "friday-offline-changes";
 var FridayOfflineTracker = class {
   constructor(core) {
-    this.pendingChanges = /* @__PURE__ */ new Map();
-    this._isOffline = false;
+    __publicField(this, "core");
+    __publicField(this, "kvDB");
+    __publicField(this, "pendingChanges", /* @__PURE__ */ new Map());
+    __publicField(this, "_isOffline", false);
     this.core = core;
     this.kvDB = core.kvDB;
   }
@@ -34672,15 +34805,16 @@ var FridayOfflineTracker = class {
   }
 };
 
-// src/sync/features/ServerConnectivity/index.ts
-var import_obsidian5 = require("obsidian");
+// src/sync/sync-core/src/features/ServerConnectivity/index.ts
 var ServerConnectivityChecker = class {
-  constructor() {
-    this._lastCheckTime = 0;
-    this._lastStatus = "UNKNOWN";
-    this._checkCooldown = 5e3;
+  constructor(http2) {
+    __publicField(this, "http");
+    __publicField(this, "_lastCheckTime", 0);
+    __publicField(this, "_lastStatus", "UNKNOWN");
+    __publicField(this, "_checkCooldown", 5e3);
     // 5 seconds
-    this._lastError = void 0;
+    __publicField(this, "_lastError");
+    this.http = http2;
   }
   /**
    * Current server status based on last check
@@ -34764,7 +34898,7 @@ var ServerConnectivityChecker = class {
         (_, reject) => window.setTimeout(() => reject(new Error("Server connectivity check timed out")), 1e4)
       );
       const response = await Promise.race([
-        (0, import_obsidian5.requestUrl)({ url: uri, method: "GET", headers: this.getAuthHeaders(setting) }),
+        this.http.request({ url: uri, method: "GET", headers: this.getAuthHeaders(setting), throw: false }),
         timeoutPromise
       ]);
       if (response.status < 400 || response.status === 401 || response.status === 403) {
@@ -35225,15 +35359,21 @@ var _FridaySyncCore = class _FridaySyncCore {
       this._replicator = new LiveSyncCouchDBReplicator(this);
       this._storageEventManager = new FridayStorageEventManager(this.plugin, this);
       if (this._settings.syncInternalFiles !== false) {
-        this._hiddenFileSync = new FridayHiddenFileSync(this.plugin, this);
+        this._hiddenFileSync = new FridayHiddenFileSync(
+          new ObsidianVaultFileLister(this.plugin),
+          this
+        );
         await this._hiddenFileSync.onload();
         Logger("Hidden file sync module initialized", LOG_LEVEL_INFO);
       }
-      this._networkEvents = new FridayNetworkEvents(this.plugin, this);
+      this._networkEvents = new FridayNetworkEvents(
+        new ObsidianDomEventRegistrar(this.plugin),
+        this
+      );
       this._connectionMonitor = new FridayConnectionMonitor(this);
       this._connectionFailureHandler = new FridayConnectionFailureHandler(this);
       this._offlineTracker = new FridayOfflineTracker(this);
-      this._serverChecker = new ServerConnectivityChecker();
+      this._serverChecker = new ServerConnectivityChecker(new ObsidianHttpClient());
       await this._offlineTracker.initialize();
       Logger("Network error handling modules initialized (monitoring not started yet)", LOG_LEVEL_INFO);
       this.setupStatusMonitoring();
@@ -36324,7 +36464,7 @@ var _FridaySyncCore = class _FridaySyncCore {
       const uri = this._settings.couchDB_URI.replace(/\/$/, "");
       const dbUrl = `${uri}/${this._settings.couchDB_DBNAME}`;
       const credentials = btoa(`${this._settings.couchDB_USER}:${this._settings.couchDB_PASSWORD}`);
-      const response = await (0, import_obsidian6.requestUrl)({
+      const response = await (0, import_obsidian4.requestUrl)({
         url: dbUrl,
         method: "GET",
         headers: {
@@ -36478,7 +36618,7 @@ var SyncService = class {
     this.config = config;
     try {
       if (!config.couchDB_URI || !config.couchDB_DBNAME) {
-        new import_obsidian7.Notice("Sync: CouchDB URI and database name are required");
+        new import_obsidian5.Notice("Sync: CouchDB URI and database name are required");
         return false;
       }
       this.core = new FridaySyncCore(this.plugin);
@@ -36490,7 +36630,7 @@ var SyncService = class {
       return result;
     } catch (error) {
       console.error("Sync initialization failed:", error);
-      new import_obsidian7.Notice("Sync initialization failed. Please check your settings.");
+      new import_obsidian5.Notice("Sync initialization failed. Please check your settings.");
       return false;
     }
   }
@@ -36518,7 +36658,7 @@ var SyncService = class {
    */
   async startSync(continuous = true) {
     if (!this.core) {
-      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian5.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.startSync(continuous);
@@ -36530,7 +36670,7 @@ var SyncService = class {
    */
   async pullFromServer() {
     if (!this.core) {
-      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian5.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.pullFromServer();
@@ -36542,7 +36682,7 @@ var SyncService = class {
    */
   async pushToServer() {
     if (!this.core) {
-      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian5.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.pushToServer();
@@ -36557,7 +36697,7 @@ var SyncService = class {
    */
   async fetchFromServer() {
     if (!this.core) {
-      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian5.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.fetchFromServer();
@@ -36570,7 +36710,7 @@ var SyncService = class {
    */
   async rebuildVaultFromDB() {
     if (!this.core) {
-      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian5.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.rebuildVaultFromDB();
@@ -36584,7 +36724,7 @@ var SyncService = class {
    */
   async rebuildRemote() {
     if (!this.core) {
-      new import_obsidian7.Notice("Sync: Not initialized. Please initialize first.");
+      new import_obsidian5.Notice("Sync: Not initialized. Please initialize first.");
       return false;
     }
     return await this.core.rebuildRemote();
@@ -36699,7 +36839,7 @@ var SyncService = class {
 };
 
 // src/sync/SyncStatusDisplay.ts
-var import_obsidian8 = require("obsidian");
+var import_obsidian6 = require("obsidian");
 
 // src/sync/utils/FileProgressTracker.ts
 var FileProgressTracker = class {
@@ -36877,7 +37017,7 @@ var FileProgressTracker = class {
 // src/sync/SyncStatusDisplay.ts
 var MARK_DONE = "\u2009\u2009";
 function truncateMiddleForMobile(text, maxLength = 60) {
-  if (!import_obsidian8.Platform.isMobile || text.length <= maxLength) {
+  if (!import_obsidian6.Platform.isMobile || text.length <= maxLength) {
     return text;
   }
   const headLength = Math.floor(maxLength * 0.4);
@@ -36908,7 +37048,7 @@ var SyncStatusDisplay = class {
    */
   get shouldShowEditorStatus() {
     var _a5, _b2;
-    if (import_obsidian8.Platform.isMobile) {
+    if (import_obsidian6.Platform.isMobile) {
       return true;
     }
     return (_b2 = (_a5 = this.plugin.settings) == null ? void 0 : _a5.showEditorStatusDisplay) != null ? _b2 : false;
@@ -37190,7 +37330,7 @@ var SyncStatusDisplay = class {
     if (key2 in this.notifies) {
       const isShown = (_a5 = this.notifies[key2].notice.noticeEl) == null ? void 0 : _a5.isShown();
       if (!isShown) {
-        this.notifies[key2].notice = new import_obsidian8.Notice(message, 0);
+        this.notifies[key2].notice = new import_obsidian6.Notice(message, 0);
       }
       if (key2 === message) {
         this.notifies[key2].count++;
@@ -37199,7 +37339,7 @@ var SyncStatusDisplay = class {
         this.notifies[key2].notice.setMessage(message);
       }
     } else {
-      const notice = new import_obsidian8.Notice(message, 0);
+      const notice = new import_obsidian6.Notice(message, 0);
       this.notifies[key2] = {
         count: 0,
         notice
@@ -37245,8 +37385,8 @@ var SyncStatusDisplay = class {
    */
   showStatusBarMenu(event) {
     var _a5, _b2, _c;
-    const menu = new import_obsidian8.Menu();
-    if (import_obsidian8.Platform.isDesktop) {
+    const menu = new import_obsidian6.Menu();
+    if (import_obsidian6.Platform.isDesktop) {
       menu.addItem((item) => {
         item.setTitle(
           this.shouldShowEditorStatus ? "\u9690\u85CF\u7F16\u8F91\u5668\u5185\u72B6\u6001" : "\u663E\u793A\u7F16\u8F91\u5668\u5185\u72B6\u6001"
@@ -37367,8 +37507,8 @@ function formatPlanName(plan) {
 }
 
 // src/setting.ts
-var import_obsidian9 = require("obsidian");
-var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
+var import_obsidian7 = require("obsidian");
+var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
   constructor(app, plugin2) {
     super(app, plugin2);
     this.isActivating = false;
@@ -37411,8 +37551,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
    */
   renderEnterpriseSettings(containerEl) {
     const { enterpriseServerUrl } = this.plugin.settings;
-    new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_settings")).setHeading().settingEl.addClass("friday-section-title");
-    new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_server_url")).setDesc(this.plugin.i18n.t("settings.enterprise_server_url_desc")).addText((text) => {
+    new import_obsidian7.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_settings")).setHeading().settingEl.addClass("friday-section-title");
+    new import_obsidian7.Setting(containerEl).setName(this.plugin.i18n.t("settings.enterprise_server_url")).setDesc(this.plugin.i18n.t("settings.enterprise_server_url_desc")).addText((text) => {
       text.setPlaceholder("https://your-enterprise-server.com").setValue(enterpriseServerUrl || "").onChange(async (value) => {
         const trimmedValue = value.trim();
         this.plugin.settings.enterpriseServerUrl = trimmedValue;
@@ -37444,14 +37584,14 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
    */
   renderLicenseSection(containerEl) {
     var _a5;
-    new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.license")).setHeading().settingEl.addClass("friday-section-title");
+    new import_obsidian7.Setting(containerEl).setName(this.plugin.i18n.t("settings.license")).setHeading().settingEl.addClass("friday-section-title");
     if (((_a5 = this.plugin.licenseState) == null ? void 0 : _a5.isActivated()) && !this.plugin.licenseState.isExpired()) {
       const licenseInfo = this.plugin.licenseState.getLicenseInfo();
       if (!licenseInfo) {
         console.warn("[Settings] License is activated but no license info available");
         return;
       }
-      const licenseKeySetting = new import_obsidian9.Setting(containerEl).setName(maskLicenseKey(this.plugin.licenseState.getLicenseKey() || "")).setDesc(this.plugin.i18n.t("settings.valid_until") + ": " + licenseInfo.expires);
+      const licenseKeySetting = new import_obsidian7.Setting(containerEl).setName(maskLicenseKey(this.plugin.licenseState.getLicenseKey() || "")).setDesc(this.plugin.i18n.t("settings.valid_until") + ": " + licenseInfo.expires);
       const planBadge = licenseKeySetting.controlEl.createSpan({
         cls: `friday-plan-badge ${licenseInfo.plan.toLowerCase()} clickable`,
         text: formatPlanName(licenseInfo.plan)
@@ -37474,10 +37614,10 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
             await this.plugin.syncLicenseToSettings();
             await this.plugin.refreshLicenseUsage();
             await this.plugin.refreshSubdomainInfo();
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.license_info_refreshed") || "License info updated");
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.license_info_refreshed") || "License info updated");
             this.display();
           } catch (error) {
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.refresh_failed") || "Failed to refresh license info");
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.refresh_failed") || "Failed to refresh license info");
             console.error("Failed to refresh license info:", error);
             planBadge.textContent = originalText;
             planBadge.removeClass("refreshing");
@@ -37499,7 +37639,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       const usedStorage = (usage == null ? void 0 : usage.totalDiskUsage) || 0;
       const maxStorage = this.plugin.licenseState.getMaxStorage();
       const usagePercentage = maxStorage > 0 ? usedStorage / maxStorage * 100 : 0;
-      const storageSetting = new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.storage_usage")).setDesc(this.plugin.i18n.t("settings.storage_usage_desc"));
+      const storageSetting = new import_obsidian7.Setting(containerEl).setName(this.plugin.i18n.t("settings.storage_usage")).setDesc(this.plugin.i18n.t("settings.storage_usage_desc"));
       const progressContainer = storageSetting.controlEl.createDiv({ cls: "friday-storage-progress-container" });
       const usageText = progressContainer.createDiv({ cls: "friday-storage-usage-text" });
       usageText.setText(this.formatStorageSize(usedStorage) + " / " + this.formatStorageSize(maxStorage));
@@ -37510,7 +37650,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       let inputEl;
       let activateBtn;
       let statusEl;
-      const licenseSetting = new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.license_key")).setDesc(this.plugin.i18n.t("settings.license_key_placeholder")).addText((text) => {
+      const licenseSetting = new import_obsidian7.Setting(containerEl).setName(this.plugin.i18n.t("settings.license_key")).setDesc(this.plugin.i18n.t("settings.license_key_placeholder")).addText((text) => {
         inputEl = text.inputEl;
         text.setPlaceholder(this.plugin.i18n.t("settings.license_key_placeholder")).onChange((value) => {
           text.setValue(value.toUpperCase());
@@ -37533,7 +37673,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
           inputEl.disabled = true;
           try {
             await this.activateLicense(licenseKey);
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.license_activated_success"));
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.license_activated_success"));
             this.display();
           } catch (error) {
             statusEl.setText(this.plugin.i18n.t("settings.license_activation_failed"));
@@ -37557,7 +37697,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       let trialEmailEl;
       let trialRequestBtn;
       let trialStatusEl;
-      const trialSetting = new import_obsidian9.Setting(containerEl).setName(this.plugin.i18n.t("settings.trial_license")).setDesc(this.plugin.i18n.t("settings.trial_email")).addText((text) => {
+      const trialSetting = new import_obsidian7.Setting(containerEl).setName(this.plugin.i18n.t("settings.trial_license")).setDesc(this.plugin.i18n.t("settings.trial_email")).addText((text) => {
         trialEmailEl = text.inputEl;
         text.setPlaceholder(this.plugin.i18n.t("settings.trial_email_placeholder")).setValue("");
       }).addButton((button) => {
@@ -37590,12 +37730,12 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
               trialStatusEl.addClass("friday-license-success");
               try {
                 await this.activateLicense(licenseKey);
-                new import_obsidian9.Notice(this.plugin.i18n.t("settings.license_activated_success"));
+                new import_obsidian7.Notice(this.plugin.i18n.t("settings.license_activated_success"));
                 trialEmailEl.value = "";
                 this.display();
               } catch (activationError) {
                 console.error("Auto-activation failed:", activationError);
-                new import_obsidian9.Notice(this.plugin.i18n.t("settings.trial_request_success"));
+                new import_obsidian7.Notice(this.plugin.i18n.t("settings.trial_request_success"));
                 this.display();
               }
             } else {
@@ -37626,7 +37766,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
     const licenseSync = this.plugin.settings.licenseSync;
     if (!license || !(licenseSync == null ? void 0 : licenseSync.enabled)) return;
     const syncHeaderContainer = containerEl.createDiv("friday-sync-header-container");
-    new import_obsidian9.Setting(syncHeaderContainer).setName(this.plugin.i18n.t("settings.sync")).setHeading().settingEl.addClass("friday-section-title");
+    new import_obsidian7.Setting(syncHeaderContainer).setName(this.plugin.i18n.t("settings.sync")).setHeading().settingEl.addClass("friday-section-title");
     const toggleContainer = syncHeaderContainer.createDiv("friday-sync-toggle-container");
     let syncToggle;
     const toggleWrapper = toggleContainer.createDiv("friday-sync-toggle-wrapper");
@@ -37647,11 +37787,11 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         if (enabled) {
           try {
             await this.plugin.initializeSyncService();
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_enabled_success") || "Sync enabled");
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_enabled_success") || "Sync enabled");
             this.display();
           } catch (error) {
             console.error("Failed to initialize sync service:", error);
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_enable_failed") || "Failed to enable sync");
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_enable_failed") || "Failed to enable sync");
             syncToggle.checked = false;
             this.plugin.settings.syncUserEnabled = false;
             this.plugin.settings.syncEnabled = false;
@@ -37662,7 +37802,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
             if ((_a6 = this.plugin.syncService) == null ? void 0 : _a6.isInitialized) {
               await this.plugin.syncService.close();
             }
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_disabled_success") || "Sync disabled");
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_disabled_success") || "Sync disabled");
             this.display();
           } catch (error) {
             console.error("Failed to close sync service:", error);
@@ -37679,11 +37819,11 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       return;
     }
     const securityContainer = syncContentContainer.createDiv("friday-security-container");
-    new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.security")).setHeading();
+    new import_obsidian7.Setting(securityContainer).setName(this.plugin.i18n.t("settings.security")).setHeading();
     let passwordVisible = false;
     const encryptionPassphrase = this.plugin.settings.encryptionPassphrase;
     if (this.firstTimeSync && encryptionPassphrase) {
-      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_enabled")).addText((text) => {
+      new import_obsidian7.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_enabled")).addText((text) => {
         text.inputEl.type = "password";
         text.inputEl.readOnly = true;
         text.setValue(encryptionPassphrase);
@@ -37701,7 +37841,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         });
       });
     } else {
-      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_password_desc")).addText((text) => {
+      new import_obsidian7.Setting(securityContainer).setName(this.plugin.i18n.t("settings.encryption_password")).setDesc(this.plugin.i18n.t("settings.encryption_password_desc")).addText((text) => {
         text.inputEl.type = "password";
         text.inputEl.placeholder = this.plugin.i18n.t("settings.encryption_password_placeholder");
         text.setValue(encryptionPassphrase || "");
@@ -37725,7 +37865,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       });
     }
     if (this.firstTimeSync) {
-      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_first_time_title")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
+      new import_obsidian7.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_first_time_title")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.upload_local_to_cloud")).setCta().onClick(async () => {
           var _a6;
           button.setButtonText(this.plugin.i18n.t("settings.sync_uploading"));
@@ -37738,22 +37878,22 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
             if ((_a6 = this.plugin.settings.syncConfig) == null ? void 0 : _a6.syncOnStart) {
               await this.plugin.syncService.startSync(true);
             }
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_upload_success"));
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_upload_success"));
             this.firstTimeSync = false;
             this.display();
           } catch (error) {
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_operation_failed"));
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_operation_failed"));
             button.setButtonText(this.plugin.i18n.t("settings.upload_local_to_cloud"));
             button.setDisabled(false);
           }
         });
       });
     } else {
-      new import_obsidian9.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_data_available")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
+      new import_obsidian7.Setting(securityContainer).setName(this.plugin.i18n.t("settings.sync_data_available")).setDesc(this.plugin.i18n.t("settings.sync_description")).addButton((button) => {
         button.setButtonText(this.plugin.i18n.t("settings.download_from_cloud")).setCta().onClick(async () => {
           var _a6;
           if (!this.plugin.settings.encryptionPassphrase) {
-            new import_obsidian9.Notice(this.plugin.i18n.t("settings.encryption_password_required"));
+            new import_obsidian7.Notice(this.plugin.i18n.t("settings.encryption_password_required"));
             return;
           }
           button.setButtonText(this.plugin.i18n.t("settings.sync_downloading"));
@@ -37766,14 +37906,14 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
             await this.plugin.initializeSyncService();
             if (this.plugin.syncService.isInitialized) {
               await this.plugin.syncService.fetchFromServer();
-              new import_obsidian9.Notice(this.plugin.i18n.t("settings.sync_download_success"));
+              new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_download_success"));
               this.display();
             } else {
               throw new Error("Sync service initialization failed");
             }
           } catch (error) {
             console.error("Download failed:", error);
-            new import_obsidian9.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error.message || error}`);
+            new import_obsidian7.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error.message || error}`);
             button.setButtonText(this.plugin.i18n.t("settings.download_from_cloud"));
             button.setDisabled(false);
           }
@@ -37795,7 +37935,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       };
     }
     const selectiveSync = this.plugin.settings.syncConfig.selectiveSync;
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_images")).setDesc(this.plugin.i18n.t("settings.sync_images_desc")).addToggle((toggle) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_images")).setDesc(this.plugin.i18n.t("settings.sync_images_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncImages) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37804,7 +37944,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_audio")).setDesc(this.plugin.i18n.t("settings.sync_audio_desc")).addToggle((toggle) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_audio")).setDesc(this.plugin.i18n.t("settings.sync_audio_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncAudio) != null ? _a6 : false);
       toggle.onChange(async (value) => {
@@ -37813,7 +37953,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_video")).setDesc(this.plugin.i18n.t("settings.sync_video_desc")).addToggle((toggle) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_video")).setDesc(this.plugin.i18n.t("settings.sync_video_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncVideo) != null ? _a6 : false);
       toggle.onChange(async (value) => {
@@ -37822,7 +37962,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_pdf")).setDesc(this.plugin.i18n.t("settings.sync_pdf_desc")).addToggle((toggle) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_pdf")).setDesc(this.plugin.i18n.t("settings.sync_pdf_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncPdf) != null ? _a6 : false);
       toggle.onChange(async (value) => {
@@ -37831,7 +37971,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_themes")).setDesc(this.plugin.i18n.t("settings.sync_themes_desc")).addToggle((toggle) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_themes")).setDesc(this.plugin.i18n.t("settings.sync_themes_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncThemes) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37840,7 +37980,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_snippets")).setDesc(this.plugin.i18n.t("settings.sync_snippets_desc")).addToggle((toggle) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_snippets")).setDesc(this.plugin.i18n.t("settings.sync_snippets_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncSnippets) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37849,7 +37989,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         await this.updateSelectiveSyncSettings();
       });
     });
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_plugins")).setDesc(this.plugin.i18n.t("settings.sync_plugins_desc")).addToggle((toggle) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.sync_plugins")).setDesc(this.plugin.i18n.t("settings.sync_plugins_desc")).addToggle((toggle) => {
       var _a6;
       toggle.setValue((_a6 = selectiveSync.syncPlugins) != null ? _a6 : true);
       toggle.onChange(async (value) => {
@@ -37877,7 +38017,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       }
     };
     const createPatternRow = (pattern = "") => {
-      const setting = new import_obsidian9.Setting(patternsListContainer).setDesc(this.plugin.i18n.t("settings.ignore_patterns_custom_rule")).addText((text) => {
+      const setting = new import_obsidian7.Setting(patternsListContainer).setDesc(this.plugin.i18n.t("settings.ignore_patterns_custom_rule")).addText((text) => {
         text.setPlaceholder(this.plugin.i18n.t("settings.ignore_patterns_placeholder"));
         text.setValue(pattern);
         text.onChange(() => savePatterns());
@@ -37888,7 +38028,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
         });
       });
     };
-    new import_obsidian9.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.ignore_patterns")).setDesc(this.plugin.i18n.t("settings.ignore_patterns_desc")).addButton((button) => {
+    new import_obsidian7.Setting(selectiveSyncContainer).setName(this.plugin.i18n.t("settings.ignore_patterns")).setDesc(this.plugin.i18n.t("settings.ignore_patterns_desc")).addButton((button) => {
       button.setButtonText(this.plugin.i18n.t("settings.ignore_patterns_add")).onClick(() => {
         createPatternRow("");
       });
@@ -37951,10 +38091,10 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
    */
   renderDangerZone(containerEl) {
     const dangerZone = containerEl.createDiv("friday-danger-zone");
-    new import_obsidian9.Setting(dangerZone).setName(this.plugin.i18n.t("settings.danger_zone")).setHeading().settingEl.addClass("friday-danger-zone-title");
+    new import_obsidian7.Setting(dangerZone).setName(this.plugin.i18n.t("settings.danger_zone")).setHeading().settingEl.addClass("friday-danger-zone-title");
     let resetInput = "";
     let resetButton;
-    new import_obsidian9.Setting(dangerZone).setName(this.plugin.i18n.t("settings.reset_sync_title")).setDesc(this.plugin.i18n.t("settings.reset_sync_message")).addText((text) => {
+    new import_obsidian7.Setting(dangerZone).setName(this.plugin.i18n.t("settings.reset_sync_title")).setDesc(this.plugin.i18n.t("settings.reset_sync_message")).addText((text) => {
       text.inputEl.placeholder = this.plugin.i18n.t("settings.reset_input_placeholder");
       text.onChange((value) => {
         resetInput = value;
@@ -38009,11 +38149,11 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
       await this.plugin.saveSettings();
       await this.plugin.initializeSyncService();
       this.firstTimeSync = true;
-      new import_obsidian9.Notice(this.plugin.i18n.t("settings.reset_sync_success"));
+      new import_obsidian7.Notice(this.plugin.i18n.t("settings.reset_sync_success"));
       this.display();
     } catch (error) {
       console.error("Reset failed:", error);
-      new import_obsidian9.Notice(this.plugin.i18n.t("settings.reset_sync_failed", {
+      new import_obsidian7.Notice(this.plugin.i18n.t("settings.reset_sync_failed", {
         error: error instanceof Error ? error.message : String(error)
       }));
     }
@@ -38105,7 +38245,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian9.PluginSettingTab {
 };
 
 // src/http.ts
-var import_obsidian10 = require("obsidian");
+var import_obsidian8 = require("obsidian");
 var http = __toESM(require("http"), 1);
 var https = __toESM(require("https"), 1);
 var ObsidianIdentityHttpClient = class {
@@ -38113,7 +38253,7 @@ var ObsidianIdentityHttpClient = class {
    * POST JSON data
    */
   async post(url, data, headers) {
-    const response = await (0, import_obsidian10.requestUrl)({
+    const response = await (0, import_obsidian8.requestUrl)({
       url,
       method: "POST",
       headers: {
@@ -38138,7 +38278,7 @@ var ObsidianIdentityHttpClient = class {
    */
   async postForm(url, data) {
     const formBody = Object.entries(data).map(([key2, value]) => `${encodeURIComponent(key2)}=${encodeURIComponent(value)}`).join("&");
-    const response = await (0, import_obsidian10.requestUrl)({
+    const response = await (0, import_obsidian8.requestUrl)({
       url,
       method: "POST",
       headers: {
@@ -38167,7 +38307,7 @@ var ObsidianIdentityHttpClient = class {
     }
     const boundary = "----WebKitFormBoundary" + Math.random().toString(36).substring(2, 9);
     const arrayBufferBody = await this.formDataToArrayBufferFromFormData(formData, boundary);
-    const response = await (0, import_obsidian10.requestUrl)({
+    const response = await (0, import_obsidian8.requestUrl)({
       url,
       method: "POST",
       headers: {
@@ -38189,7 +38329,7 @@ var ObsidianIdentityHttpClient = class {
     if (headers) {
       request.headers = headers;
     }
-    const response = await (0, import_obsidian10.requestUrl)(request);
+    const response = await (0, import_obsidian8.requestUrl)(request);
     return this.adaptResponse(response);
   }
   /**
@@ -38772,7 +38912,7 @@ function GetBaseUrl(settings) {
   }
   return API_URL_PRO;
 }
-var MdfridaySyncPlugin = class extends import_obsidian14.Plugin {
+var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
   constructor() {
     super(...arguments);
     this.syncStatusDisplay = null;
@@ -38781,9 +38921,9 @@ var MdfridaySyncPlugin = class extends import_obsidian14.Plugin {
     this.pluginDir = `${this.manifest.dir}`;
     await this.loadSettings();
     await this.initCore();
-    if (import_obsidian14.Platform.isDesktop) {
+    if (import_obsidian12.Platform.isDesktop) {
       const adapter = this.app.vault.adapter;
-      if (adapter instanceof import_obsidian14.FileSystemAdapter) {
+      if (adapter instanceof import_obsidian12.FileSystemAdapter) {
         const basePath = adapter.getBasePath();
         this.vaultBasePath = basePath;
         this.absWorkspacePath = nodePath2.join(basePath, this.pluginDir, "workspace");
@@ -38792,7 +38932,7 @@ var MdfridaySyncPlugin = class extends import_obsidian14.Plugin {
     } else {
       this.absWorkspacePath = joinVaultPath(this.pluginDir, "workspace");
       const adapter = this.app.vault.adapter;
-      if (adapter instanceof import_obsidian14.FileSystemAdapter) {
+      if (adapter instanceof import_obsidian12.FileSystemAdapter) {
         this.vaultBasePath = adapter.getBasePath();
       }
       await this.initMobileFeatures();
