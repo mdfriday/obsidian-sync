@@ -1,5 +1,5 @@
 import { requestUrl } from 'obsidian';
-import type { IHttpClient } from '../sync-core/src/interfaces/IPluginAdapters';
+import type { IHttpClient } from '@mdfriday/sync-core/interfaces/IPluginAdapters';
 
 /**
  * Wraps Obsidian's requestUrl as IHttpClient.

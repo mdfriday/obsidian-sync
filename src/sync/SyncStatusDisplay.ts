@@ -6,7 +6,7 @@
 
 import { Plugin, Notice, Platform, Menu, MenuItem } from "obsidian";
 import { computed, reactive, reactiveSource, type ReactiveValue } from "octagonal-wheels/dataobject/reactive";
-import type { DatabaseConnectingStatus } from "./sync-core/src/core/common/types";
+import type { DatabaseConnectingStatus } from "@mdfriday/sync-core/core/common/types";
 import type { FridaySyncCore } from "./FridaySyncCore";
 import { FileProgressTracker, type FileProgressState } from "./utils/FileProgressTracker";
 

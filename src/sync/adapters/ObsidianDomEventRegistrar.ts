@@ -1,5 +1,5 @@
 import type { Plugin } from 'obsidian';
-import type { IDomEventRegistrar } from '../sync-core/src/interfaces/IPluginAdapters';
+import type { IDomEventRegistrar } from '@mdfriday/sync-core/interfaces/IPluginAdapters';
 
 /**
  * Wraps Obsidian's Plugin.registerDomEvent as IDomEventRegistrar.

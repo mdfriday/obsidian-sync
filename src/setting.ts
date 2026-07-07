@@ -1,7 +1,7 @@
 import {App, PluginSettingTab, Setting, Notice, Platform} from 'obsidian';
 import type MdfridaySyncPlugin from './main';
 import {generateEncryptionPassphrase, maskLicenseKey, formatPlanName} from "./license";
-import {clearHandlers as clearSyncHandlerCache} from "./sync/sync-core/src/core/replication/SyncParamsHandler";
+import {clearHandlers as clearSyncHandlerCache} from "@mdfriday/sync-core/core/replication/SyncParamsHandler";
 
 export class MdfridaySyncSettingTab extends PluginSettingTab {
 	plugin: MdfridaySyncPlugin;

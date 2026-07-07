@@ -17,8 +17,9 @@
 		"lib": ["ES2018", "ES2022", "DOM", "ES5", "ES6", "ES7", "ES2019.Array", "ES2021.WeakRef", "ES2020.BigInt", "ESNext.Intl"],
 		"paths": {
 			"@/*": ["src/sync/*"],
-			"@lib/*": ["src/sync/core/*"],
-			"src/*": ["src/*"]
+			"src/*": ["src/*"],
+			"@mdfriday/sync-core": ["node_modules/@mdfriday/sync-core/src/index.ts"],
+			"@mdfriday/sync-core/*": ["node_modules/@mdfriday/sync-core/src/*"]
 		}
 	},
 	"include": ["src/**/*"],

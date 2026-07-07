@@ -6,7 +6,7 @@
  */
 
 import type { FileProgressEvent } from '../types/FileProgressEvents';
-import { $msg } from '../sync-core/src/core/common/i18n';
+import { $msg } from '@mdfriday/sync-core/core/common/i18n';
 
 export interface FileProgressState {
     // 上传

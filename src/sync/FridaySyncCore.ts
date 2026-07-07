@@ -32,21 +32,21 @@ import {
 	type ObsidianLiveSyncSettings,
 	REMOTE_COUCHDB,
 	type RemoteDBSettings,
-} from "./sync-core/src/core/common/types";
+} from "@mdfriday/sync-core/core/common/types";
 
 // Import core components
-import {LiveSyncLocalDB, type LiveSyncLocalDBEnv} from "./sync-core/src/core/pouchdb/LiveSyncLocalDB";
+import {LiveSyncLocalDB, type LiveSyncLocalDBEnv} from "@mdfriday/sync-core/core/pouchdb/LiveSyncLocalDB";
 import {
 	LiveSyncCouchDBReplicator,
 	type LiveSyncCouchDBReplicatorEnv
-} from "./sync-core/src/core/replication/couchdb/LiveSyncReplicator";
-import {type ReplicationStat} from "./sync-core/src/core/replication/LiveSyncAbstractReplicator";
-import {LiveSyncManagers} from "./sync-core/src/core/managers/LiveSyncManagers";
-import {type KeyValueDatabase} from "./sync-core/src/core/interfaces/KeyValueDatabase";
+} from "@mdfriday/sync-core/core/replication/couchdb/LiveSyncReplicator";
+import {type ReplicationStat} from "@mdfriday/sync-core/core/replication/LiveSyncAbstractReplicator";
+import {LiveSyncManagers} from "@mdfriday/sync-core/core/managers/LiveSyncManagers";
+import {type KeyValueDatabase} from "@mdfriday/sync-core/core/interfaces/KeyValueDatabase";
 import {type SimpleStore} from "octagonal-wheels/databases/SimpleStoreBase";
-import {Logger, setGlobalLogFunction} from "./sync-core/src/core/common/logger";
-import {isTextDocument, readContent} from "./sync-core/src/core/common/utils";
-import {$msg} from "./sync-core/src/core/common/i18n";
+import {Logger, setGlobalLogFunction} from "@mdfriday/sync-core/core/common/logger";
+import {isTextDocument, readContent} from "@mdfriday/sync-core/core/common/utils";
+import {$msg} from "@mdfriday/sync-core/core/common/i18n";
 
 // Import services
 import {FridayServiceHub} from "./FridayServiceHub";
@@ -56,29 +56,29 @@ import { initializeSameChangePairs } from "./utils/sameChangePairs";
 import type { SyncStatusDisplay } from "./SyncStatusDisplay";
 
 // Import HiddenFileSync module
-import {FridayHiddenFileSync} from "./sync-core/src/features/HiddenFileSync";
+import {FridayHiddenFileSync} from "@mdfriday/sync-core/features/HiddenFileSync";
 import {DEFAULT_INTERNAL_IGNORE_PATTERNS} from "./types";
 
 // Import network error handling modules
-import {FridayNetworkEvents} from "./sync-core/src/features/NetworkEvents";
-import {FridayConnectionMonitor} from "./sync-core/src/features/ConnectionMonitor";
-import {FridayConnectionFailureHandler} from "./sync-core/src/features/ConnectionFailure";
-import {FridayOfflineTracker} from "./sync-core/src/features/OfflineTracker";
-import {ServerConnectivityChecker, type ServerStatus} from "./sync-core/src/features/ServerConnectivity";
+import {FridayNetworkEvents} from "@mdfriday/sync-core/features/NetworkEvents";
+import {FridayConnectionMonitor} from "@mdfriday/sync-core/features/ConnectionMonitor";
+import {FridayConnectionFailureHandler} from "@mdfriday/sync-core/features/ConnectionFailure";
+import {FridayOfflineTracker} from "@mdfriday/sync-core/features/OfflineTracker";
+import {ServerConnectivityChecker, type ServerStatus} from "@mdfriday/sync-core/features/ServerConnectivity";
 
 // Import hidden file utilities
 import {isInternalMetadata} from "./utils/hiddenFileUtils";
 
 // PouchDB imports - use the configured PouchDB with all plugins (including transform-pouch)
-import {PouchDB} from "./sync-core/src/core/pouchdb/pouchdb-browser";
+import {PouchDB} from "@mdfriday/sync-core/core/pouchdb/pouchdb-browser";
 
 // Import encryption utilities for local database
-import {disableEncryption, enableEncryption} from "./sync-core/src/core/pouchdb/encryption";
-import {replicationFilter} from "./sync-core/src/core/pouchdb/compress";
-import {clearHandlers as clearSyncParamsHandlerCache} from "./sync-core/src/core/replication/SyncParamsHandler";
+import {disableEncryption, enableEncryption} from "@mdfriday/sync-core/core/pouchdb/encryption";
+import {replicationFilter} from "@mdfriday/sync-core/core/pouchdb/compress";
+import {clearHandlers as clearSyncParamsHandlerCache} from "@mdfriday/sync-core/core/replication/SyncParamsHandler";
 
 // Import path utilities for correct document ID generation
-import {id2path_base, path2id_base, isAccepted} from "./sync-core/src/core/string_and_binary/path";
+import {id2path_base, path2id_base, isAccepted} from "@mdfriday/sync-core/core/string_and_binary/path";
 
 /**
  * Simple KeyValue Database implementation using localStorage

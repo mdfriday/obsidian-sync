@@ -45,10 +45,12 @@ const cssRenamePlugin = {
 // External modules — provided by Obsidian / Electron (not bundled)
 // NOTE: 'events' is intentionally NOT listed here so it is bundled via the
 // Node.js polyfill (events@3.3.0) for PouchDB / SyncService on mobile.
+// NOTE: 'path' is intentionally NOT listed here — we alias it to path-browserify
+// so it works on both desktop and mobile.
 const externals = [
-	'obsidian',
-	'electron',
-	'crypto',
+        'obsidian',
+        'electron',
+        'crypto',
 	'@codemirror/autocomplete', '@codemirror/closebrackets', '@codemirror/collab',
 	'@codemirror/commands', '@codemirror/comment', '@codemirror/fold',
 	'@codemirror/gutter', '@codemirror/highlight', '@codemirror/history',
@@ -57,23 +59,28 @@ const externals = [
 	'@codemirror/search', '@codemirror/state', '@codemirror/stream-parser',
 	'@codemirror/text', '@codemirror/tooltip', '@codemirror/view',
 	'@lezer/common', '@lezer/highlight', '@lezer/lr',
-	'fs', 'fs/promises', 'path', 'net', 'tls', 'stream', 'stream/promises',
-	'http', 'https', 'util', 'os', 'process', 'url', 'worker_threads',
+        'fs', 'fs/promises', 'net', 'tls', 'stream', 'stream/promises',
+        'http', 'https', 'util', 'os', 'process', 'url', 'worker_threads',
 	'child_process', 'node:fs', 'node:fs/promises', 'node:path',
 	'node:stream', 'node:process', 'node:url', 'node:worker_threads',
 	'node:child_process',
 ];
 
 const buildOptions = {
-	banner: { js: banner },
-	entryPoints: ['src/main.ts'],
-	bundle: true,
-	define: {
-		'process.env.NODE_ENV': prod ? '"production"' : '"development"',
-		global: 'window',
-	},
-	external: externals,
-	platform: 'browser',
+        banner: { js: banner },
+        entryPoints: ['src/main.ts'],
+        bundle: true,
+        define: {
+                'process.env.NODE_ENV': prod ? '"production"' : '"development"',
+                global: 'window',
+        },
+        external: externals,
+        alias: {
+                // Replace Node's 'path' with browser-compatible path-browserify
+                // This makes foundry/index.ts work on Obsidian mobile
+                'path': 'path-browserify',
+        },
+        platform: 'browser',
 	mainFields: ['browser', 'module', 'main'],
 	format: 'cjs',
 	target: 'es2018',

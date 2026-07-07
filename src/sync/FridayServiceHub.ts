@@ -5,7 +5,7 @@
  */
 
 import { Platform, TFile, TFolder, requestUrl } from "obsidian";
-import { ServiceHub, type ServiceInstances } from "./sync-core/src/core/services/ServiceHub";
+import { ServiceHub, type ServiceInstances } from "@mdfriday/sync-core/core/services/ServiceHub";
 import {
     type APIService,
     type PathService,
@@ -24,8 +24,8 @@ import {
     type UIService,
     ServiceBase,
     HubService,
-} from "./sync-core/src/core/services/Services";
-import { ServiceBackend } from "./sync-core/src/core/services/ServiceBackend";
+} from "@mdfriday/sync-core/core/services/Services";
+import { ServiceBackend } from "@mdfriday/sync-core/core/services/ServiceBackend";
 import type { FridaySyncCore } from "./FridaySyncCore";
 import type { FetchHttpHandler } from "@smithy/fetch-http-handler";
 import { Logger, type LOG_LEVEL, LOG_LEVEL_INFO, LOG_LEVEL_NOTICE, LOG_LEVEL_VERBOSE } from "octagonal-wheels/common/logger";
@@ -46,15 +46,15 @@ import type {
     UXFileInfoStub,
     AUTO_MERGED,
     MISSING_OR_ERROR,
-} from "./sync-core/src/core/common/types";
-import type { LiveSyncLocalDB } from "./sync-core/src/core/pouchdb/LiveSyncLocalDB";
-import type { LiveSyncAbstractReplicator } from "./sync-core/src/core/replication/LiveSyncAbstractReplicator";
+} from "@mdfriday/sync-core/core/common/types";
+import type { LiveSyncLocalDB } from "@mdfriday/sync-core/core/pouchdb/LiveSyncLocalDB";
+import type { LiveSyncAbstractReplicator } from "@mdfriday/sync-core/core/replication/LiveSyncAbstractReplicator";
 import type { SimpleStore } from "octagonal-wheels/databases/SimpleStoreBase";
-import type { SvelteDialogManagerBase } from "./sync-core/src/core/UI/svelteDialog";
-import { readContent, isTextDocument, isDocContentSame } from "./sync-core/src/core/common/utils";
-import { enableEncryption, disableEncryption } from "./sync-core/src/core/pouchdb/encryption";
-import { replicationFilter } from "./sync-core/src/core/pouchdb/compress";
-import { E2EEAlgorithms } from "./sync-core/src/core/common/types";
+import type { SvelteDialogManagerBase } from "@mdfriday/sync-core/core/UI/svelteDialog";
+import { readContent, isTextDocument, isDocContentSame } from "@mdfriday/sync-core/core/common/utils";
+import { enableEncryption, disableEncryption } from "@mdfriday/sync-core/core/pouchdb/encryption";
+import { replicationFilter } from "@mdfriday/sync-core/core/pouchdb/compress";
+import { E2EEAlgorithms } from "@mdfriday/sync-core/core/common/types";
 
 // Import hidden file utilities
 import { isInternalMetadata } from "./utils/hiddenFileUtils";
@@ -64,7 +64,7 @@ import { compareFileFreshness } from "./FridayStorageEventManager";
 import { markChangesAreSame, unmarkChanges } from "./utils/sameChangePairs";
 
 // PouchDB imports - use the configured PouchDB with transform-pouch plugin
-import { PouchDB } from "./sync-core/src/core/pouchdb/pouchdb-browser";
+import { PouchDB } from "@mdfriday/sync-core/core/pouchdb/pouchdb-browser";
 
 /**
  * Stub API Service
@@ -956,24 +956,39 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
                         headers.append("Authorization", `Basic ${credentials}`);
                     }
                     
-                    // 🔧 Add timeout for HTTP requests via Promise.race
-                    const DEFAULT_HTTP_TIMEOUT = 30000; // 30 seconds per batch
-                    const timeoutPromise = new Promise<never>((_, reject) =>
-                        window.setTimeout(() => reject(new Error(`Request timeout after ${DEFAULT_HTTP_TIMEOUT}ms`)), DEFAULT_HTTP_TIMEOUT)
-                    );
+                    // Determine the request URL string
+                    const reqUrl = typeof url === 'string' ? url : url.url;
+
+                    // _changes long-poll/continuous requests must NOT have a client-side timeout:
+                    //   - CouchDB holds the connection open for the heartbeat interval (default 30s)
+                    //   - Adding a 30s client timeout races with the 30s heartbeat → intermittent errors
+                    //   - livesync original: no client timeout on requestUrl, heartbeat drives the cycle
+                    const isChanges = reqUrl.includes('/_changes');
 
                     try {
                         const headersRecord: Record<string, string> = {};
                         headers.forEach((value, key) => { headersRecord[key] = value; });
-                        const result = await Promise.race([
-                            requestUrl({
-                                url: typeof url === 'string' ? url : url.url,
-                                method: (opts.method as string) || "GET",
-                                headers: headersRecord,
-                                body: opts.body as string | ArrayBuffer | undefined,
-                            }),
-                            timeoutPromise,
-                        ]);
+
+                        const requestPromise = requestUrl({
+                            url: reqUrl,
+                            method: (opts?.method as string) || "GET",
+                            headers: headersRecord,
+                            body: opts?.body as string | ArrayBuffer | undefined,
+                        });
+
+                        // Only apply timeout to regular (non-streaming) requests
+                        const result = isChanges
+                            ? await requestPromise
+                            : await Promise.race([
+                                requestPromise,
+                                new Promise<never>((_, reject) =>
+                                    window.setTimeout(
+                                        () => reject(new Error("Request timeout after 30000ms")),
+                                        30000
+                                    )
+                                ),
+                            ]);
+
                         // Wrap requestUrl result as Fetch-API-compatible Response for PouchDB
                         return new Response(result.arrayBuffer, {
                             status: result.status,

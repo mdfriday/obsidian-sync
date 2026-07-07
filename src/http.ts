@@ -6,8 +6,6 @@
  */
 
 import { requestUrl, type RequestUrlParam, type RequestUrlResponse } from 'obsidian';
-import * as http from 'http';
-import * as https from 'https';
 import type {
 	PublishHttpClient, 
 	PublishHttpResponse, 

@@ -13,7 +13,7 @@
  */
 
 import { TAbstractFile, TFile, TFolder, Plugin } from "obsidian";
-import { Logger } from "./sync-core/src/core/common/logger";
+import { Logger } from "@mdfriday/sync-core/core/common/logger";
 import { 
     LOG_LEVEL_INFO, 
     LOG_LEVEL_VERBOSE, 
@@ -24,8 +24,8 @@ import {
     type DocumentID,
     type SavingEntry,
     type LoadedEntry,
-} from "./sync-core/src/core/common/types";
-import { shouldBeIgnored } from "./sync-core/src/core/string_and_binary/path";
+} from "@mdfriday/sync-core/core/common/types";
+import { shouldBeIgnored } from "@mdfriday/sync-core/core/string_and_binary/path";
 import type { FridaySyncCore } from "./FridaySyncCore";
 import { 
     fireAndForget, 
@@ -35,7 +35,7 @@ import {
     isDocContentSame,
     getDocDataAsArray,
     readAsBlob,
-} from "./sync-core/src/core/common/utils";
+} from "@mdfriday/sync-core/core/common/utils";
 import {
     isMarkedAsSameChanges,
     markChangesAreSame,
@@ -44,7 +44,7 @@ import {
     TARGET_IS_NEW,
     EVEN,
 } from "./utils/sameChangePairs";
-import type { MetaEntry } from "./sync-core/src/core/common/types";
+import type { MetaEntry } from "@mdfriday/sync-core/core/common/types";
 
 export type FileEventType = "CREATE" | "CHANGED" | "DELETE" | "RENAME";
 

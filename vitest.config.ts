@@ -29,7 +29,7 @@ export default defineConfig({
   resolve: {
     alias: {
       obsidian: path.resolve(__dirname, 'tests/__mocks__/obsidian.ts'),
-      '@mdfriday/sync-core': path.resolve(__dirname, 'src/sync/sync-core/src/index.ts'),
+      // @mdfriday/sync-core resolves via npm link → node_modules/@mdfriday/sync-core
     },
   },
 });
