@@ -205,7 +205,6 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
     private _managers: LiveSyncManagers | null = null;
     private _services: FridayServiceHub;
     private _kvDB: KeyValueDatabase;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private _simpleStore: SimpleStore<any>;
 
     // Status tracking
@@ -380,7 +379,6 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         return this._kvDB;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get simpleStore(): SimpleStore<any> {
         return this._simpleStore;
     }
