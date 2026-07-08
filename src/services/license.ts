@@ -48,7 +48,7 @@ export class LicenseServiceManager {
 			return { success: false, error: result.error || 'Failed to request trial' };
 		} catch (error: unknown) {
 			console.error('[Friday] Error requesting trial license:', error);
-			return { success: false, error: (error as Error).message };
+			return { success: false, error: error instanceof Error ? error.message : String(error) };
 		}
 	}
 
@@ -67,7 +67,7 @@ export class LicenseServiceManager {
 			return { success: false, error: result.error || 'Login with license failed' };
 		} catch (error: unknown) {
 			console.error('[Friday] Error logging in with license:', error);
-			return { success: false, error: (error as Error).message };
+			return { success: false, error: error instanceof Error ? error.message : String(error) };
 		}
 	}
 
@@ -92,7 +92,7 @@ export class LicenseServiceManager {
 			return { success: false, error: result.error || 'Failed to activate license' };
 		} catch (error: unknown) {
 			console.error('[Friday] Error activating license:', error);
-			return { success: false, error: (error as Error).message };
+			return { success: false, error: error instanceof Error ? error.message : String(error) };
 		}
 	}
 
@@ -105,7 +105,7 @@ export class LicenseServiceManager {
 			return result;
 		} catch (error: unknown) {
 			console.error('[Friday] Error getting license info:', error);
-			return { success: false, error: (error as Error).message };
+			return { success: false, error: error instanceof Error ? error.message : String(error) };
 		}
 	}
 
@@ -118,7 +118,7 @@ export class LicenseServiceManager {
 			return result;
 		} catch (error: unknown) {
 			console.error('[Friday] Error getting license usage:', error);
-			return { success: false, error: (error as Error).message };
+			return { success: false, error: error instanceof Error ? error.message : String(error) };
 		}
 	}
 
@@ -135,7 +135,7 @@ export class LicenseServiceManager {
 			return result;
 		} catch (error: unknown) {
 			console.error('[Friday] Error resetting license usage:', error);
-			return { success: false, error: (error as Error).message };
+			return { success: false, error: error instanceof Error ? error.message : String(error) };
 		}
 	}
 

@@ -92,9 +92,9 @@ export class LicenseStateManager {
 				licenseKey: this.authStatus.license
 			};
 			
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('[LicenseState] Initialize failed:', error);
-			return { isActivated: false, error: (error as Error).message };
+			return { isActivated: false, error: error instanceof Error ? error.message : String(error) };
 		}
 	}
 

@@ -3376,7 +3376,7 @@ var init_foundry = __esm({
           };
           return { success: true, data: status };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async getConfig(workspacePath) {
@@ -3385,7 +3385,7 @@ var init_foundry = __esm({
           const ud = await loadUserData(workspacePath);
           return { success: true, data: { apiUrl: (_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl, websiteUrl: (_b2 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _b2.websiteUrl } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async updateConfig(workspacePath, config) {
@@ -3395,7 +3395,7 @@ var init_foundry = __esm({
           await saveUserData(workspacePath, { serverConfig });
           return { success: true, data: serverConfig };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
     };
@@ -3414,7 +3414,7 @@ var init_foundry = __esm({
           if (!(d == null ? void 0 : d.license_key)) throw new Error("Invalid trial response");
           return { success: true, data: { email: (_a5 = d.email) != null ? _a5 : "", licenseKey: d.license_key, password: (_b2 = d.password) != null ? _b2 : "", validityDays: (_c = d.validity_days) != null ? _c : 0 } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async loginWithLicense(workspacePath, licenseKey) {
@@ -3430,7 +3430,7 @@ var init_foundry = __esm({
           await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
           return { success: true, data: {} };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async activateLicense(workspacePath, licenseKey) {
@@ -3475,7 +3475,7 @@ var init_foundry = __esm({
           await saveUserData(workspacePath, { license: licenseToStore, syncConfig: syncToStore });
           return { success: true, data: info3 };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async getLicenseInfo(workspacePath, options) {
@@ -3503,7 +3503,7 @@ var init_foundry = __esm({
           }
           return { success: true, data: buildLicenseInfoFromStored(ud.license) };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async getLicenseUsage(workspacePath) {
@@ -3538,7 +3538,7 @@ var init_foundry = __esm({
           };
           return { success: true, data: usage };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async resetUsage(workspacePath, force) {
@@ -3559,7 +3559,7 @@ var init_foundry = __esm({
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Reset failed: ${res2.status}`);
           return { success: true, message: "Usage data reset successfully" };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async hasActiveLicense(workspacePath) {
@@ -3579,7 +3579,7 @@ var init_foundry = __esm({
           const marker = nodePath.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
           return { success: true, data: fileExists(marker) };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async initWorkspace(workspacePath) {
@@ -3613,7 +3613,7 @@ var init_foundry = __esm({
             }
           };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
     };
@@ -3631,7 +3631,7 @@ var init_foundry = __esm({
           if (value === void 0) return { success: false, error: `Key not found: ${key2}` };
           return { success: true, data: { key: key2, value } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async set(workspacePath, key2, value) {
@@ -3641,7 +3641,7 @@ var init_foundry = __esm({
           await writeJsonFile(this.configPath(workspacePath), cfg);
           return { success: true, data: { key: key2, value } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async list(workspacePath) {
@@ -3649,7 +3649,7 @@ var init_foundry = __esm({
           const config = await this.load(workspacePath);
           return { success: true, data: { config, scope: "global" } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
     };
@@ -3842,7 +3842,7 @@ var init_obsidian_mobile_repositories = __esm({
           return results;
         } catch (error) {
           console.error(`[Mobile] Failed to read directory: ${dirPath}`, error);
-          throw new Error(`Failed to read directory: ${error.message}`);
+          throw new Error(`Failed to read directory: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
       async scanFolderStructure(dirPath) {
@@ -4353,7 +4353,7 @@ var init_mobile = __esm({
           };
           return { success: true, data: status };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async getConfig(workspacePath) {
@@ -4362,7 +4362,7 @@ var init_mobile = __esm({
           const ud = await loadUserData2(this.vault, this.pluginDir);
           return { success: true, data: { apiUrl: (_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl, websiteUrl: (_b2 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _b2.websiteUrl } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async updateConfig(workspacePath, config) {
@@ -4372,7 +4372,7 @@ var init_mobile = __esm({
           await saveUserData2(this.vault, this.pluginDir, { serverConfig });
           return { success: true, data: serverConfig };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
     };
@@ -4392,7 +4392,7 @@ var init_mobile = __esm({
           if (!(d == null ? void 0 : d.license_key)) throw new Error("Invalid trial response");
           return { success: true, data: { email: (_a5 = d.email) != null ? _a5 : "", licenseKey: d.license_key, password: (_b2 = d.password) != null ? _b2 : "", validityDays: (_c = d.validity_days) != null ? _c : 0 } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async loginWithLicense(workspacePath, licenseKey) {
@@ -4408,7 +4408,7 @@ var init_mobile = __esm({
           await saveUserData2(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
           return { success: true, data: {} };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async activateLicense(workspacePath, licenseKey) {
@@ -4435,7 +4435,7 @@ var init_mobile = __esm({
           await saveUserData2(this.vault, this.pluginDir, { license: licenseToStore, syncConfig: syncToStore });
           return { success: true, data: info3 };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async getLicenseInfo(workspacePath, options) {
@@ -4457,7 +4457,7 @@ var init_mobile = __esm({
           }
           return { success: true, data: buildLicenseInfoFromStored2(ud.license) };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async getLicenseUsage(workspacePath) {
@@ -4480,7 +4480,7 @@ var init_mobile = __esm({
             disk: { syncUsage: Number((_h = raw.disks) == null ? void 0 : _h.sync_disk_usage) || 0, publishUsage: Number((_i = raw.disks) == null ? void 0 : _i.publish_disk_usage) || 0, totalUsage: Number((_j = raw.disks) == null ? void 0 : _j.total_disk_usage) || 0, maxStorage: ((_k = raw.features) == null ? void 0 : _k.max_storage) || 1024, unit: ((_l = raw.disks) == null ? void 0 : _l.unit) || "MB" }
           } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async resetUsage(workspacePath, force) {
@@ -4493,7 +4493,7 @@ var init_mobile = __esm({
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Reset failed: ${res2.status}`);
           return { success: true };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async hasActiveLicense(workspacePath) {
@@ -4515,7 +4515,7 @@ var init_mobile = __esm({
           const exists = await this.vault.adapter.exists(makeWorkspaceMarker(this.pluginDir));
           return { success: true, data: exists };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async initWorkspace(workspacePath) {
@@ -4526,7 +4526,7 @@ var init_mobile = __esm({
           if (!await this.vault.adapter.exists(cfgPath)) await vaultWriteJson(this.vault, cfgPath, {});
           return { success: true, data: { id: metadata.id, name: metadata.name, path: workspacePath, createdAt: metadata.createdAt, modulesDir: metadata.modulesDir, projectsDir: metadata.projectsDir, projectCount: 0, projects: [] } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
     };
@@ -4548,7 +4548,7 @@ var init_mobile = __esm({
           if (value === void 0) return { success: false, error: `Key not found: ${key2}` };
           return { success: true, data: { key: key2, value } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async set(workspacePath, key2, value) {
@@ -4558,14 +4558,14 @@ var init_mobile = __esm({
           await vaultWriteJson(this.vault, this.cfgPath(), cfg);
           return { success: true, data: { key: key2, value } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
       async list(workspacePath) {
         try {
           return { success: true, data: { config: await this.load(), scope: "global" } };
         } catch (e2) {
-          return { success: false, error: e2.message };
+          return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
     };
@@ -32423,14 +32423,14 @@ var FridayRemoteService = class extends ServiceBase {
         const info3 = await db.info();
         return { db, info: info3 };
       } catch (ex) {
-        const err2 = ex;
-        const msg = `${err2 == null ? void 0 : err2.name}:${err2 == null ? void 0 : err2.message}`;
+        const name = ex instanceof Error ? ex.name : "";
+        const message = ex instanceof Error ? ex.message : String(ex);
+        const msg = `${name}:${message}`;
         console.error("[Friday Sync] Failed to get database info:", msg);
         return msg;
       }
     } catch (ex) {
-      const err2 = ex;
-      const msg = `Connection error: ${(err2 == null ? void 0 : err2.message) || String(ex)}`;
+      const msg = `Connection error: ${ex instanceof Error ? ex.message : String(ex)}`;
       console.error("[Friday Sync]", msg);
       return msg;
     }
@@ -37879,8 +37879,9 @@ var SyncStatusDisplay = class {
     }
     menu.addItem((item) => {
       item.setTitle("\u540C\u6B65\u8BBE\u7F6E").setIcon("settings").onClick(() => {
-        this.plugin.app.setting.open();
-        this.plugin.app.setting.openTabById("mdfriday");
+        const appWithSetting = this.plugin.app;
+        appWithSetting.setting.open();
+        appWithSetting.setting.openTabById("mdfriday");
       });
     });
     menu.showAtMouseEvent(event);
@@ -38384,7 +38385,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
             }
           } catch (error) {
             console.error("Download failed:", error);
-            new import_obsidian7.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error.message || error}`);
+            new import_obsidian7.Notice(`${this.plugin.i18n.t("settings.sync_operation_failed")}: ${error instanceof Error ? error.message : String(error)}`);
             button.setButtonText(this.plugin.i18n.t("settings.download_from_cloud"));
             button.setDisabled(false);
           }
@@ -38956,7 +38957,7 @@ var LicenseServiceManager = class {
       return { success: false, error: result.error || "Failed to request trial" };
     } catch (error) {
       console.error("[Friday] Error requesting trial license:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
   /**
@@ -38972,7 +38973,7 @@ var LicenseServiceManager = class {
       return { success: false, error: result.error || "Login with license failed" };
     } catch (error) {
       console.error("[Friday] Error logging in with license:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
   /**
@@ -38989,7 +38990,7 @@ var LicenseServiceManager = class {
       return { success: false, error: result.error || "Failed to activate license" };
     } catch (error) {
       console.error("[Friday] Error activating license:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
   /**
@@ -39001,7 +39002,7 @@ var LicenseServiceManager = class {
       return result;
     } catch (error) {
       console.error("[Friday] Error getting license info:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
   /**
@@ -39013,7 +39014,7 @@ var LicenseServiceManager = class {
       return result;
     } catch (error) {
       console.error("[Friday] Error getting license usage:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
   /**
@@ -39028,7 +39029,7 @@ var LicenseServiceManager = class {
       return result;
     } catch (error) {
       console.error("[Friday] Error resetting license usage:", error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
   /**
@@ -39122,7 +39123,7 @@ var LicenseStateManager = class {
       };
     } catch (error) {
       console.error("[LicenseState] Initialize failed:", error);
-      return { isActivated: false, error: error.message };
+      return { isActivated: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
   hasPublishPermission() {

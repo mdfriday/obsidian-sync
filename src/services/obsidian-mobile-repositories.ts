@@ -254,9 +254,9 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 			}
 			
 			return results;
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to read directory: ${dirPath}`, error);
-			throw new Error(`Failed to read directory: ${(error as Error).message}`);
+			throw new Error(`Failed to read directory: ${error instanceof Error ? error.message : String(error)}`);
 		}
 	}
 
@@ -318,7 +318,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 				staticFolder,
 				isStructured,
 			};
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to scan folder structure: ${dirPath}`, error);
 			throw error;
 		}
@@ -363,7 +363,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 		try {
 			const path = this.normalizePath(dirPath);
 			await this.vault.adapter.mkdir(path);
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to create directory: ${dirPath}`, error);
 			throw error;
 		}
@@ -381,7 +381,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 				// 删除文件
 				await this.vault.adapter.remove(path);
 			}
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to remove: ${filePath}`, error);
 			throw error;
 		}
@@ -409,7 +409,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 				size: stat.size,
 				mtime: new Date(stat.mtime),
 			};
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to stat: ${filePath}`, error);
 			throw error;
 		}
@@ -431,7 +431,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 			
 			// 写入目标文件
 			await this.vault.adapter.write(targetPath, content);
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to copy file: ${source} -> ${target}`, error);
 			throw error;
 		}
@@ -441,7 +441,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 		try {
 			const path = this.normalizePath(filePath);
 			return await this.vault.adapter.read(path);
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile FileSystemRepo] Failed to read file: ${filePath}`, error);
 			throw error;
 		}
@@ -458,7 +458,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 			}
 			
 			await this.vault.adapter.write(path, content);
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to write file: ${filePath}`, error);
 			throw error;
 		}
@@ -468,7 +468,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 		try {
 			const path = this.normalizePath(filePath);
 			await this.vault.adapter.remove(path);
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error(`[Mobile] Failed to delete file: ${filePath}`, error);
 			throw error;
 		}

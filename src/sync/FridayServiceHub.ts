@@ -1042,14 +1042,14 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
                 const info = await db.info();
                 return { db, info };
             } catch (ex: unknown) {
-                const err = ex as { name?: string; message?: string };
-                const msg = `${err?.name}:${err?.message}`;
+                const name = ex instanceof Error ? ex.name : '';
+                const message = ex instanceof Error ? ex.message : String(ex);
+                const msg = `${name}:${message}`;
                 console.error("[Friday Sync] Failed to get database info:", msg);
                 return msg;
             }
         } catch (ex: unknown) {
-            const err = ex as { message?: string };
-            const msg = `Connection error: ${err?.message || String(ex)}`;
+            const msg = `Connection error: ${ex instanceof Error ? ex.message : String(ex)}`;
             console.error("[Friday Sync]", msg);
             return msg;
         }

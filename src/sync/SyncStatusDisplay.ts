@@ -552,10 +552,11 @@ export class SyncStatusDisplay {
                 .setTitle('同步设置')
                 .setIcon('settings')
                 .onClick(() => {
-                    // @ts-ignore - app.setting may not have complete types
-                    this.plugin.app.setting.open();
-                    // @ts-ignore
-                    this.plugin.app.setting.openTabById('mdfriday');
+                    const appWithSetting = this.plugin.app as unknown as {
+                        setting: { open(): void; openTabById(id: string): void };
+                    };
+                    appWithSetting.setting.open();
+                    appWithSetting.setting.openTabById('mdfriday');
                 });
         });
         

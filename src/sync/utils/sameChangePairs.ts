@@ -13,7 +13,7 @@
 
 import { PersistentMap } from "octagonal-wheels/dataobject/PersistentMap";
 import { Logger, LOG_LEVEL_VERBOSE } from "@mdfriday/sync-core/core/common/logger";
-import type { AnyEntry, MetaEntry } from "../core/common/types";
+import type { AnyEntry, MetaEntry } from "@mdfriday/sync-core/core/common/types";
 
 /**
  * Persistent storage for mtime pairs

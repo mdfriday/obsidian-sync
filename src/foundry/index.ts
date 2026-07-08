@@ -358,8 +358,8 @@ class LightweightAuthService implements ObsidianAuthService {
         } : undefined,
       };
       return { success: true, data: status };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -367,8 +367,8 @@ class LightweightAuthService implements ObsidianAuthService {
     try {
       const ud = await loadUserData(workspacePath);
       return { success: true, data: { apiUrl: ud?.serverConfig?.apiUrl, websiteUrl: ud?.serverConfig?.websiteUrl } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -378,8 +378,8 @@ class LightweightAuthService implements ObsidianAuthService {
       const serverConfig = { ...(ud?.serverConfig || {}), ...config };
       await saveUserData(workspacePath, { serverConfig });
       return { success: true, data: serverConfig };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 }
@@ -400,8 +400,8 @@ class LightweightLicenseService implements ObsidianLicenseService {
       const d = unwrapFirst<{ license_key?: string; email?: string; password?: string; validity_days?: number }>(res.data);
       if (!d?.license_key) throw new Error('Invalid trial response');
       return { success: true, data: { email: d.email ?? '', licenseKey: d.license_key, password: d.password ?? '', validityDays: d.validity_days ?? 0 } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -420,8 +420,8 @@ class LightweightLicenseService implements ObsidianLicenseService {
 
       await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
       return { success: true, data: {} as object };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -472,8 +472,8 @@ class LightweightLicenseService implements ObsidianLicenseService {
 
       await saveUserData(workspacePath, { license: licenseToStore, syncConfig: syncToStore });
       return { success: true, data: info };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -504,8 +504,8 @@ class LightweightLicenseService implements ObsidianLicenseService {
       }
 
       return { success: true, data: buildLicenseInfoFromStored(ud.license) };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -539,8 +539,8 @@ class LightweightLicenseService implements ObsidianLicenseService {
         },
       };
       return { success: true, data: usage };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -560,8 +560,8 @@ class LightweightLicenseService implements ObsidianLicenseService {
       );
       if (res.status !== 200 && res.status !== 201) throw new Error(`Reset failed: ${res.status}`);
       return { success: true, message: 'Usage data reset successfully' };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -586,8 +586,8 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
     try {
       const marker = nodePath.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
       return { success: true, data: fileExists(marker) };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -625,8 +625,8 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
           projects:     [],
         },
       };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 }
@@ -670,8 +670,8 @@ class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
       const value = getNested(cfg, key);
       if (value === undefined) return { success: false, error: `Key not found: ${key}` };
       return { success: true, data: { key, value } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -681,8 +681,8 @@ class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
       setNested(cfg, key, value);
       await writeJsonFile(this.configPath(workspacePath), cfg);
       return { success: true, data: { key, value } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -690,8 +690,8 @@ class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
     try {
       const config = await this.load(workspacePath);
       return { success: true, data: { config, scope: 'global' } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 }

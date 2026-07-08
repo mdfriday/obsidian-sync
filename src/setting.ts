@@ -623,9 +623,9 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 								} else {
 									throw new Error('Sync service initialization failed');
 								}
-							} catch (error) {
-								console.error('Download failed:', error);
-								new Notice(`${this.plugin.i18n.t('settings.sync_operation_failed')}: ${error.message || error}`);
+						} catch (error: unknown) {
+							console.error('Download failed:', error);
+							new Notice(`${this.plugin.i18n.t('settings.sync_operation_failed')}: ${error instanceof Error ? error.message : String(error)}`);
 								button.setButtonText(this.plugin.i18n.t('settings.download_from_cloud'));
 								button.setDisabled(false);
 							}

@@ -299,8 +299,8 @@ class MobileAuthService implements ObsidianAuthService {
         } : undefined,
       };
       return { success: true, data: status };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -308,8 +308,8 @@ class MobileAuthService implements ObsidianAuthService {
     try {
       const ud = await loadUserData(this.vault, this.pluginDir);
       return { success: true, data: { apiUrl: ud?.serverConfig?.apiUrl, websiteUrl: ud?.serverConfig?.websiteUrl } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -319,8 +319,8 @@ class MobileAuthService implements ObsidianAuthService {
       const serverConfig = { ...(ud?.serverConfig || {}), ...config };
       await saveUserData(this.vault, this.pluginDir, { serverConfig });
       return { success: true, data: serverConfig };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 }
@@ -340,8 +340,8 @@ class MobileLicenseService implements ObsidianLicenseService {
       const d = unwrapFirst<{ license_key?: string; email?: string; password?: string; validity_days?: number }>(res.data);
       if (!d?.license_key) throw new Error('Invalid trial response');
       return { success: true, data: { email: d.email ?? '', licenseKey: d.license_key, password: d.password ?? '', validityDays: d.validity_days ?? 0 } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -357,8 +357,8 @@ class MobileLicenseService implements ObsidianLicenseService {
       if (!token) throw new Error('No token in login response');
       await saveUserData(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
       return { success: true, data: {} as object };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -384,8 +384,8 @@ class MobileLicenseService implements ObsidianLicenseService {
       const syncToStore: SyncConfigShape | undefined = info.sync ? { dbEndpoint: info.sync.dbEndpoint, dbName: info.sync.dbName, email: info.sync.email, dbPassword: info.sync.dbPassword, userDir, status: info.sync.status } : ud?.syncConfig;
       await saveUserData(this.vault, this.pluginDir, { license: licenseToStore, syncConfig: syncToStore });
       return { success: true, data: info };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -406,8 +406,8 @@ class MobileLicenseService implements ObsidianLicenseService {
         }
       }
       return { success: true, data: buildLicenseInfoFromStored(ud.license) };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -428,8 +428,8 @@ class MobileLicenseService implements ObsidianLicenseService {
         ips:     { count: raw.ips?.count || 0,     max: raw.features?.max_ips || 1,     list: (raw.ips?.ips || []).map((ip: RawIpEntry) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
         disk: { syncUsage: Number(raw.disks?.sync_disk_usage) || 0, publishUsage: Number(raw.disks?.publish_disk_usage) || 0, totalUsage: Number(raw.disks?.total_disk_usage) || 0, maxStorage: raw.features?.max_storage || 1024, unit: raw.disks?.unit || 'MB' },
       }};
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -441,8 +441,8 @@ class MobileLicenseService implements ObsidianLicenseService {
       const res = await this.http.post(`${getApiUrl(ud)}/api/license/usage/reset?key=${ud.license.key}`, {}, { 'Authorization': `Bearer ${ud.token}` });
       if (res.status !== 200 && res.status !== 201) throw new Error(`Reset failed: ${res.status}`);
       return { success: true };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -465,8 +465,8 @@ class MobileWorkspaceService implements ObsidianWorkspaceService {
     try {
       const exists = await this.vault.adapter.exists(makeWorkspaceMarker(this.pluginDir));
       return { success: true, data: exists };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -477,8 +477,8 @@ class MobileWorkspaceService implements ObsidianWorkspaceService {
       const cfgPath = makeConfigPath(this.pluginDir);
       if (!await this.vault.adapter.exists(cfgPath)) await vaultWriteJson(this.vault, cfgPath, {});
       return { success: true, data: { id: metadata.id, name: metadata.name, path: workspacePath, createdAt: metadata.createdAt, modulesDir: metadata.modulesDir, projectsDir: metadata.projectsDir, projectCount: 0, projects: [] } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 }
@@ -516,8 +516,8 @@ class MobileConfigService implements ObsidianGlobalConfigService {
       const value = getNested(cfg, key);
       if (value === undefined) return { success: false, error: `Key not found: ${key}` };
       return { success: true, data: { key, value } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -527,16 +527,16 @@ class MobileConfigService implements ObsidianGlobalConfigService {
       setNested(cfg, key, value);
       await vaultWriteJson(this.vault, this.cfgPath(), cfg);
       return { success: true, data: { key, value } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
   async list(workspacePath: string): Promise<ObsidianConfigResult<ConfigListResult>> {
     try {
       return { success: true, data: { config: await this.load(), scope: 'global' } };
-    } catch (e) {
-      return { success: false, error: (e as Error).message };
+    } catch (e: unknown) {
+      return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 }
