@@ -44,6 +44,6 @@ export function safeTrim(value: string | null | undefined): string | undefined {
  * @param obj - 对象
  * @returns 是否为空对象
  */
-export function isEmptyObject(obj: any): boolean {
-	return Object.keys(obj || {}).length === 0;
+export function isEmptyObject(obj: unknown): boolean {
+	return Object.keys((obj as Record<string, unknown>) || {}).length === 0;
 }

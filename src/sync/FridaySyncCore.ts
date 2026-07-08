@@ -5,7 +5,7 @@
  * to enable full CouchDB synchronization functionality.
  */
 
-import {Plugin, requestUrl} from "obsidian";
+import {Plugin, TFile, requestUrl} from "obsidian";
 import {reactiveSource, type ReactiveSource} from "octagonal-wheels/dataobject/reactive";
 
 // Obsidian adapters — wrap platform APIs for sync-core features
@@ -26,6 +26,8 @@ import {
 	type EntryHasPath,
 	type FilePath,
 	type FilePathWithPrefix,
+	type LoadedEntry,
+	type MetaEntry,
 	LOG_LEVEL_INFO,
 	LOG_LEVEL_NOTICE,
 	LOG_LEVEL_VERBOSE,
@@ -79,6 +81,26 @@ import {clearHandlers as clearSyncParamsHandlerCache} from "@mdfriday/sync-core/
 
 // Import path utilities for correct document ID generation
 import {id2path_base, path2id_base, isAccepted} from "@mdfriday/sync-core/core/string_and_binary/path";
+
+/** Local helper type – PouchDB document augmented with common sync-core business fields */
+interface DocWithMeta {
+    _id: string;
+    _rev?: string;
+    _deleted?: boolean;
+    type?: string;
+    path?: string;
+    deleted?: boolean;
+    size?: number;
+    children?: string[];
+}
+
+/** PouchDB allDocs row when checking for missing chunks (error rows) */
+interface AllDocsRowWithError {
+    key: string;
+    error?: string;
+    id?: string;
+    value?: { rev: string };
+}
 
 /**
  * Simple KeyValue Database implementation using localStorage
@@ -183,8 +205,9 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
     private _managers: LiveSyncManagers | null = null;
     private _services: FridayServiceHub;
     private _kvDB: KeyValueDatabase;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private _simpleStore: SimpleStore<any>;
-    
+
     // Status tracking
     private statusCallback: SyncStatusCallback | null = null;
     private _status: SyncStatus = "NOT_CONNECTED";
@@ -287,7 +310,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         
         // Set up global logging that also notifies status display
         // This matches livesync's pattern: all logs go to status display
-        setGlobalLogFunction((message: any, level?: number, key?: string) => {
+        setGlobalLogFunction((message: unknown, level?: number, key?: string) => {
             const msgStr = String(message);
             const logLevel = level ?? LOG_LEVEL_INFO;
             
@@ -357,6 +380,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         return this._kvDB;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get simpleStore(): SimpleStore<any> {
         return this._simpleStore;
     }
@@ -1398,13 +1422,13 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 // Skip non-file documents (same logic as below)
                 if (doc._id.startsWith("h:")) continue;
                 if (doc._id.startsWith("_")) continue;
-                if ((doc as any).type === "versioninfo") continue;
-                if ((doc as any).type === "milestoneinfo") continue;
-                if ((doc as any).type === "nodeinfo") continue;
-                if ((doc as any).type === "leaf") continue;
-                
-                const docPath = (doc as any).path as string | undefined;
-                const isInternalFile = isInternalMetadata(doc._id) || 
+                if ((doc as DocWithMeta).type === "versioninfo") continue;
+                if ((doc as DocWithMeta).type === "milestoneinfo") continue;
+                if ((doc as DocWithMeta).type === "nodeinfo") continue;
+                if ((doc as DocWithMeta).type === "leaf") continue;
+
+                const docPath = (doc as DocWithMeta).path as string | undefined;
+                const isInternalFile = isInternalMetadata(doc._id) ||
                     (docPath && isInternalMetadata(docPath));
                 
                 // Count internal files
@@ -1414,9 +1438,9 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 }
                 
                 // Count normal files
-                const docType = (doc as any).type;
+                const docType = (doc as DocWithMeta).type;
                 if (docType === "notes" || docType === "newnote" || docType === "plain") {
-                    const isDeleted = doc._deleted === true || (doc as any).deleted === true;
+                    const isDeleted = doc._deleted === true || (doc as DocWithMeta).deleted === true;
                     if (!isDeleted && docPath) {
                         totalFilesToWrite++;
                     }
@@ -1449,22 +1473,22 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 // Skip non-file documents
                 if (doc._id.startsWith("h:")) continue; // chunk
                 if (doc._id.startsWith("_")) continue; // internal PouchDB docs
-                if ((doc as any).type === "versioninfo") continue;
-                if ((doc as any).type === "milestoneinfo") continue;
-                if ((doc as any).type === "nodeinfo") continue;
-                if ((doc as any).type === "leaf") continue;
-                
+                if ((doc as DocWithMeta).type === "versioninfo") continue;
+                if ((doc as DocWithMeta).type === "milestoneinfo") continue;
+                if ((doc as DocWithMeta).type === "nodeinfo") continue;
+                if ((doc as DocWithMeta).type === "leaf") continue;
+
                 // Check if this is an internal file (i: prefix) - delegate to HiddenFileSync
                 // This matches livesync's architecture where internal files are processed separately
-                const docPath = (doc as any).path as string | undefined;
-                const isInternalFile = isInternalMetadata(doc._id) || 
+                const docPath = (doc as DocWithMeta).path as string | undefined;
+                const isInternalFile = isInternalMetadata(doc._id) ||
                     (docPath && isInternalMetadata(docPath));
                 
                 if (isInternalFile) {
                     // Delegate internal files to HiddenFileSync module
                     if (this._hiddenFileSync && this._hiddenFileSync.isThisModuleEnabled()) {
                         try {
-                            const result = await this._hiddenFileSync.processReplicationResult(doc as any);
+                            const result = await this._hiddenFileSync.processReplicationResult(doc as LoadedEntry);
                             if (result) {
                                 internalFilesProcessed++;
                                 // ✨ 发出文件写入进度事件（内部文件）
@@ -1491,21 +1515,21 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 }
                 
                 // Only process note/plain documents for normal files
-                const docType = (doc as any).type;
+                const docType = (doc as DocWithMeta).type;
                 if (docType !== "notes" && docType !== "newnote" && docType !== "plain") continue;
                 
                 const path = docPath;
                 if (!path) continue;
                 
                 // Check if deleted
-                const isDeleted = doc._deleted === true || (doc as any).deleted === true;
+                const isDeleted = doc._deleted === true || (doc as DocWithMeta).deleted === true;
                 if (isDeleted) continue;
                 
                 processed++;
                 
                 try {
                     // Get full document with data
-                    const fullEntry = await this._localDatabase.getDBEntryFromMeta(doc as any, false, true);
+                    const fullEntry = await this._localDatabase.getDBEntryFromMeta(doc as MetaEntry, false, true);
                     if (!fullEntry) {
                         // Track as missing chunks error (most common cause)
                         missingChunksErrors++;
@@ -1515,9 +1539,9 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                         console.error(`[Friday Sync] Could not get full entry for:`, {
                             docId: doc._id,
                             path: path,
-                            docType: (doc as any).type,
-                            docSize: (doc as any).size,
-                            docChildren: (doc as any).children?.length ?? 0,
+                            docType: (doc as DocWithMeta).type,
+                            docSize: (doc as DocWithMeta).size,
+                            docChildren: (doc as DocWithMeta).children?.length ?? 0,
                         });
                         continue;
                     }
@@ -1547,9 +1571,9 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                     const existingFile = vault.getAbstractFileByPath(path);
                     if (existingFile) {
                         if (isText) {
-                            await vault.modify(existingFile as any, content as string);
+                            await vault.modify(existingFile as TFile, content as string);
                         } else {
-                            await vault.modifyBinary(existingFile as any, content as ArrayBuffer);
+                            await vault.modifyBinary(existingFile as TFile, content as ArrayBuffer);
                         }
                         updated++;
                     } else {
@@ -1564,8 +1588,8 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                     // Mark file as touched AFTER write (livesync pattern)
                     // This prevents the vault event from triggering another sync
                     const writtenFile = vault.getAbstractFileByPath(path);
-                    if (writtenFile && this._storageEventManager && 'stat' in writtenFile) {
-                        const stat = (writtenFile as any).stat;
+                    if (writtenFile instanceof TFile && this._storageEventManager) {
+                        const stat = writtenFile.stat;
                         this._storageEventManager.touch(path, stat.mtime, stat.size);
                     }
                     
@@ -1586,8 +1610,8 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                     console.error(`[Friday Sync] Error writing file ${path}:`, {
                         error: error,
                         docId: doc._id,
-                        docType: (doc as any).type,
-                        docSize: (doc as any).size,
+                        docType: (doc as DocWithMeta).type,
+                        docSize: (doc as DocWithMeta).size,
                         errorMessage: error instanceof Error ? error.message : String(error),
                         errorStack: error instanceof Error ? error.stack : undefined,
                     });
@@ -1951,7 +1975,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
             });
             
             for (const row of allDocs.rows) {
-                const doc = row.doc as any;
+                const doc = row.doc as DocWithMeta | undefined;
                 if (doc && doc.children && Array.isArray(doc.children)) {
                     doc.children.forEach((chunkId: string) => {
                         referencedChunkIds.add(chunkId);
@@ -1971,9 +1995,9 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
             });
             
             const missingChunkIds = localChunksResult.rows
-                .filter((row: any) => 'error' in row && row.error === 'not_found')
-                .map((row: any) => row.key);
-            
+                .filter((row: AllDocsRowWithError) => 'error' in row && row.error === 'not_found')
+                .map((row: AllDocsRowWithError) => row.key);
+
             if (missingChunkIds.length === 0) {
                 Logger("All chunks are already present locally", LOG_LEVEL_VERBOSE);
                 return;
@@ -2206,8 +2230,8 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
      * This updates _settings directly for real-time effect
      */
     updateInternalFilesIgnorePatterns(patterns: string): void {
-        this._settings.syncInternalFilesIgnorePatterns = patterns as any;
-        
+        this._settings.syncInternalFilesIgnorePatterns = patterns as unknown as typeof this._settings.syncInternalFilesIgnorePatterns;
+
         // Clear HiddenFileSync regex cache to force re-parse
         if (this._hiddenFileSync) {
             this._hiddenFileSync.clearRegexCache();

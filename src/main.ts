@@ -13,6 +13,11 @@ import {
 	type StoredUserData
 } from "./license";
 import {MdfridaySyncSettingTab} from "./setting";
+import type {
+	ObsidianAuthService,
+	ObsidianLicenseService,
+	ObsidianGlobalConfigService,
+} from './foundry/types';
 import type {ObsidianEnvironmentConfig as ObsidianMobileEnvironmentConfig} from './foundry/types';
 import {createObsidianIdentityHttpClient} from './http';
 import {LicenseServiceManager} from './services/license';
@@ -76,9 +81,9 @@ export default class MdfridaySyncPlugin extends Plugin {
 	syncStatusDisplay: SyncStatusDisplay | null = null;
 
 	// Foundry services
-	foundryAuthService?: any;
-	foundryLicenseService?: any;
-	foundryGlobalConfigService?: any;
+	foundryAuthService?: ObsidianAuthService;
+	foundryLicenseService?: ObsidianLicenseService;
+	foundryGlobalConfigService?: ObsidianGlobalConfigService;
 	licenseServiceManager?: LicenseServiceManager | null;
 	licenseState?: LicenseStateManager | null;
 
@@ -460,14 +465,13 @@ export default class MdfridaySyncPlugin extends Plugin {
 
 			// Update license data (for UI display)
 			if (licenseInfo) {
-				const features = licenseInfo.features as any;
 				this.settings.license = {
 					key: this.licenseState.getLicenseKey() || '',
 					plan: licenseInfo.plan,
 					expiresAt: licenseInfo.expiresAt || 0,
 					features: {
 						...licenseInfo.features,
-						validityDays: features?.validityDays || 365
+						validityDays: licenseInfo.features?.validityDays || 365
 					},
 					activatedAt: Date.now()
 				};

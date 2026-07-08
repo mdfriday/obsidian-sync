@@ -9,16 +9,16 @@
 export interface IdentityHttpResponse {
   status: number;
   ok: boolean;
-  data: any;
+  data: unknown;
   text(): Promise<string>;
-  json(): Promise<any>;
+  json(): Promise<unknown>;
 }
 
 export interface IdentityHttpClient {
-  post(url: string, data: any, headers?: Record<string, string>): Promise<IdentityHttpResponse>;
-  postJSON(url: string, data: any, headers?: Record<string, string>): Promise<IdentityHttpResponse>;
+  post(url: string, data: unknown, headers?: Record<string, string>): Promise<IdentityHttpResponse>;
+  postJSON(url: string, data: unknown, headers?: Record<string, string>): Promise<IdentityHttpResponse>;
   postForm(url: string, data: Record<string, string>): Promise<IdentityHttpResponse>;
-  postMultipart(url: string, data: Record<string, any>, headers?: Record<string, string>): Promise<IdentityHttpResponse>;
+  postMultipart(url: string, data: Record<string, unknown>, headers?: Record<string, string>): Promise<IdentityHttpResponse>;
   get(url: string, headers?: Record<string, string>): Promise<IdentityHttpResponse>;
 }
 
@@ -26,14 +26,14 @@ export interface PublishHttpResponse {
   status: number;
   ok: boolean;
   statusText: string;
-  data: any;
+  data: unknown;
   text(): Promise<string>;
-  json(): Promise<any>;
+  json(): Promise<unknown>;
 }
 
 export interface PublishHttpClient {
-  postJSON(url: string, data: any, headers?: Record<string, string>): Promise<PublishHttpResponse>;
-  postMultipart(url: string, formData: Record<string, any>, headers?: Record<string, string>): Promise<PublishHttpResponse>;
+  postJSON(url: string, data: unknown, headers?: Record<string, string>): Promise<PublishHttpResponse>;
+  postMultipart(url: string, formData: Record<string, unknown>, headers?: Record<string, string>): Promise<PublishHttpResponse>;
   putBinary(url: string, data: Buffer | Uint8Array, headers?: Record<string, string>): Promise<PublishHttpResponse>;
   get(url: string, headers?: Record<string, string>): Promise<PublishHttpResponse>;
 }
@@ -52,7 +52,7 @@ export interface LLMHttpResponse {
   ok: boolean;
   body?: ReadableStream<Uint8Array>;
   text(): Promise<string>;
-  json(): Promise<any>;
+  json(): Promise<unknown>;
 }
 
 export interface LLMHttpClient {
@@ -86,7 +86,7 @@ export interface ObsidianServerConfig {
   websiteUrl?: string;
 }
 
-export interface ObsidianAuthResult<T = any> {
+export interface ObsidianAuthResult<T = unknown> {
   success: boolean;
   message?: string;
   error?: string;
@@ -108,6 +108,14 @@ export interface ObsidianLicenseFeatures {
   validityDays?: number;
 }
 
+export interface ObsidianLicenseSyncConfig {
+  dbEndpoint: string;
+  dbName: string;
+  db_password?: string;
+  userDir?: string;
+  [key: string]: unknown;
+}
+
 export interface ObsidianLicenseInfo {
   key: string;
   plan: string;
@@ -127,15 +135,53 @@ export interface ObsidianLicenseInfo {
     email: string;
     dbPassword: string;
     userDir: string;
-    liveSyncConfig?: any;
+    liveSyncConfig?: ObsidianLicenseSyncConfig;
   };
+}
+
+/** Raw device entry as returned by the API */
+export interface RawDeviceEntry {
+  id: string;
+  device_name: string;
+  device_type: string;
+  status: string;
+  last_seen_at: string;
+}
+
+/** Normalised device entry stored in ObsidianLicenseUsage */
+export interface DeviceEntry {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  lastSeenAt: string;
+}
+
+/** Raw IP entry as returned by the API */
+export interface RawIpEntry {
+  ip_address: string;
+  city: string;
+  region: string;
+  country: string;
+  status: string;
+  last_seen_at: string;
+}
+
+/** Normalised IP entry stored in ObsidianLicenseUsage */
+export interface IpEntry {
+  ip: string;
+  city: string;
+  region: string;
+  country: string;
+  status: string;
+  lastSeenAt: string;
 }
 
 export interface ObsidianLicenseUsage {
   licenseKey: string;
   plan: string;
-  devices: { count: number; max: number; list: any[] };
-  ips: { count: number; max: number; list: any[] };
+  devices: { count: number; max: number; list: DeviceEntry[] };
+  ips: { count: number; max: number; list: IpEntry[] };
   disk: {
     syncUsage: number;
     publishUsage: number;
@@ -145,7 +191,7 @@ export interface ObsidianLicenseUsage {
   };
 }
 
-export interface ObsidianLicenseResult<T = any> {
+export interface ObsidianLicenseResult<T = unknown> {
   success: boolean;
   message?: string;
   error?: string;
@@ -156,17 +202,17 @@ export interface ObsidianLicenseResult<T = any> {
 
 export interface ConfigGetResult {
   key: string;
-  value: any;
+  value: unknown;
   project?: string;
 }
 
 export interface ConfigListResult {
-  config: Record<string, any>;
+  config: Record<string, unknown>;
   scope: string;
   project?: string;
 }
 
-export interface ObsidianConfigResult<T = any> {
+export interface ObsidianConfigResult<T = unknown> {
   success: boolean;
   message?: string;
   error?: string;
@@ -174,6 +220,13 @@ export interface ObsidianConfigResult<T = any> {
 }
 
 // ─── Workspace Types ──────────────────────────────────────────────────────────
+
+export interface ProjectInfo {
+  id: string;
+  name: string;
+  path: string;
+  createdAt?: string;
+}
 
 export interface ObsidianWorkspaceInfo {
   id: string;
@@ -183,10 +236,10 @@ export interface ObsidianWorkspaceInfo {
   modulesDir: string;
   projectsDir: string;
   projectCount: number;
-  projects: any[];
+  projects: ProjectInfo[];
 }
 
-export interface ObsidianWorkspaceResult<T = any> {
+export interface ObsidianWorkspaceResult<T = unknown> {
   success: boolean;
   message?: string;
   error?: string;
@@ -244,6 +297,16 @@ export interface SymlinkResult {
   error?: string;
 }
 
+/** Minimal file-stat shape returned by FileSystemRepository.stat() */
+export interface FileStat {
+  size: number;
+  mtime: number | Date;
+  ctime?: number | Date;
+  isFile?: boolean | (() => boolean);
+  isDirectory?: boolean | (() => boolean);
+  isSymbolicLink?: boolean | (() => boolean);
+}
+
 export interface WorkspaceRepository {
   isWorkspace(workspacePath: string): Promise<boolean>;
   initWorkspaceStructure(workspacePath: string, modulesDir: string, projectsDir: string): Promise<void>;
@@ -266,7 +329,7 @@ export interface FileSystemRepository {
   readSymlink(filePath: string): Promise<string>;
   createDirectory(dirPath: string, recursive?: boolean): Promise<void>;
   remove(filePath: string, recursive?: boolean): Promise<void>;
-  stat(filePath: string): Promise<any>;
+  stat(filePath: string): Promise<FileStat>;
   copyFile(source: string, target: string): Promise<void>;
   readFile(filePath: string, encoding?: BufferEncoding): Promise<string>;
   writeFile(filePath: string, content: string, encoding?: BufferEncoding): Promise<void>;
@@ -302,13 +365,13 @@ export interface ObsidianLicenseService {
   activateLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<ObsidianLicenseInfo>>;
   getLicenseInfo(workspacePath: string, options?: { refresh?: boolean }): Promise<ObsidianLicenseResult<ObsidianLicenseInfo>>;
   getLicenseUsage(workspacePath: string): Promise<ObsidianLicenseResult<ObsidianLicenseUsage>>;
-  resetUsage(workspacePath: string, force: boolean): Promise<ObsidianLicenseResult<any>>;
+  resetUsage(workspacePath: string, force: boolean): Promise<ObsidianLicenseResult<void>>;
   hasActiveLicense(workspacePath: string): Promise<boolean>;
 }
 
 export interface ObsidianGlobalConfigService {
   get(workspacePath: string, key: string): Promise<ObsidianConfigResult<ConfigGetResult>>;
-  set(workspacePath: string, key: string, value: any): Promise<ObsidianConfigResult<ConfigGetResult>>;
+  set(workspacePath: string, key: string, value: unknown): Promise<ObsidianConfigResult<ConfigGetResult>>;
   list(workspacePath: string): Promise<ObsidianConfigResult<ConfigListResult>>;
 }
 

@@ -496,8 +496,8 @@ export class SyncStatusDisplay {
      * Toggle editor status display visibility
      */
     async toggleEditorStatusDisplay() {
-        // @ts-ignore - plugin.settings type
-        const plugin = this.plugin as any;
+        interface PluginWithSettings { settings: { showEditorStatusDisplay: boolean }; saveSettings(): Promise<void>; }
+        const plugin = this.plugin as unknown as PluginWithSettings;
         plugin.settings.showEditorStatusDisplay = !plugin.settings.showEditorStatusDisplay;
         await plugin.saveSettings();
         

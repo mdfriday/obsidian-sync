@@ -9,6 +9,8 @@ import type {
 	ObsidianLicenseService,
 	ObsidianAuthService,
 	ObsidianGlobalConfigService,
+	ObsidianLicenseInfo,
+	ObsidianLicenseUsage,
 } from '../foundry/types';
 
 /**
@@ -27,7 +29,7 @@ export class LicenseServiceManager {
 	 * Request trial license using Foundry License Service
 	 * Saves the license key to global config for publishing
 	 */
-	async requestTrial(email: string): Promise<{ success: boolean; error?: string; data?: any }> {
+	async requestTrial(email: string): Promise<{ success: boolean; error?: string; data?: { email: string; licenseKey: string; password: string; validityDays: number } }> {
 		try {
 			const result = await this.licenseService.requestTrial(this.workspacePath, email);
 			
@@ -44,9 +46,9 @@ export class LicenseServiceManager {
 			}
 			
 			return { success: false, error: result.error || 'Failed to request trial' };
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('[Friday] Error requesting trial license:', error);
-			return { success: false, error: error.message };
+			return { success: false, error: (error as Error).message };
 		}
 	}
 
@@ -54,7 +56,7 @@ export class LicenseServiceManager {
 	 * Login with license key (获取 token)
 	 * This should be called before activateLicense
 	 */
-	async loginWithLicense(licenseKey: string): Promise<{ success: boolean; error?: string; data?: any }> {
+	async loginWithLicense(licenseKey: string): Promise<{ success: boolean; error?: string; data?: object }> {
 		try {
 			const result = await this.licenseService.loginWithLicense(this.workspacePath, licenseKey);
 			
@@ -63,9 +65,9 @@ export class LicenseServiceManager {
 			}
 			
 			return { success: false, error: result.error || 'Login with license failed' };
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('[Friday] Error logging in with license:', error);
-			return { success: false, error: error.message };
+			return { success: false, error: (error as Error).message };
 		}
 	}
 
@@ -73,7 +75,7 @@ export class LicenseServiceManager {
 	 * Activate license using license key
 	 * Saves the license key to global config for publishing
 	 */
-	async activateLicense(licenseKey: string): Promise<{ success: boolean; error?: string; data?: any }> {
+	async activateLicense(licenseKey: string): Promise<{ success: boolean; error?: string; data?: ObsidianLicenseInfo }> {
 		try {
 			const result = await this.licenseService.activateLicense(this.workspacePath, licenseKey);
 			
@@ -88,35 +90,35 @@ export class LicenseServiceManager {
 			}
 			
 			return { success: false, error: result.error || 'Failed to activate license' };
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('[Friday] Error activating license:', error);
-			return { success: false, error: error.message };
+			return { success: false, error: (error as Error).message };
 		}
 	}
 
 	/**
 	 * Get license information from Foundry License Service
 	 */
-	async getLicenseInfo(): Promise<{ success: boolean; error?: string; data?: any }> {
+	async getLicenseInfo(): Promise<{ success: boolean; error?: string; data?: ObsidianLicenseInfo }> {
 		try {
 			const result = await this.licenseService.getLicenseInfo(this.workspacePath);
 			return result;
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('[Friday] Error getting license info:', error);
-			return { success: false, error: error.message };
+			return { success: false, error: (error as Error).message };
 		}
 	}
 
 	/**
 	 * Get license usage information
 	 */
-	async getLicenseUsage(): Promise<{ success: boolean; error?: string; data?: any }> {
+	async getLicenseUsage(): Promise<{ success: boolean; error?: string; data?: ObsidianLicenseUsage }> {
 		try {
 			const result = await this.licenseService.getLicenseUsage(this.workspacePath);
 			return result;
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('[Friday] Error getting license usage:', error);
-			return { success: false, error: error.message };
+			return { success: false, error: (error as Error).message };
 		}
 	}
 
@@ -131,9 +133,9 @@ export class LicenseServiceManager {
 		try {
 			const result = await this.licenseService.resetUsage(this.workspacePath, force);
 			return result;
-		} catch (error) {
+		} catch (error: unknown) {
 			console.error('[Friday] Error resetting license usage:', error);
-			return { success: false, error: error.message };
+			return { success: false, error: (error as Error).message };
 		}
 	}
 

@@ -119,7 +119,7 @@ export function getDocProps(doc: LoadedEntry | MetaEntry): {
     revDisplay: string;
     shortenedId: string;
 } {
-    const path = (doc as any).path || "";
+    const path = doc.path || "";
     const rev = doc._rev || "";
     const id = doc._id || "";
     
@@ -144,12 +144,12 @@ export function getComparingMTime(
     
     if (!includeDeleted) {
         if ("deleted" in doc && doc.deleted) return 0;
-        if ("_deleted" in doc && (doc as any)._deleted) return 0;
+        if ("_deleted" in doc && (doc as { _deleted?: boolean })._deleted) return 0;
     }
     
     if ("stat" in doc && doc.stat) return doc.stat.mtime ?? 0;
-    if ("mtime" in doc) return (doc as any).mtime ?? 0;
-    
+    if ("mtime" in doc) return (doc as { mtime?: number }).mtime ?? 0;
+
     return 0;
 }
 
@@ -188,8 +188,8 @@ export function statToKey(stat: UXStat | null): string {
  * @returns String key for caching
  */
 export function docToKey(doc: LoadedEntry | MetaEntry): string {
-    const deleted = (doc as any)._deleted || (doc as any).deleted || false;
-    return `${(doc as any).mtime || 0}-${(doc as any).size || 0}-${doc._rev || ""}-${deleted ? "0" : "1"}`;
+    const deleted = doc._deleted || doc.deleted || false;
+    return `${doc.mtime || 0}-${doc.size || 0}-${doc._rev || ""}-${deleted ? "0" : "1"}`;
 }
 
 // ==================== RegExp Helpers ====================

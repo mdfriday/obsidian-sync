@@ -3155,6 +3155,10 @@ __export(foundry_exports, {
   createObsidianLicenseService: () => createObsidianLicenseService,
   createObsidianWorkspaceService: () => createObsidianWorkspaceService
 });
+function unwrapFirst(responseData) {
+  var _a5;
+  return (_a5 = responseData == null ? void 0 : responseData.data) == null ? void 0 : _a5[0];
+}
 function licenseToEmail(key2) {
   return `${key2.replace(/^MDF-/i, "").toLowerCase()}@mdfriday.com`;
 }
@@ -3400,21 +3404,20 @@ var init_foundry = __esm({
         this.http = http2;
       }
       async requestTrial(workspacePath, email) {
-        var _a5, _b2;
+        var _a5, _b2, _c;
         try {
           const ud = await loadUserData(workspacePath);
           const url = `${getApiUrl(ud)}/api/license/trial`;
           const res2 = await this.http.postMultipart(url, { email });
           if (res2.status !== 200 && res2.status !== 201) throw new Error("Trial request failed");
-          const d = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
+          const d = unwrapFirst(res2.data);
           if (!(d == null ? void 0 : d.license_key)) throw new Error("Invalid trial response");
-          return { success: true, data: { email: d.email, licenseKey: d.license_key, password: d.password, validityDays: d.validity_days } };
+          return { success: true, data: { email: (_a5 = d.email) != null ? _a5 : "", licenseKey: d.license_key, password: (_b2 = d.password) != null ? _b2 : "", validityDays: (_c = d.validity_days) != null ? _c : 0 } };
         } catch (e2) {
           return { success: false, error: e2.message };
         }
       }
       async loginWithLicense(workspacePath, licenseKey) {
-        var _a5, _b2;
         try {
           const ud = await loadUserData(workspacePath);
           const apiUrl = getApiUrl(ud);
@@ -3422,7 +3425,7 @@ var init_foundry = __esm({
           const password = licenseToPassword(licenseKey);
           const res2 = await this.http.postForm(`${apiUrl}/api/login`, { email, password });
           if (res2.status !== 201) throw new Error(`Login failed: ${res2.status}`);
-          const token = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
+          const token = unwrapFirst(res2.data);
           if (!token) throw new Error("No token in login response");
           await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
           return { success: true, data: {} };
@@ -3431,7 +3434,7 @@ var init_foundry = __esm({
         }
       }
       async activateLicense(workspacePath, licenseKey) {
-        var _a5, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d;
         try {
           const ud = await loadUserData(workspacePath);
           const token = ud == null ? void 0 : ud.token;
@@ -3445,9 +3448,9 @@ var init_foundry = __esm({
             { "Authorization": `Bearer ${token}` }
           );
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Activation failed: ${res2.status}`);
-          const raw = ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) || res2.data;
+          const raw = (_a5 = unwrapFirst(res2.data)) != null ? _a5 : res2.data;
           if (!(raw == null ? void 0 : raw.success)) throw new Error("License activation unsuccessful");
-          const userDir = ((_c = raw.user) == null ? void 0 : _c.user_dir) || "";
+          const userDir = ((_b2 = raw.user) == null ? void 0 : _b2.user_dir) || "";
           const info3 = buildLicenseInfoFromActivation(raw, userDir);
           const licenseToStore = {
             key: raw.license_key,
@@ -3455,8 +3458,8 @@ var init_foundry = __esm({
             expiresAt: raw.expires_at || 0,
             features: info3.features,
             activatedAt: Date.now(),
-            activated: (_d = raw.activated) != null ? _d : true,
-            firstTime: (_e = raw.first_time) != null ? _e : false,
+            activated: (_c = raw.activated) != null ? _c : true,
+            firstTime: (_d = raw.first_time) != null ? _d : false,
             user: info3.user,
             activation: info3.activation,
             sync: info3.sync
@@ -3490,7 +3493,7 @@ var init_foundry = __esm({
               { "Authorization": `Bearer ${token}`, "Cache-Control": "no-cache" }
             );
             if (res2.status === 200 && ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0])) {
-              const raw = res2.data.data[0];
+              const raw = unwrapFirst(res2.data);
               const userDir = String((_g = (_f = (_c = ud.syncConfig) == null ? void 0 : _c.userDir) != null ? _f : (_e = (_d = ud.license) == null ? void 0 : _d.user) == null ? void 0 : _e.userDir) != null ? _g : "");
               const info3 = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || "", user_dir: userDir } }, userDir);
               const updated = { ...ud.license, ...{ key: raw.license_key || licenseKey, plan: info3.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info3.features, isExpired: info3.isExpired } };
@@ -3504,7 +3507,7 @@ var init_foundry = __esm({
         }
       }
       async getLicenseUsage(workspacePath) {
-        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n;
+        var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
         try {
           const ud = await loadUserData(workspacePath);
           const token = ud == null ? void 0 : ud.token;
@@ -3518,19 +3521,19 @@ var init_foundry = __esm({
             { "Authorization": `Bearer ${token}`, "Cache-Control": "no-cache", "Pragma": "no-cache" }
           );
           if (res2.status !== 200) throw new Error(`Usage fetch failed: ${res2.status}`);
-          const raw = (_c = (_b2 = res2.data) == null ? void 0 : _b2.data) == null ? void 0 : _c[0];
+          const raw = unwrapFirst(res2.data);
           if (!raw) throw new Error("Invalid usage response");
           const usage = {
             licenseKey: raw.license_key,
             plan: raw.plan,
-            devices: { count: ((_d = raw.devices) == null ? void 0 : _d.count) || 0, max: ((_e = raw.features) == null ? void 0 : _e.max_devices) || 1, list: (((_f = raw.devices) == null ? void 0 : _f.devices) || []).map((d) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
-            ips: { count: ((_g = raw.ips) == null ? void 0 : _g.count) || 0, max: ((_h = raw.features) == null ? void 0 : _h.max_ips) || 1, list: (((_i = raw.ips) == null ? void 0 : _i.ips) || []).map((ip) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
+            devices: { count: ((_b2 = raw.devices) == null ? void 0 : _b2.count) || 0, max: ((_c = raw.features) == null ? void 0 : _c.max_devices) || 1, list: (((_d = raw.devices) == null ? void 0 : _d.devices) || []).map((d) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
+            ips: { count: ((_e = raw.ips) == null ? void 0 : _e.count) || 0, max: ((_f = raw.features) == null ? void 0 : _f.max_ips) || 1, list: (((_g = raw.ips) == null ? void 0 : _g.ips) || []).map((ip) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
             disk: {
-              syncUsage: Number((_j = raw.disks) == null ? void 0 : _j.sync_disk_usage) || 0,
-              publishUsage: Number((_k = raw.disks) == null ? void 0 : _k.publish_disk_usage) || 0,
-              totalUsage: Number((_l = raw.disks) == null ? void 0 : _l.total_disk_usage) || 0,
-              maxStorage: ((_m = raw.features) == null ? void 0 : _m.max_storage) || 1024,
-              unit: ((_n = raw.disks) == null ? void 0 : _n.unit) || "MB"
+              syncUsage: Number((_h = raw.disks) == null ? void 0 : _h.sync_disk_usage) || 0,
+              publishUsage: Number((_i = raw.disks) == null ? void 0 : _i.publish_disk_usage) || 0,
+              totalUsage: Number((_j = raw.disks) == null ? void 0 : _j.total_disk_usage) || 0,
+              maxStorage: ((_k = raw.features) == null ? void 0 : _k.max_storage) || 1024,
+              unit: ((_l = raw.disks) == null ? void 0 : _l.unit) || "MB"
             }
           };
           return { success: true, data: usage };
@@ -3554,7 +3557,7 @@ var init_foundry = __esm({
             { "Authorization": `Bearer ${token}` }
           );
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Reset failed: ${res2.status}`);
-          return { success: true, message: "Usage data reset successfully", data: res2.data };
+          return { success: true, message: "Usage data reset successfully" };
         } catch (e2) {
           return { success: false, error: e2.message };
         }
@@ -4125,6 +4128,10 @@ __export(mobile_exports, {
   createObsidianLicenseService: () => createObsidianLicenseService2,
   createObsidianWorkspaceService: () => createObsidianWorkspaceService2
 });
+function unwrapFirst2(responseData) {
+  var _a5;
+  return (_a5 = responseData == null ? void 0 : responseData.data) == null ? void 0 : _a5[0];
+}
 function vaultPath(...parts) {
   return parts.join("/").replace(/\/+/g, "/");
 }
@@ -4197,13 +4204,13 @@ function getDeviceInfo2() {
   return { deviceName: name, deviceType };
 }
 function buildLicenseInfoFromActivation2(data, userDir) {
-  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
-  const f3 = data.features || {};
-  const expiresAt = data.expires_at || 0;
+  var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p;
+  const f3 = (_a5 = data.features) != null ? _a5 : {};
+  const expiresAt = (_b2 = data.expires_at) != null ? _b2 : 0;
   const daysRemaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 864e5));
   const expires = new Date(expiresAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   const info3 = {
-    key: data.license_key,
+    key: (_c = data.license_key) != null ? _c : "",
     plan: data.plan ? data.plan.charAt(0).toUpperCase() + data.plan.slice(1).toLowerCase() : "Free",
     isExpired: Date.now() > expiresAt,
     expires,
@@ -4211,19 +4218,19 @@ function buildLicenseInfoFromActivation2(data, userDir) {
     daysRemaining,
     isTrial: (data.plan || "").toLowerCase() === "free",
     features: {
-      maxDevices: (_a5 = f3.max_devices) != null ? _a5 : 1,
-      maxIps: (_b2 = f3.max_ips) != null ? _b2 : 1,
-      syncEnabled: (_c = f3.sync_enabled) != null ? _c : false,
-      syncQuota: (_d = f3.sync_quota) != null ? _d : 0,
-      publishEnabled: (_e = f3.publish_enabled) != null ? _e : false,
-      maxSites: (_f = f3.max_sites) != null ? _f : 1,
-      maxStorage: (_g = f3.max_storage) != null ? _g : 1024,
-      customDomain: (_h = f3.custom_domain) != null ? _h : false,
-      customSubDomain: (_i = f3.custom_sub_domain) != null ? _i : false,
-      validityDays: (_j = f3.validity_days) != null ? _j : 365
+      maxDevices: (_d = f3.max_devices) != null ? _d : 1,
+      maxIps: (_e = f3.max_ips) != null ? _e : 1,
+      syncEnabled: (_f = f3.sync_enabled) != null ? _f : false,
+      syncQuota: (_g = f3.sync_quota) != null ? _g : 0,
+      publishEnabled: (_h = f3.publish_enabled) != null ? _h : false,
+      maxSites: (_i = f3.max_sites) != null ? _i : 1,
+      maxStorage: (_j = f3.max_storage) != null ? _j : 1024,
+      customDomain: (_k = f3.custom_domain) != null ? _k : false,
+      customSubDomain: (_l = f3.custom_sub_domain) != null ? _l : false,
+      validityDays: (_m = f3.validity_days) != null ? _m : 365
     },
-    user: { email: ((_k = data.user) == null ? void 0 : _k.email) || "", userDir },
-    activation: { activated: (_l = data.activated) != null ? _l : true, firstTime: (_m = data.first_time) != null ? _m : false }
+    user: { email: ((_n = data.user) == null ? void 0 : _n.email) || "", userDir },
+    activation: { activated: (_o = data.activated) != null ? _o : true, firstTime: (_p = data.first_time) != null ? _p : false }
   };
   if (data.sync && f3.sync_enabled) {
     info3.sync = {
@@ -4279,7 +4286,7 @@ function setNested2(obj, key2, value) {
   cur[parts[parts.length - 1]] = value;
 }
 function getNested2(obj, key2) {
-  return key2.split(".").reduce((cur, p) => cur == null ? void 0 : cur[p], obj);
+  return key2.split(".").reduce((cur, p) => cur == null || typeof cur !== "object" ? void 0 : cur[p], obj);
 }
 function extractVaultAndDir(config) {
   var _a5;
@@ -4376,20 +4383,19 @@ var init_mobile = __esm({
         this.pluginDir = pluginDir;
       }
       async requestTrial(workspacePath, email) {
-        var _a5, _b2;
+        var _a5, _b2, _c;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const res2 = await this.http.postMultipart(`${getApiUrl2(ud)}/api/license/trial`, { email });
           if (res2.status !== 200 && res2.status !== 201) throw new Error("Trial request failed");
-          const d = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
+          const d = unwrapFirst2(res2.data);
           if (!(d == null ? void 0 : d.license_key)) throw new Error("Invalid trial response");
-          return { success: true, data: { email: d.email, licenseKey: d.license_key, password: d.password, validityDays: d.validity_days } };
+          return { success: true, data: { email: (_a5 = d.email) != null ? _a5 : "", licenseKey: d.license_key, password: (_b2 = d.password) != null ? _b2 : "", validityDays: (_c = d.validity_days) != null ? _c : 0 } };
         } catch (e2) {
           return { success: false, error: e2.message };
         }
       }
       async loginWithLicense(workspacePath, licenseKey) {
-        var _a5, _b2;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const apiUrl = getApiUrl2(ud);
@@ -4397,7 +4403,7 @@ var init_mobile = __esm({
           const pass = licenseToPassword2(licenseKey);
           const res2 = await this.http.postForm(`${apiUrl}/api/login`, { email, password: pass });
           if (res2.status !== 201) throw new Error(`Login failed: ${res2.status}`);
-          const token = (_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0];
+          const token = unwrapFirst2(res2.data);
           if (!token) throw new Error("No token in login response");
           await saveUserData2(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
           return { success: true, data: {} };
@@ -4406,7 +4412,7 @@ var init_mobile = __esm({
         }
       }
       async activateLicense(workspacePath, licenseKey) {
-        var _a5, _b2, _c, _d, _e;
+        var _a5, _b2, _c, _d;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           const token = ud == null ? void 0 : ud.token;
@@ -4420,11 +4426,11 @@ var init_mobile = __esm({
             { "Authorization": `Bearer ${token}` }
           );
           if (res2.status !== 200 && res2.status !== 201) throw new Error(`Activation failed: ${res2.status}`);
-          const raw = ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0]) || res2.data;
+          const raw = (_a5 = unwrapFirst2(res2.data)) != null ? _a5 : res2.data;
           if (!(raw == null ? void 0 : raw.success)) throw new Error("License activation unsuccessful");
-          const userDir = ((_c = raw.user) == null ? void 0 : _c.user_dir) || "";
+          const userDir = (_c = (_b2 = raw.user) == null ? void 0 : _b2.user_dir) != null ? _c : "";
           const info3 = buildLicenseInfoFromActivation2(raw, userDir);
-          const licenseToStore = { key: raw.license_key, plan: info3.plan, expiresAt: raw.expires_at || 0, features: info3.features, activatedAt: Date.now(), activated: (_d = raw.activated) != null ? _d : true, firstTime: (_e = raw.first_time) != null ? _e : false, user: info3.user, activation: info3.activation, sync: info3.sync };
+          const licenseToStore = { key: raw.license_key, plan: info3.plan, expiresAt: (_d = raw.expires_at) != null ? _d : 0, features: info3.features, user: info3.user, activation: info3.activation, sync: info3.sync };
           const syncToStore = info3.sync ? { dbEndpoint: info3.sync.dbEndpoint, dbName: info3.sync.dbName, email: info3.sync.email, dbPassword: info3.sync.dbPassword, userDir, status: info3.sync.status } : ud == null ? void 0 : ud.syncConfig;
           await saveUserData2(this.vault, this.pluginDir, { license: licenseToStore, syncConfig: syncToStore });
           return { success: true, data: info3 };
@@ -4433,7 +4439,7 @@ var init_mobile = __esm({
         }
       }
       async getLicenseInfo(workspacePath, options) {
-        var _a5, _b2, _c, _d;
+        var _a5, _b2, _c, _d, _e, _f, _g, _h;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           if (!(ud == null ? void 0 : ud.license)) return { success: true, message: "No active license" };
@@ -4443,9 +4449,9 @@ var init_mobile = __esm({
               { "Authorization": `Bearer ${ud.token}`, "Cache-Control": "no-cache" }
             );
             if (res2.status === 200 && ((_b2 = (_a5 = res2.data) == null ? void 0 : _a5.data) == null ? void 0 : _b2[0])) {
-              const raw = res2.data.data[0];
-              const info3 = buildLicenseInfoFromActivation2({ ...raw, user: { email: ud.email || "", user_dir: ((_c = ud.syncConfig) == null ? void 0 : _c.userDir) || "" } }, ((_d = ud.syncConfig) == null ? void 0 : _d.userDir) || "");
-              await saveUserData2(this.vault, this.pluginDir, { license: { ...ud.license, plan: info3.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info3.features } });
+              const raw = unwrapFirst2(res2.data);
+              const info3 = buildLicenseInfoFromActivation2({ ...raw, user: { email: (_c = ud.email) != null ? _c : "", user_dir: String((_e = (_d = ud.syncConfig) == null ? void 0 : _d.userDir) != null ? _e : "") } }, String((_g = (_f = ud.syncConfig) == null ? void 0 : _f.userDir) != null ? _g : ""));
+              await saveUserData2(this.vault, this.pluginDir, { license: { ...ud.license, plan: info3.plan, expiresAt: (_h = raw.expires_at) != null ? _h : ud.license.expiresAt, features: info3.features } });
               return { success: true, data: info3 };
             }
           }
@@ -4464,13 +4470,13 @@ var init_mobile = __esm({
             { "Authorization": `Bearer ${ud.token}`, "Cache-Control": "no-cache" }
           );
           if (res2.status !== 200) throw new Error(`Usage fetch failed: ${res2.status}`);
-          const raw = (_c = (_b2 = res2.data) == null ? void 0 : _b2.data) == null ? void 0 : _c[0];
+          const raw = unwrapFirst2(res2.data);
           if (!raw) throw new Error("Invalid usage response");
           return { success: true, data: {
             licenseKey: raw.license_key,
             plan: raw.plan,
-            devices: { count: ((_d = raw.devices) == null ? void 0 : _d.count) || 0, max: ((_e = raw.features) == null ? void 0 : _e.max_devices) || 1, list: [] },
-            ips: { count: ((_f = raw.ips) == null ? void 0 : _f.count) || 0, max: ((_g = raw.features) == null ? void 0 : _g.max_ips) || 1, list: [] },
+            devices: { count: ((_b2 = raw.devices) == null ? void 0 : _b2.count) || 0, max: ((_c = raw.features) == null ? void 0 : _c.max_devices) || 1, list: (((_d = raw.devices) == null ? void 0 : _d.devices) || []).map((d) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
+            ips: { count: ((_e = raw.ips) == null ? void 0 : _e.count) || 0, max: ((_f = raw.features) == null ? void 0 : _f.max_ips) || 1, list: (((_g = raw.ips) == null ? void 0 : _g.ips) || []).map((ip) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
             disk: { syncUsage: Number((_h = raw.disks) == null ? void 0 : _h.sync_disk_usage) || 0, publishUsage: Number((_i = raw.disks) == null ? void 0 : _i.publish_disk_usage) || 0, totalUsage: Number((_j = raw.disks) == null ? void 0 : _j.total_disk_usage) || 0, maxStorage: ((_k = raw.features) == null ? void 0 : _k.max_storage) || 1024, unit: ((_l = raw.disks) == null ? void 0 : _l.unit) || "MB" }
           } };
         } catch (e2) {
@@ -8704,8 +8710,9 @@ var ObsidianVaultFileLister = class {
     return this.adapter.writeBinary(path2, data);
   }
   async setMtime(path2, mtime) {
-    if (typeof this.adapter.setMtime === "function") {
-      await this.adapter.setMtime(path2, mtime);
+    const adapterWithMtime = this.adapter;
+    if (typeof adapterWithMtime.setMtime === "function") {
+      await adapterWithMtime.setMtime(path2, mtime);
     }
   }
   async remove(path2) {
@@ -32064,7 +32071,7 @@ var FridayReplicationService = class extends ServiceBase {
           }
         }
         const writtenFile = vault.getAbstractFileByPath(path2);
-        if (writtenFile && storageEventManager && "stat" in writtenFile) {
+        if (writtenFile && storageEventManager && writtenFile instanceof import_obsidian3.TFile) {
           const stat = writtenFile.stat;
           storageEventManager.touch(path2, stat.mtime, stat.size);
         }
@@ -32416,12 +32423,14 @@ var FridayRemoteService = class extends ServiceBase {
         const info3 = await db.info();
         return { db, info: info3 };
       } catch (ex) {
-        const msg = `${ex == null ? void 0 : ex.name}:${ex == null ? void 0 : ex.message}`;
+        const err2 = ex;
+        const msg = `${err2 == null ? void 0 : err2.name}:${err2 == null ? void 0 : err2.message}`;
         console.error("[Friday Sync] Failed to get database info:", msg);
         return msg;
       }
     } catch (ex) {
-      const msg = `Connection error: ${(ex == null ? void 0 : ex.message) || ex}`;
+      const err2 = ex;
+      const msg = `Connection error: ${(err2 == null ? void 0 : err2.message) || String(ex)}`;
       console.error("[Friday Sync]", msg);
       return msg;
     }
@@ -35612,6 +35621,7 @@ var _FridaySyncCore = class _FridaySyncCore {
   get kvDB() {
     return this._kvDB;
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get simpleStore() {
     return this._simpleStore;
   }
@@ -36502,7 +36512,7 @@ var _FridaySyncCore = class _FridaySyncCore {
             created++;
           }
           const writtenFile = vault.getAbstractFileByPath(path2);
-          if (writtenFile && this._storageEventManager && "stat" in writtenFile) {
+          if (writtenFile instanceof import_obsidian4.TFile && this._storageEventManager) {
             const stat = writtenFile.stat;
             this._storageEventManager.touch(path2, stat.mtime, stat.size);
           }
@@ -38750,14 +38760,15 @@ var ObsidianIdentityHttpClient = class {
   /**
    * POST multipart form data (for file uploads)
    * 
-   * Converts Record<string, any> to FormData, with special handling for 'asset' field
+   * Converts Record<string, unknown> to FormData, with special handling for 'asset' field
    */
   async postMultipart(url, data, headers) {
     const formData = new FormData();
     for (const [key2, value] of Object.entries(data)) {
-      if (key2 === "asset" && typeof value === "object" && "data" in value && "filename" in value && "contentType" in value) {
-        const blob = new Blob([value.data], { type: value.contentType || "application/octet-stream" });
-        formData.append(key2, blob, value.filename);
+      if (key2 === "asset" && typeof value === "object" && value !== null && "data" in value && "filename" in value && "contentType" in value) {
+        const asset = value;
+        const blob = new Blob([asset.data], { type: asset.contentType || "application/octet-stream" });
+        formData.append(key2, blob, asset.filename);
       } else if (typeof value === "string" || typeof value === "number") {
         formData.append(key2, value.toString());
       } else {
@@ -38809,7 +38820,6 @@ var ObsidianIdentityHttpClient = class {
   }
   /**
    * 将 FormData 转换为 ArrayBuffer（用于 multipart 请求）
-   * Based on hugoverse.ts implementation
    */
   async formDataToArrayBufferFromFormData(formData, boundary) {
     const bodyParts = [];
@@ -38854,9 +38864,6 @@ ${value}\r
   }
   /**
    * 将 FormData 对象转换为 ArrayBuffer
-   * 
-   * 基于 Friday 插件的实现：
-   * friday/src/hugoverse.ts:220-268
    */
   async formDataToArrayBuffer(formData, boundary) {
     const bodyParts = [];
@@ -39681,6 +39688,7 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
    * Identical to the original Friday plugin implementation.
    */
   async syncLicenseToSettings() {
+    var _a5;
     if (!this.licenseState) {
       return;
     }
@@ -39688,14 +39696,13 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
       const licenseInfo = this.licenseState.getLicenseInfo();
       const authStatus = this.licenseState.getAuthStatus();
       if (licenseInfo) {
-        const features = licenseInfo.features;
         this.settings.license = {
           key: this.licenseState.getLicenseKey() || "",
           plan: licenseInfo.plan,
           expiresAt: licenseInfo.expiresAt || 0,
           features: {
             ...licenseInfo.features,
-            validityDays: (features == null ? void 0 : features.validityDays) || 365
+            validityDays: ((_a5 = licenseInfo.features) == null ? void 0 : _a5.validityDays) || 365
           },
           activatedAt: Date.now()
         };

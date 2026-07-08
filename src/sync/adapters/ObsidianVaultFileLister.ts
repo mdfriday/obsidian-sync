@@ -57,8 +57,11 @@ export class ObsidianVaultFileLister implements IVaultFileLister {
     }
 
     async setMtime(path: string, mtime: number): Promise<void> {
-        if (typeof (this.adapter as any).setMtime === 'function') {
-            await (this.adapter as any).setMtime(path, mtime);
+        /** Obsidian's DataAdapter exposes setMtime on disk (not in public typings) */
+        interface AdapterWithMtime { setMtime(path: string, mtime: number): Promise<void>; }
+        const adapterWithMtime = this.adapter as unknown as AdapterWithMtime;
+        if (typeof adapterWithMtime.setMtime === 'function') {
+            await adapterWithMtime.setMtime(path, mtime);
         }
     }
 

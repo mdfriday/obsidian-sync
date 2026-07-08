@@ -4,6 +4,14 @@
  * Implements the minimum required services for CouchDB synchronization
  */
 
+/** Minimal request shape expected by the custom FetchHttpHandler */
+interface FetchHandlerRequest {
+  url: string;
+  method: string;
+  headers?: Record<string, string>;
+  body?: string | ArrayBuffer;
+}
+
 import { Platform, TFile, TFolder, requestUrl } from "obsidian";
 import { ServiceHub, type ServiceInstances } from "@mdfriday/sync-core/core/services/ServiceHub";
 import {
@@ -80,7 +88,7 @@ class FridayAPIService extends ServiceBase implements APIService {
     getCustomFetchHandler(): FetchHttpHandler {
         // Return a basic fetch handler that uses Obsidian's requestUrl
         return {
-            handle: async (request: any) => {
+            handle: async (request: FetchHandlerRequest) => {
                 const result = await requestUrl({
                     url: request.url,
                     method: request.method,
@@ -94,10 +102,10 @@ class FridayAPIService extends ServiceBase implements APIService {
                 });
                 return { response };
             },
-        } as any;
+        } as unknown as FetchHttpHandler;
     }
 
-    addLog(message: any, level: LOG_LEVEL, key: string): void {
+    addLog(message: unknown, level: LOG_LEVEL, key: string): void {
 		Logger(`[${key}] ${message}`, level)
     }
 
@@ -371,8 +379,8 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
             const storageEventManager = this.core.storageEventManager;
             
             // Check if document is deleted first
-            const isDeleted = doc._deleted === true || ("deleted" in doc && (doc as any).deleted === true);
-            
+            const isDeleted = doc._deleted === true || ("deleted" in doc && (doc as MetaEntry & { deleted?: boolean }).deleted === true);
+
             // Mark file as being processed to prevent sync loop
             // (When we write the file, vault will emit 'modify' event, 
             //  which should NOT trigger another upload to server)
@@ -500,9 +508,9 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
                 if (existingFile) {
                     // Modify existing file
                     if (isText) {
-                        await vault.modify(existingFile as any, content as string);
+                        await vault.modify(existingFile as TFile, content as string);
                     } else {
-                        await vault.modifyBinary(existingFile as any, content as ArrayBuffer);
+                        await vault.modifyBinary(existingFile as TFile, content as ArrayBuffer);
                     }
                 } else {
                     // Create new file
@@ -518,8 +526,8 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
                 // This prevents the vault event from triggering another sync
                 // We need to get the file stat after write to get correct mtime/size
                 const writtenFile = vault.getAbstractFileByPath(path);
-                if (writtenFile && storageEventManager && 'stat' in writtenFile) {
-                    const stat = (writtenFile as any).stat;
+                if (writtenFile && storageEventManager && writtenFile instanceof TFile) {
+                    const stat = writtenFile.stat;
                     storageEventManager.touch(path, stat.mtime, stat.size);
                 }
                 
@@ -684,7 +692,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
                 } catch (error) {
                     console.error(`[Friday Sync] Error processing doc ${doc._id}:`, {
                         error: error,
-                        docPath: (doc as any).path,
+                        docPath: (doc as MetaEntry).path,
                         docType: doc.type,
                         errorMessage: error instanceof Error ? error.message : String(error),
                         errorStack: error instanceof Error ? error.stack : undefined,
@@ -994,7 +1002,7 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
                             status: result.status,
                             headers: result.headers,
                         });
-                    } catch (ex: any) {
+                    } catch (ex: unknown) {
                         console.error("[Friday Sync] Request error:", ex);
                         throw ex;
                     }
@@ -1033,13 +1041,15 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
             try {
                 const info = await db.info();
                 return { db, info };
-            } catch (ex: any) {
-                const msg = `${ex?.name}:${ex?.message}`;
+            } catch (ex: unknown) {
+                const err = ex as { name?: string; message?: string };
+                const msg = `${err?.name}:${err?.message}`;
                 console.error("[Friday Sync] Failed to get database info:", msg);
                 return msg;
             }
-        } catch (ex: any) {
-            const msg = `Connection error: ${ex?.message || ex}`;
+        } catch (ex: unknown) {
+            const err = ex as { message?: string };
+            const msg = `Connection error: ${err?.message || String(ex)}`;
             console.error("[Friday Sync]", msg);
             return msg;
         }

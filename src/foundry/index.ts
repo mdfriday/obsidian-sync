@@ -30,7 +30,35 @@ import type {
   ObsidianLicenseService,
   ObsidianGlobalConfigService,
   ObsidianWorkspaceService,
+  RawDeviceEntry,
+  RawIpEntry,
 } from './types';
+
+/** Generic envelope returned by the MDFriday API: { data: T[] } */
+interface ApiEnvelope<T = unknown> {
+  data?: T[];
+  success?: boolean;
+  message?: string;
+  [key: string]: unknown;
+}
+
+/** Helper – unwrap the first element of an API envelope */
+function unwrapFirst<T>(responseData: unknown): T | undefined {
+  return (responseData as ApiEnvelope<T> | undefined)?.data?.[0];
+}
+
+/** Raw usage API response shape */
+interface RawUsageResponse {
+  license_key: string;
+  plan: string;
+  devices?: { count?: number; devices?: RawDeviceEntry[] };
+  ips?: { count?: number; ips?: RawIpEntry[] };
+  features?: { max_devices?: number; max_ips?: number; max_storage?: number };
+  disks?: { sync_disk_usage?: number; publish_disk_usage?: number; total_disk_usage?: number; unit?: string };
+}
+
+/** Raw login response – token string */
+type RawTokenResponse = string;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -118,7 +146,7 @@ async function saveUserData(workspacePath: string, patch: Partial<UserData>): Pr
   const existing = (await loadUserData(workspacePath)) || {};
   const merged: UserData = { ...existing, ...patch };
   // Remove undefined values
-  Object.keys(merged).forEach(k => (merged as any)[k] === undefined && delete (merged as any)[k]);
+  Object.keys(merged).forEach(k => (merged as Record<string, unknown>)[k] === undefined && delete (merged as Record<string, unknown>)[k]);
   await writeJsonFile(userDataPath(workspacePath), merged);
 }
 
@@ -183,7 +211,8 @@ interface ActivationApiResponse {
   plan?: string;
   activated?: boolean;
   first_time?: boolean;
-  user?: { email?: string };
+  success?: boolean;
+  user?: { email?: string; user_dir?: string };
   sync?: {
     status?: string;
     db_endpoint?: string;
@@ -368,9 +397,9 @@ class LightweightLicenseService implements ObsidianLicenseService {
       const url = `${getApiUrl(ud)}/api/license/trial`;
       const res = await this.http.postMultipart(url, { email });
       if (res.status !== 200 && res.status !== 201) throw new Error('Trial request failed');
-      const d = res.data?.data?.[0];
+      const d = unwrapFirst<{ license_key?: string; email?: string; password?: string; validity_days?: number }>(res.data);
       if (!d?.license_key) throw new Error('Invalid trial response');
-      return { success: true, data: { email: d.email, licenseKey: d.license_key, password: d.password, validityDays: d.validity_days } };
+      return { success: true, data: { email: d.email ?? '', licenseKey: d.license_key, password: d.password ?? '', validityDays: d.validity_days ?? 0 } };
     } catch (e) {
       return { success: false, error: (e as Error).message };
     }
@@ -386,7 +415,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       const res = await this.http.postForm(`${apiUrl}/api/login`, { email, password });
       if (res.status !== 201) throw new Error(`Login failed: ${res.status}`);
 
-      const token = res.data?.data?.[0];
+      const token = unwrapFirst<RawTokenResponse>(res.data);
       if (!token) throw new Error('No token in login response');
 
       await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
@@ -413,7 +442,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       );
       if (res.status !== 200 && res.status !== 201) throw new Error(`Activation failed: ${res.status}`);
 
-      const raw = res.data?.data?.[0] || res.data;
+      const raw: ActivationApiResponse = (unwrapFirst<ActivationApiResponse>(res.data) ?? (res.data as ActivationApiResponse));
       if (!raw?.success) throw new Error('License activation unsuccessful');
 
       const userDir = raw.user?.user_dir || '';
@@ -463,8 +492,8 @@ class LightweightLicenseService implements ObsidianLicenseService {
           `${apiUrl}/api/license/info?key=${licenseKey}&_t=${ts}`,
           { 'Authorization': `Bearer ${token}`, 'Cache-Control': 'no-cache' }
         );
-        if (res.status === 200 && res.data?.data?.[0]) {
-          const raw = res.data.data[0];
+        if (res.status === 200 && (res.data as ApiEnvelope<ActivationApiResponse>)?.data?.[0]) {
+          const raw = unwrapFirst<ActivationApiResponse>(res.data) as ActivationApiResponse;
           const userDir = String(ud.syncConfig?.userDir ?? ud.license?.user?.userDir ?? '');
           const info = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || '', user_dir: userDir } }, userDir);
           // update stored license
@@ -494,13 +523,13 @@ class LightweightLicenseService implements ObsidianLicenseService {
         { 'Authorization': `Bearer ${token}`, 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
       );
       if (res.status !== 200) throw new Error(`Usage fetch failed: ${res.status}`);
-      const raw = res.data?.data?.[0];
+      const raw = unwrapFirst<RawUsageResponse>(res.data);
       if (!raw) throw new Error('Invalid usage response');
       const usage: ObsidianLicenseUsage = {
         licenseKey: raw.license_key,
         plan:       raw.plan,
-        devices:    { count: raw.devices?.count || 0, max: raw.features?.max_devices || 1, list: (raw.devices?.devices || []).map((d: any) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
-        ips:        { count: raw.ips?.count || 0, max: raw.features?.max_ips || 1, list: (raw.ips?.ips || []).map((ip: any) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
+        devices:    { count: raw.devices?.count || 0, max: raw.features?.max_devices || 1, list: (raw.devices?.devices || []).map((d: RawDeviceEntry) => ({ id: d.id, name: d.device_name, type: d.device_type, status: d.status, lastSeenAt: d.last_seen_at })) },
+        ips:        { count: raw.ips?.count || 0, max: raw.features?.max_ips || 1, list: (raw.ips?.ips || []).map((ip: RawIpEntry) => ({ ip: ip.ip_address, city: ip.city, region: ip.region, country: ip.country, status: ip.status, lastSeenAt: ip.last_seen_at })) },
         disk: {
           syncUsage:    Number(raw.disks?.sync_disk_usage) || 0,
           publishUsage: Number(raw.disks?.publish_disk_usage) || 0,
@@ -515,7 +544,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
     }
   }
 
-  async resetUsage(workspacePath: string, force: boolean): Promise<ObsidianLicenseResult<any>> {
+  async resetUsage(workspacePath: string, force: boolean): Promise<ObsidianLicenseResult<void>> {
     if (!force) return { success: false, error: 'Set force=true to confirm reset' };
     try {
       const ud    = await loadUserData(workspacePath);
@@ -530,7 +559,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
         { 'Authorization': `Bearer ${token}` }
       );
       if (res.status !== 200 && res.status !== 201) throw new Error(`Reset failed: ${res.status}`);
-      return { success: true, message: 'Usage data reset successfully', data: res.data };
+      return { success: true, message: 'Usage data reset successfully' };
     } catch (e) {
       return { success: false, error: (e as Error).message };
     }
@@ -606,22 +635,22 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
 // Global Config Service (dot-notation key → nested JSON)
 // ─────────────────────────────────────────────────────────────────────────────
 
-function setNested(obj: any, key: string, value: any): void {
+function setNested(obj: Record<string, unknown>, key: string, value: unknown): void {
   const parts = key.split('.');
-  let cur = obj;
+  let cur: Record<string, unknown> = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     if (typeof cur[parts[i]] !== 'object' || cur[parts[i]] === null) cur[parts[i]] = {};
-    cur = cur[parts[i]];
+    cur = cur[parts[i]] as Record<string, unknown>;
   }
   cur[parts[parts.length - 1]] = value;
 }
 
-function getNested(obj: any, key: string): any {
+function getNested(obj: Record<string, unknown>, key: string): unknown {
   const parts = key.split('.');
-  let cur = obj;
+  let cur: unknown = obj;
   for (const p of parts) {
     if (cur == null || typeof cur !== 'object') return undefined;
-    cur = cur[p];
+    cur = (cur as Record<string, unknown>)[p];
   }
   return cur;
 }
@@ -631,8 +660,8 @@ class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
     return nodePath.join(workspacePath, MDFRIDAY_DIR, CONFIG_FILE);
   }
 
-  private async load(workspacePath: string): Promise<Record<string, any>> {
-    return (await readJsonFile<Record<string, any>>(this.configPath(workspacePath))) || {};
+  private async load(workspacePath: string): Promise<Record<string, unknown>> {
+    return (await readJsonFile<Record<string, unknown>>(this.configPath(workspacePath))) || {};
   }
 
   async get(workspacePath: string, key: string): Promise<ObsidianConfigResult<ConfigGetResult>> {
@@ -646,7 +675,7 @@ class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
     }
   }
 
-  async set(workspacePath: string, key: string, value: any): Promise<ObsidianConfigResult<ConfigGetResult>> {
+  async set(workspacePath: string, key: string, value: unknown): Promise<ObsidianConfigResult<ConfigGetResult>> {
     try {
       const cfg = await this.load(workspacePath);
       setNested(cfg, key, value);
