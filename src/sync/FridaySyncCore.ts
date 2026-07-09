@@ -595,8 +595,8 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                     return getDB();
                 },
                 getActiveReplicator: () => this._replicator!,
-                id2path: this.id2path.bind(this),
-                path2id: this.path2id.bind(this),
+                id2path: (id: DocumentID, entry?: EntryHasPath, stripPrefix?: boolean): FilePathWithPrefix => this.id2path(id, entry, stripPrefix),
+                path2id: (filename: FilePathWithPrefix | FilePath, prefix?: string): Promise<DocumentID> => this.path2id(filename, prefix),
                 get settings() {
                     return getSettings();
                 },
@@ -1602,7 +1602,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                     if (processed % 50 === 0) {
                         Logger(`Progress: ${processed} files processed (${created} created, ${updated} updated)`, LOG_LEVEL_INFO);
                     }
-                } catch (error) {
+                } catch (error: unknown) {
                     errors++;
                     // Log detailed error info to console for debugging
                     console.error(`[Friday Sync] Error writing file ${path}:`, {

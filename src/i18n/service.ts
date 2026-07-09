@@ -10,15 +10,18 @@ import {
 import { en } from './locales/en';
 import { zhCn } from './locales/zh-cn';
 import type FridayPlugin from '../main';
-import { setLang as setSyncLang, type I18N_LANGS } from '@mdfriday/sync-core/core/common/i18n';
+import { setLang as setSyncLang } from '@mdfriday/sync-core/core/common/i18n';
+
+/** Type of the lang parameter accepted by setSyncLang */
+type SyncLang = Parameters<typeof setSyncLang>[0];
 
 /**
  * Map main i18n language codes to sync module language codes
  * Main i18n uses: 'en', 'zh-cn', 'es', 'fr', 'de', 'ja', 'ko', 'pt'
  * Sync module uses: 'def', 'zh', 'es', 'de', 'ja', 'ko', 'ru', 'zh-tw'
  */
-function mapToSyncLang(lang: LanguageCode): I18N_LANGS {
-	const mapping: Record<string, I18N_LANGS> = {
+function mapToSyncLang(lang: LanguageCode): SyncLang {
+	const mapping: Record<string, SyncLang> = {
 		'en': 'def',
 		'zh-cn': 'zh',
 		'es': 'es',

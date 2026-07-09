@@ -545,8 +545,9 @@ export default class MdfridaySyncPlugin extends Plugin {
 	 */
 	async refreshSubdomainInfo(): Promise<void> {}
 
-	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		async loadSettings() {
+			const savedData = await this.loadData() as Partial<SyncPluginSettings> | null;
+			this.settings = Object.assign({}, DEFAULT_SETTINGS, savedData);
 		this.initializeDefaultIgnorePatterns();
 	}
 

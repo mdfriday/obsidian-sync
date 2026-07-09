@@ -74,8 +74,10 @@ export default defineConfig([
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
       // TypeScript handles undefined references - no-undef is redundant for .ts files
       "no-undef":                                         "off",
-      // Node.js http/https modules are intentionally used in LLM streaming client
+      // Node.js http/https intentionally used in LLM streaming client
       "obsidianmd/no-nodejs-modules":                     "off",
+      // getSettingDefinitions() refactor is tracked in docs/eslint-fix-plan.md (Step 13)
+      "obsidianmd/settings-tab/prefer-setting-definitions": "off",
       // Logger() passes unknown values into template literals
       "@typescript-eslint/restrict-template-expressions": "off",
       // void used to discard promises intentionally

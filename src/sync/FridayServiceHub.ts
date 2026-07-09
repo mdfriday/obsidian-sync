@@ -186,8 +186,8 @@ class FridayDatabaseService extends ServiceBase implements DatabaseService {
         const prefix = `friday-${kind}-`;
         return {
             get: async (key: string) => {
-                const value = app.loadLocalStorage(`${prefix}${key}`);
-                return value !== undefined ? value as T : undefined;
+                const value = app.loadLocalStorage(`${prefix}${key}`) as T | undefined;
+                return value !== undefined ? value : undefined;
             },
             set: async (key: string, value: T) => {
                 app.saveLocalStorage(`${prefix}${key}`, value);
@@ -324,7 +324,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
             this._first<typeof this.checkConnectionFailure>("connectionHasFailure");
         
         // Register the default document processor
-        this.handleProcessSynchroniseResult(this.defaultProcessSynchroniseResult.bind(this));
+        this.handleProcessSynchroniseResult((doc) => this.defaultProcessSynchroniseResult(doc));
     }
 
     // ==================== Document Processing (Aligned with LiveSync) ====================
@@ -557,7 +557,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
                     }, 1000);
                 }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             // Log detailed error info to console for debugging
             console.error(`[Friday Sync] Error processing document:`, {
                 error: error,
@@ -695,7 +695,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
                             });
                         }
                     }
-                } catch (error) {
+                } catch (error: unknown) {
                     console.error(`[Friday Sync] Error processing doc ${doc._id}:`, {
                         error: error,
                         docPath: (doc as MetaEntry).path,

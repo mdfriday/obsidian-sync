@@ -11,7 +11,7 @@
     "tsc-check": "tsc --noEmit -skipLibCheck",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
-    "lint:ci": "eslint src/ --max-warnings=50",
+    "lint:ci": "eslint src/ --max-warnings=0",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"

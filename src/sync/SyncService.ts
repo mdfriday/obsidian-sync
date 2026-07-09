@@ -135,7 +135,7 @@ export class SyncService {
         try {
             // Validate configuration
             if (!config.couchDB_URI || !config.couchDB_DBNAME) {
-                new Notice("Sync: CouchDB URI and database name are required");
+                new Notice("Sync: CouchDB uri and database name are required");
                 return false;
             }
 

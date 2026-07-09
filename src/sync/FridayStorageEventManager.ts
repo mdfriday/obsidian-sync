@@ -239,12 +239,6 @@ export class FridayStorageEventManager {
             return;
         }
         
-        // Bind event handlers
-        this.watchVaultCreate = this.watchVaultCreate.bind(this);
-        this.watchVaultChange = this.watchVaultChange.bind(this);
-        this.watchVaultDelete = this.watchVaultDelete.bind(this);
-        this.watchVaultRename = this.watchVaultRename.bind(this);
-        
         // Register vault events (arrow wrappers ensure correct `this` binding)
         this.plugin.registerEvent(
             this.plugin.app.vault.on("create", (f) => this.watchVaultCreate(f))
@@ -260,9 +254,9 @@ export class FridayStorageEventManager {
         );
         
         // Register raw event for hidden file sync (.obsidian files)
-        // @ts-ignore - Internal Obsidian API
+        // @ts-ignore - Internal Obsidian API ("raw" event not in public types)
         this.plugin.registerEvent(
-            this.plugin.app.vault.on("raw", this.watchVaultRawEvents.bind(this))
+            this.plugin.app.vault.on("raw", (path: string) => this.watchVaultRawEvents(path))
         );
         
         this._isWatching = true;
@@ -666,7 +660,7 @@ export class FridayStorageEventManager {
 				}
 
 				Logger(`File changed, updating: ${path}`, LOG_LEVEL_VERBOSE);
-                } catch (e) {
+                } catch {
                     // Entry doesn't exist or error getting it - proceed with creation
                     Logger(`Entry not found or error, creating: ${path}`, LOG_LEVEL_VERBOSE);
                 }

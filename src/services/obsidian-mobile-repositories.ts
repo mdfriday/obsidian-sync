@@ -122,7 +122,7 @@ export class ObsidianMobileWorkspaceRepository implements WorkspaceRepository {
 
 		const content = await this.vault.adapter.read(metadataPath);
 
-		return JSON.parse(content);
+		return JSON.parse(content) as WorkspaceMetadataData;
 	}
 
 	async saveProjectRegistry(workspacePath: string, registry: ProjectRegistry): Promise<void> {
@@ -134,7 +134,7 @@ export class ObsidianMobileWorkspaceRepository implements WorkspaceRepository {
 		const registryPath = this.getWorkspacePath(workspacePath, MDFRIDAY_DIR, PROJECTS_FILE);
 		const content = await this.vault.adapter.read(registryPath);
 
-		return JSON.parse(content);
+		return JSON.parse(content) as ProjectRegistry;
 	}
 }
 
@@ -540,7 +540,7 @@ export class ObsidianMobileFileSystemRepository implements FileSystemRepository 
 		
 		// 构建相对路径
 		const relativeParts = [
-			...Array(upLevels).fill('..'),
+			...Array<string>(upLevels).fill('..'),
 			...toParts.slice(commonLength)
 		];
 		

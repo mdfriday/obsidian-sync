@@ -81,8 +81,8 @@ export class SyncStatusDisplay {
             return true;
         }
         // Desktop respects user settings
-        // @ts-ignore - plugin.settings type
-        return this.plugin.settings?.showEditorStatusDisplay ?? false;
+        const pluginWithSettings = this.plugin as unknown as { settings?: { showEditorStatusDisplay?: boolean } };
+        return pluginWithSettings.settings?.showEditorStatusDisplay ?? false;
     }
     
     constructor(plugin: Plugin) {
@@ -443,8 +443,7 @@ export class SyncStatusDisplay {
         if (!key) key = message;
         
         if (key in this.notifies) {
-            // @ts-ignore - noticeEl may not be typed
-            const isShown = this.notifies[key].notice.noticeEl?.isShown();
+            const isShown = this.notifies[key].notice.messageEl?.isShown();
             if (!isShown) {
                 this.notifies[key].notice = new Notice(message, 0);
             }

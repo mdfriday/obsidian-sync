@@ -59,19 +59,17 @@ export const DEFAULT_LANGUAGE: LanguageCode = 'en';
 export function detectLanguage(app: App): LanguageCode {
 	// 1. Try to get Obsidian's language setting
 	try {
-		// @ts-ignore - Obsidian internal API
-		let obsidianLang = app.vault?.config?.lang;
-		
-		// Try alternative paths if first method fails
-		if (!obsidianLang) {
-			// @ts-ignore - Obsidian internal API  
-			obsidianLang = app.vault?.config?.language;
+		// Access Obsidian internal vault config (not in public types)
+		const vaultConfig = (app.vault as unknown as { config?: { lang?: string; language?: string } }).config;
+		let obsidianLang: string | undefined = vaultConfig?.lang ?? vaultConfig?.language;
+
+		if (!obsidianLang && typeof window !== 'undefined') {
+			// window.moment is available in Obsidian (bundled)
+			const windowWithMoment = window as unknown as { moment?: { locale(): string } };
+			if (windowWithMoment.moment) {
+				obsidianLang = windowWithMoment.moment.locale();
+			}
 		}
-		
-		if (!obsidianLang && typeof window !== 'undefined' && (window as unknown).moment) {
-			obsidianLang = (window as unknown).moment.locale();
-		}
-		
 		if (!obsidianLang && document.documentElement.lang) {
 			obsidianLang = document.documentElement.lang;
 		}
@@ -211,7 +209,7 @@ export function getLanguageInfo(code: LanguageCode): LanguageInfo | undefined {
 export function interpolateTemplate(template: string, params?: Record<string, unknown>): string {
 	if (!params) return template;
 
-	return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+	return template.replace(/\{\{(\w+)\}\}/g, (match: string, key: string) => {
 		return params[key] !== undefined ? String(params[key]) : match;
 	});
 }

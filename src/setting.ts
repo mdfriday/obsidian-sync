@@ -3,6 +3,8 @@ import type MdfridaySyncPlugin from './main';
 import {generateEncryptionPassphrase, maskLicenseKey, formatPlanName} from "./license";
 import {clearHandlers as clearSyncHandlerCache} from "@mdfriday/sync-core/core/replication/SyncParamsHandler";
 
+// TODO: Implement getSettingDefinitions() to support Obsidian 1.13+ settings search
+// See docs/eslint-fix-plan.md Step 13 for the planned declarative settings API migration
 export class MdfridaySyncSettingTab extends PluginSettingTab {
 	plugin: MdfridaySyncPlugin;
 	private isActivating: boolean = false;
