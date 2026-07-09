@@ -38,26 +38,6 @@ export interface PublishHttpClient {
   get(url: string, headers?: Record<string, string>): Promise<PublishHttpResponse>;
 }
 
-export interface LLMHttpRequest {
-  url: string;
-  method: string;
-  headers?: Record<string, string>;
-  body?: string;
-  signal?: AbortSignal;
-}
-
-export interface LLMHttpResponse {
-  status: number;
-  statusText: string;
-  ok: boolean;
-  body?: ReadableStream<Uint8Array>;
-  text(): Promise<string>;
-  json(): Promise<unknown>;
-}
-
-export interface LLMHttpClient {
-  fetch(request: LLMHttpRequest): Promise<LLMHttpResponse>;
-}
 
 // ─── Auth Types ───────────────────────────────────────────────────────────────
 

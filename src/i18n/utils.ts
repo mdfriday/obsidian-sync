@@ -68,8 +68,8 @@ export function detectLanguage(app: App): LanguageCode {
 			obsidianLang = app.vault?.config?.language;
 		}
 		
-		if (!obsidianLang && typeof window !== 'undefined' && (window as any).moment) {
-			obsidianLang = (window as any).moment.locale();
+		if (!obsidianLang && typeof window !== 'undefined' && (window as unknown).moment) {
+			obsidianLang = (window as unknown).moment.locale();
 		}
 		
 		if (!obsidianLang && document.documentElement.lang) {
@@ -208,7 +208,7 @@ export function getLanguageInfo(code: LanguageCode): LanguageInfo | undefined {
  * Simple template replacement for translations with parameters
  * Supports {{param}} syntax
  */
-export function interpolateTemplate(template: string, params?: Record<string, any>): string {
+export function interpolateTemplate(template: string, params?: Record<string, unknown>): string {
 	if (!params) return template;
 
 	return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
@@ -219,7 +219,7 @@ export function interpolateTemplate(template: string, params?: Record<string, an
 /**
  * Get nested translation value by dot-notation key
  */
-export function getNestedValue(obj: any, path: string): any {
+export function getNestedValue(obj: unknown, path: string): unknown {
 	return path.split('.').reduce((current, key) => {
 		return current && current[key] !== undefined ? current[key] : undefined;
 	}, obj);

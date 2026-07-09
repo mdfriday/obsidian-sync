@@ -1,4 +1,4 @@
-import {App, PluginSettingTab, Setting, Notice, Platform} from 'obsidian';
+import {App, PluginSettingTab, Setting, Notice} from 'obsidian';
 import type MdfridaySyncPlugin from './main';
 import {generateEncryptionPassphrase, maskLicenseKey, formatPlanName} from "./license";
 import {clearHandlers as clearSyncHandlerCache} from "@mdfriday/sync-core/core/replication/SyncParamsHandler";
@@ -177,7 +177,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 					new Notice(this.plugin.i18n.t('settings.license_info_refreshed') || 'License info updated');
 					
 					// Refresh display to show updated data
-					this.display();
+					this.update();
 				} catch (error) {
 					// Show error notification
 					new Notice(this.plugin.i18n.t('settings.refresh_failed') || 'Failed to refresh license info');
@@ -274,7 +274,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 								
 								// Success - refresh the entire settings display
 								new Notice(this.plugin.i18n.t('settings.license_activated_success'));
-								this.display();
+								this.update();
 							} catch (error) {
 								// Show error
 								statusEl.setText(this.plugin.i18n.t('settings.license_activation_failed'));
@@ -371,7 +371,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 									trialEmailEl.value = '';
 									
 									// Refresh display to show activated license
-									this.display();
+									this.update();
 								} catch (activationError) {
 									// If activation fails, still show trial request success
 									// User can manually click the activate button
@@ -379,7 +379,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 									new Notice(this.plugin.i18n.t('settings.trial_request_success'));
 									
 									// Refresh display to show the activate button
-									this.display();
+									this.update();
 								}
 							} else {
 								throw new Error(result.error || 'Invalid trial response');
@@ -450,7 +450,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 					await this.plugin.initializeSyncService();
 					new Notice(this.plugin.i18n.t('settings.sync_enabled_success') || 'Sync enabled');
 					// Refresh display to show sync content
-					this.display();
+					this.update();
 				} catch (error) {
 					console.error('Failed to initialize sync service:', error);
 					new Notice(this.plugin.i18n.t('settings.sync_enable_failed') || 'Failed to enable sync');
@@ -467,7 +467,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 					}
 					new Notice(this.plugin.i18n.t('settings.sync_disabled_success') || 'Sync disabled');
 					// Refresh display to hide sync content
-					this.display();
+					this.update();
 				} catch (error) {
 					console.error('Failed to close sync service:', error);
 				}
@@ -577,8 +577,8 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 								
 								new Notice(this.plugin.i18n.t('settings.sync_upload_success'));
 								this.firstTimeSync = false;
-								this.display();
-							} catch (error) {
+								this.update();
+							} catch {
 								new Notice(this.plugin.i18n.t('settings.sync_operation_failed'));
 								button.setButtonText(this.plugin.i18n.t('settings.upload_local_to_cloud'));
 								button.setDisabled(false);
@@ -619,7 +619,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 								if (this.plugin.syncService.isInitialized) {
 									await this.plugin.syncService.fetchFromServer();
 									new Notice(this.plugin.i18n.t('settings.sync_download_success'));
-									this.display();
+									this.update();
 								} else {
 									throw new Error('Sync service initialization failed');
 								}
@@ -827,7 +827,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 		if (!selectiveSync) return;
 
 		// Build internal ignore patterns using the vault's actual config directory
-		const configDir = this.plugin.app?.vault?.configDir ?? '.obsidian';
+		const configDir = this.plugin.app.vault.configDir;
 		const c = configDir.replace(/\./g, '\\.').replace(/\//g, '\\/');
 		const defaultInternalPatterns = [
 			`${c}\\/workspace`,
@@ -905,7 +905,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 			.addButton((button) => {
 				button
 					.setButtonText(this.plugin.i18n.t('settings.reset_sync_button'))
-					.setWarning();
+					.setDestructive();
 				
 				// Store reference and set initial disabled state after setting up the button
 				resetButton = button.buttonEl;
@@ -918,7 +918,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 						resetButton.textContent = this.plugin.i18n.t('settings.sync_resetting');
 						try {
 							await this.performReset();
-						} catch (error) {
+						} catch {
 							resetButton.disabled = false;
 							resetButton.textContent = this.plugin.i18n.t('settings.reset_sync_button');
 						}
@@ -975,7 +975,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 
 			// Step 9: Show success message and refresh display
 			new Notice(this.plugin.i18n.t('settings.reset_sync_success'));
-			this.display();
+			this.update();
 
 		} catch (error) {
 			console.error('Reset failed:', error);

@@ -5,7 +5,7 @@
  */
 
 import { ICHeader, ICHeaderLength } from "../types";
-import type { FilePath, LoadedEntry, MetaEntry, UXStat } from "../types";
+import type { LoadedEntry, MetaEntry, UXStat } from "../types";
 
 // ==================== Comparison Constants ====================
 

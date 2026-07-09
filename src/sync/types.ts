@@ -48,8 +48,6 @@ export function getDefaultInternalIgnorePatterns(configDir: string): string[] {
     ];
 }
 
-/** @deprecated Use getDefaultInternalIgnorePatterns() instead */
-export const DEFAULT_INTERNAL_IGNORE_PATTERNS = getDefaultInternalIgnorePatterns('.obsidian').join(",");
 
 /**
  * Hidden file sync settings interface

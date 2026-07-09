@@ -1,74 +1,85 @@
 // @ts-check
 /**
- * ESLint configuration using the official Obsidian plugin.
+ * ESLint configuration — follows the official obsidianmd eslint-plugin README.
  * https://github.com/obsidianmd/eslint-plugin
  */
+import tsparser from "@typescript-eslint/parser";
+import { defineConfig } from "eslint/config";
 import obsidianmd from "eslint-plugin-obsidianmd";
+import globals from "globals";
 
-export default [
-  // ── Ignore build output, tests, and third-party code ─────────────────────
+export default defineConfig([
+  // ── Ignore build output, tests, and vendored code ─────────────────────────
   {
     ignores: [
       "node_modules/**",
       "main.js",
       "**/*.test.ts",
       "src/sync/lib/**",
+      "src/i18n/locales/**",   // locale files contain .obsidian as display text
     ],
   },
 
-  // ── Point the TypeScript parser at our tsconfig (must come FIRST) ─────────
-  // This single block sets parserOptions for ALL subsequent configs.
-  {
-    files: ["src/**/*.ts"],
-    languageOptions: {
-      parserOptions: {
-        project: "./tsconfig.json",
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-
-  // ── Official Obsidian recommended config ──────────────────────────────────
-  // Bundles: @eslint/js, typescript-eslint recommended-type-checked
-  //          (no-unsafe-*, no-explicit-any, no-floating-promises, …),
-  //          Obsidian-specific rules, Microsoft SDL, eslint-plugin-import
+  // ── Official Obsidian recommended rules ───────────────────────────────────
+  // Bundles: @eslint/js, typescript-eslint recommended-type-checked,
+  // Obsidian-specific rules, Microsoft SDL, eslint-plugin-import …
   ...obsidianmd.configs.recommended,
 
-  // ── Project-specific overrides ────────────────────────────────────────────
+  // ── TypeScript parser + project-specific overrides ────────────────────────
   {
-    files: ["src/**/*.ts"],
+    files: ["**/*.ts"],
+    languageOptions: {
+      parser: tsparser,
+      parserOptions: { project: "./tsconfig.json" },
+      // Node.js globals for Desktop (Electron) + shared code
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
 
     rules: {
-      // Downgrade to warn for gradual adoption (don't block CI immediately)
+      // ── Downgrade unsafe-any to warn (gradual adoption) ───────────────────
       "@typescript-eslint/no-explicit-any":               "warn",
       "@typescript-eslint/no-unsafe-member-access":       "warn",
       "@typescript-eslint/no-unsafe-call":                "warn",
       "@typescript-eslint/no-unsafe-assignment":          "warn",
       "@typescript-eslint/no-unsafe-return":              "warn",
       "@typescript-eslint/no-unsafe-argument":            "warn",
-      "@typescript-eslint/no-unused-vars":                "warn",
-      "no-unused-vars":                                   "warn",
       "@typescript-eslint/no-floating-promises":          "warn",
+      // Unused variables — args:none avoids false positives on interface method param names
+      "@typescript-eslint/no-unused-vars":            ["warn", {
+        args: "none",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      }],
+      "no-unused-vars":                               ["warn", {
+        args: "none",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      }],
 
-      // ── Rules turned off — don't fit this codebase ───────────────────────
-      // console.* is used throughout for debugging
+      // ── Rules that don't fit this codebase (turn off) ────────────────────
+      // console.* used throughout for debug logging
       "no-console":                                       "off",
-      // async functions without await satisfy interface contracts
+      // async without await is used to satisfy interface contracts
       "@typescript-eslint/require-await":                 "off",
-      // String(e) in error-handling is intentional
+      // String(e) in catch blocks is intentional error formatting
       "@typescript-eslint/no-base-to-string":             "off",
-      // {} return type used for legacy compat
+      // {} return type used for legacy compatibility
       "@typescript-eslint/no-empty-object-type":          "off",
       // @ts-ignore used for untyped Obsidian internal APIs
       "@typescript-eslint/ban-ts-comment":                "off",
-      // Unnecessary assertions are low-priority cleanup
+      // Low-priority cleanup items
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
-      // Node.js http/https modules are intentionally used in the LLM client
+      // TypeScript handles undefined references - no-undef is redundant for .ts files
+      "no-undef":                                         "off",
+      // Node.js http/https modules are intentionally used in LLM streaming client
       "obsidianmd/no-nodejs-modules":                     "off",
-      // Logger() calls pass unknown values into template literals
+      // Logger() passes unknown values into template literals
       "@typescript-eslint/restrict-template-expressions": "off",
-      // void operator used to discard promises deliberately
+      // void used to discard promises intentionally
       "no-void":                                          "off",
     },
   },
-];
+]);

@@ -13,7 +13,7 @@
 
 import { PersistentMap } from "octagonal-wheels/dataobject/PersistentMap";
 import { Logger, LOG_LEVEL_VERBOSE } from "@mdfriday/sync-core/core/common/logger";
-import type { AnyEntry, MetaEntry } from "@mdfriday/sync-core/core/common/types";
+import type { AnyEntry } from "@mdfriday/sync-core/core/common/types";
 
 /**
  * Persistent storage for mtime pairs
@@ -189,10 +189,9 @@ export function isMarkedAsSameChanges(
  * @returns Number of records cleaned up
  */
 export async function cleanupSameChangePairs(
-    existingPaths: Set<string>
+    _existingPaths: Set<string>
 ): Promise<number> {
     try {
-        const store = getSameChangePairs();
         // Note: PersistentMap doesn't expose keys() method in the same way
         // This is a simplified version - full implementation would need
         // to iterate through the internal storage
@@ -204,8 +203,6 @@ export async function cleanupSameChangePairs(
     }
 }
 
-// Symbol constants (matching LiveSync's implementation)
-export const BASE_IS_NEW = Symbol("base");
-export const TARGET_IS_NEW = Symbol("target");
+/** Sentinel value returned when two mtimes are marked as representing identical content */
 export const EVEN = Symbol("even");
 

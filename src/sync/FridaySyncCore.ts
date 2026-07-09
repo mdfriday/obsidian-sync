@@ -59,7 +59,7 @@ import type { SyncStatusDisplay } from "./SyncStatusDisplay";
 
 // Import HiddenFileSync module
 import {FridayHiddenFileSync} from "@mdfriday/sync-core/features/HiddenFileSync";
-import {DEFAULT_INTERNAL_IGNORE_PATTERNS} from "./types";
+import {getDefaultInternalIgnorePatterns} from "./types";
 
 // Import network error handling modules
 import {FridayNetworkEvents} from "@mdfriday/sync-core/features/NetworkEvents";
@@ -117,7 +117,7 @@ class SimpleKeyValueDB implements KeyValueDatabase {
     }
 
     async get<T>(key: string): Promise<T | undefined> {
-        const value = localStorage.getItem(this.getKey(key));
+        const value = window.localStorage.getItem(this.getKey(key));
         if (value === null) return undefined;
         try {
             return JSON.parse(value) as T;
@@ -127,17 +127,17 @@ class SimpleKeyValueDB implements KeyValueDatabase {
     }
 
     async set<T>(key: string, value: T): Promise<void> {
-        localStorage.setItem(this.getKey(key), JSON.stringify(value));
+        window.localStorage.setItem(this.getKey(key), JSON.stringify(value));
     }
 
     async delete(key: string): Promise<void> {
-        localStorage.removeItem(this.getKey(key));
+        window.localStorage.removeItem(this.getKey(key));
     }
 
     async keys(): Promise<string[]> {
         const result: string[] = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
+        for (let i = 0; i < window.localStorage.length; i++) {
+            const key = window.localStorage.key(i);
             if (key?.startsWith(this.prefix)) {
                 result.push(key.substring(this.prefix.length + 1));
             }
@@ -147,13 +147,13 @@ class SimpleKeyValueDB implements KeyValueDatabase {
 
     destroy(): void {
         const keysToRemove: string[] = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
+        for (let i = 0; i < window.localStorage.length; i++) {
+            const key = window.localStorage.key(i);
             if (key?.startsWith(this.prefix)) {
                 keysToRemove.push(key);
             }
         }
-        keysToRemove.forEach(key => localStorage.removeItem(key));
+        keysToRemove.forEach(key => window.localStorage.removeItem(key));
     }
 }
 
@@ -205,7 +205,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
     private _managers: LiveSyncManagers | null = null;
     private _services: FridayServiceHub;
     private _kvDB: KeyValueDatabase;
-    private _simpleStore: SimpleStore<any>;
+    private _simpleStore: SimpleStore<unknown>;
 
     // Status tracking
     private statusCallback: SyncStatusCallback | null = null;
@@ -379,7 +379,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         return this._kvDB;
     }
 
-    get simpleStore(): SimpleStore<any> {
+    get simpleStore(): SimpleStore<unknown> {
         return this._simpleStore;
     }
 
@@ -580,8 +580,8 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 syncInternalFilesBeforeReplication: config.syncInternalFilesBeforeReplication ?? true,
                 syncInternalFilesInterval: config.syncInternalFilesInterval ?? 60,
                 syncInternalFilesIgnorePatterns: config.syncInternalFilesIgnorePatterns 
-                    ? `${DEFAULT_INTERNAL_IGNORE_PATTERNS},${config.syncInternalFilesIgnorePatterns}`
-                    : DEFAULT_INTERNAL_IGNORE_PATTERNS,
+                    ? `${getDefaultInternalIgnorePatterns(this.app.vault.configDir).join(",")},${config.syncInternalFilesIgnorePatterns}`
+                    : getDefaultInternalIgnorePatterns(this.app.vault.configDir).join(","),
                 syncInternalFilesTargetPatterns: config.syncInternalFilesTargetPatterns ?? "",
                 watchInternalFileChanges: config.watchInternalFileChanges ?? true,
             };
@@ -1557,7 +1557,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                         if (!existingDir) {
                             try {
                                 await vault.createFolder(dirPath);
-                            } catch (e) {
+                            } catch {
                                 // Folder might already exist
                             }
                         }
@@ -1567,11 +1567,11 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                     // Use isTextDocument to determine if content is text or binary (same as livesync)
                     const isText = isTextDocument(fullEntry);
                     const existingFile = vault.getAbstractFileByPath(path);
-                    if (existingFile) {
+                    if (existingFile instanceof TFile) {
                         if (isText) {
-                            await vault.modify(existingFile as TFile, content as string);
+                            await vault.modify(existingFile, content as string);
                         } else {
-                            await vault.modifyBinary(existingFile as TFile, content as ArrayBuffer);
+                            await vault.modifyBinary(existingFile, content as ArrayBuffer);
                         }
                         updated++;
                     } else {

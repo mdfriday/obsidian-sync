@@ -520,7 +520,7 @@ export interface TranslationNamespace {
  */
 export type TranslationFunction = (
 	key: string,
-	params?: Record<string, any>
+	params?: Record<string, unknown>
 ) => string;
 
 /**

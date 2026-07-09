@@ -13,7 +13,7 @@ interface FetchHandlerRequest {
 }
 
 import { Platform, TFile, TFolder, requestUrl } from "obsidian";
-import { ServiceHub, type ServiceInstances } from "@mdfriday/sync-core/core/services/ServiceHub";
+import { ServiceHub } from "@mdfriday/sync-core/core/services/ServiceHub";
 import {
     type APIService,
     type PathService,
@@ -36,7 +36,7 @@ import {
 import { ServiceBackend } from "@mdfriday/sync-core/core/services/ServiceBackend";
 import type { FridaySyncCore } from "./FridaySyncCore";
 import type { FetchHttpHandler } from "@smithy/fetch-http-handler";
-import { Logger, type LOG_LEVEL, LOG_LEVEL_INFO, LOG_LEVEL_NOTICE, LOG_LEVEL_VERBOSE } from "octagonal-wheels/common/logger";
+import { Logger, type LOG_LEVEL, LOG_LEVEL_INFO, LOG_LEVEL_VERBOSE } from "octagonal-wheels/common/logger";
 import type {
     DocumentID,
     EntryDoc,
@@ -181,25 +181,28 @@ class FridayDatabaseService extends ServiceBase implements DatabaseService {
     }
 
     openSimpleStore<T>(kind: string): SimpleStore<T> {
-        // Return a simple localStorage-based store
+        // Use Obsidian's vault-isolated local storage API
+        const app = this.core.app;
+        const prefix = `friday-${kind}-`;
         return {
             get: async (key: string) => {
-                const value = localStorage.getItem(`friday-${kind}-${key}`);
-                return value ? JSON.parse(value) : undefined;
+                const value = app.loadLocalStorage(`${prefix}${key}`);
+                return value !== undefined ? value as T : undefined;
             },
             set: async (key: string, value: T) => {
-                localStorage.setItem(`friday-${kind}-${key}`, JSON.stringify(value));
+                app.saveLocalStorage(`${prefix}${key}`, value);
             },
             delete: async (key: string) => {
-                localStorage.removeItem(`friday-${kind}-${key}`);
+                app.saveLocalStorage(`${prefix}${key}`, undefined);
             },
             keys: async () => {
-                const prefix = `friday-${kind}-`;
+                // app.loadLocalStorage has no keys() API — fall back to window.localStorage
+                // for the keys enumeration only (read-only, no writes)
                 const keys: string[] = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key?.startsWith(prefix)) {
-                        keys.push(key.substring(prefix.length));
+                for (let i = 0; i < window.localStorage.length; i++) {
+                    const k = window.localStorage.key(i);
+                    if (k?.includes(prefix)) {
+                        keys.push(k.substring(k.indexOf(prefix) + prefix.length));
                     }
                 }
                 return keys;
@@ -506,11 +509,15 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
                 }
                 
                 if (existingFile) {
-                    // Modify existing file
+                    // Modify existing file — guard with instanceof before calling vault.modify
+                    if (!(existingFile instanceof TFile)) {
+                        console.error(`[Friday Sync] Expected TFile but got different type for path: ${path}`);
+                        return false;
+                    }
                     if (isText) {
-                        await vault.modify(existingFile as TFile, content as string);
+                        await vault.modify(existingFile, content as string);
                     } else {
-                        await vault.modifyBinary(existingFile as TFile, content as ArrayBuffer);
+                        await vault.modifyBinary(existingFile, content as ArrayBuffer);
                     }
                 } else {
                     // Create new file
@@ -577,7 +584,6 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
      */
     private async deleteVaultItem(file: TFile | TFolder): Promise<void> {
         const settings = this.core.settings;
-        const vault = this.core.app.vault;
         
         // Store parent folder reference before deletion
         const dir = file.parent;

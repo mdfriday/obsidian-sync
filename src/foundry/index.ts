@@ -90,9 +90,6 @@ function licenseToPassword(key: string): string {
 // Node.js file helpers  (fs / path are external — not bundled)
 // ─────────────────────────────────────────────────────────────────────────────
 
-function mdfridayDir(workspacePath: string): string {
-  return nodePath.join(workspacePath, MDFRIDAY_DIR);
-}
 
 async function readJsonFile<T>(filePath: string): Promise<T | null> {
   try {

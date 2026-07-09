@@ -4328,7 +4328,7 @@ var init_mobile = __esm({
         this.vault = vault;
         this.pluginDir = pluginDir;
       }
-      async getStatus(workspacePath) {
+      async getStatus(_workspacePath) {
         var _a5, _b2;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
@@ -4356,7 +4356,7 @@ var init_mobile = __esm({
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
-      async getConfig(workspacePath) {
+      async getConfig(_workspacePath) {
         var _a5, _b2;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
@@ -4460,7 +4460,7 @@ var init_mobile = __esm({
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
-      async getLicenseUsage(workspacePath) {
+      async getLicenseUsage(_workspacePath) {
         var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
@@ -4496,7 +4496,7 @@ var init_mobile = __esm({
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
-      async hasActiveLicense(workspacePath) {
+      async hasActiveLicense(_workspacePath) {
         try {
           const ud = await loadUserData2(this.vault, this.pluginDir);
           return !!(ud == null ? void 0 : ud.license) && Date.now() < (ud.license.expiresAt || 0);
@@ -4510,7 +4510,7 @@ var init_mobile = __esm({
         this.vault = vault;
         this.pluginDir = pluginDir;
       }
-      async workspaceExists(workspacePath) {
+      async workspaceExists(_workspacePath) {
         try {
           const exists = await this.vault.adapter.exists(makeWorkspaceMarker(this.pluginDir));
           return { success: true, data: exists };
@@ -4561,7 +4561,7 @@ var init_mobile = __esm({
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
-      async list(workspacePath) {
+      async list(_workspacePath) {
         try {
           return { success: true, data: { config: await this.load(), scope: "global" } };
         } catch (e2) {
@@ -19856,7 +19856,6 @@ function getDefaultInternalIgnorePatterns(configDir) {
     // MDFriday plugin directory (device-specific)
   ];
 }
-var DEFAULT_INTERNAL_IGNORE_PATTERNS = getDefaultInternalIgnorePatterns(".obsidian").join(",");
 
 // src/sync/utils/hiddenFileUtils.ts
 function isInternalMetadata(id) {
@@ -20082,8 +20081,6 @@ function isMarkedAsSameChanges(file, mtimes) {
   }
   return void 0;
 }
-var BASE_IS_NEW = Symbol("base");
-var TARGET_IS_NEW = Symbol("target");
 var EVEN = Symbol("even");
 
 // src/sync/FridayStorageEventManager.ts
@@ -20476,8 +20473,9 @@ var FridayStorageEventManager = class {
    */
   async storeFileToDB(event, force = false) {
     const path2 = event.path;
-    const file = event.file || this.plugin.app.vault.getAbstractFileByPath(path2);
-    if (!file || !(file instanceof import_obsidian2.TFile)) {
+    const abstractFile = event.file || this.plugin.app.vault.getAbstractFileByPath(path2);
+    const file = abstractFile instanceof import_obsidian2.TFile ? abstractFile : null;
+    if (!file) {
       Logger(`File not found for storage: ${path2}`, LOG_LEVEL_VERBOSE);
       return false;
     }
@@ -31853,24 +31851,25 @@ var FridayDatabaseService = class extends ServiceBase {
     });
   }
   openSimpleStore(kind) {
+    const app = this.core.app;
+    const prefix = `friday-${kind}-`;
     return {
       get: async (key2) => {
-        const value = localStorage.getItem(`friday-${kind}-${key2}`);
-        return value ? JSON.parse(value) : void 0;
+        const value = app.loadLocalStorage(`${prefix}${key2}`);
+        return value !== void 0 ? value : void 0;
       },
       set: async (key2, value) => {
-        localStorage.setItem(`friday-${kind}-${key2}`, JSON.stringify(value));
+        app.saveLocalStorage(`${prefix}${key2}`, value);
       },
       delete: async (key2) => {
-        localStorage.removeItem(`friday-${kind}-${key2}`);
+        app.saveLocalStorage(`${prefix}${key2}`, void 0);
       },
       keys: async () => {
-        const prefix = `friday-${kind}-`;
         const keys2 = [];
-        for (let i = 0; i < localStorage.length; i++) {
-          const key2 = localStorage.key(i);
-          if (key2 == null ? void 0 : key2.startsWith(prefix)) {
-            keys2.push(key2.substring(prefix.length));
+        for (let i = 0; i < window.localStorage.length; i++) {
+          const k = window.localStorage.key(i);
+          if (k == null ? void 0 : k.includes(prefix)) {
+            keys2.push(k.substring(k.indexOf(prefix) + prefix.length));
           }
         }
         return keys2;
@@ -32058,6 +32057,10 @@ var FridayReplicationService = class extends ServiceBase {
           }
         }
         if (existingFile) {
+          if (!(existingFile instanceof import_obsidian3.TFile)) {
+            console.error(`[Friday Sync] Expected TFile but got different type for path: ${path2}`);
+            return false;
+          }
           if (isText) {
             await vault.modify(existingFile, content);
           } else {
@@ -32111,7 +32114,6 @@ var FridayReplicationService = class extends ServiceBase {
    */
   async deleteVaultItem(file) {
     const settings = this.core.settings;
-    const vault = this.core.app.vault;
     const dir = file.parent;
     const fileManager = this.core.app.fileManager;
     await fileManager.trashFile(file);
@@ -33647,11 +33649,11 @@ function getDefaultInternalIgnorePatterns2(configDir) {
     // MDFriday plugin directory (device-specific)
   ];
 }
-var DEFAULT_INTERNAL_IGNORE_PATTERNS2 = getDefaultInternalIgnorePatterns2(".obsidian").join(",");
+var DEFAULT_INTERNAL_IGNORE_PATTERNS = getDefaultInternalIgnorePatterns2(".obsidian").join(",");
 
 // node_modules/@mdfriday/sync-core/src/features/HiddenFileSync/hiddenFileUtils.ts
-var TARGET_IS_NEW3 = 1;
-var BASE_IS_NEW3 = -1;
+var TARGET_IS_NEW = 1;
+var BASE_IS_NEW = -1;
 var EVEN2 = 0;
 function isInternalMetadata2(id) {
   return id.startsWith(ICHeader2);
@@ -33666,9 +33668,9 @@ function compareMTime(baseMTime, targetMTime) {
   const tolerance = 2e3;
   const diff = targetMTime - baseMTime;
   if (diff > tolerance) {
-    return TARGET_IS_NEW3;
+    return TARGET_IS_NEW;
   } else if (diff < -tolerance) {
-    return BASE_IS_NEW3;
+    return BASE_IS_NEW;
   }
   return EVEN2;
 }
@@ -33783,7 +33785,7 @@ var FridayHiddenFileSync = class {
     const s = this.core.getSettings();
     return {
       syncInternalFiles: (_a5 = s.syncInternalFiles) != null ? _a5 : true,
-      syncInternalFilesIgnorePatterns: s.syncInternalFilesIgnorePatterns ? `${DEFAULT_INTERNAL_IGNORE_PATTERNS2},${s.syncInternalFilesIgnorePatterns}` : DEFAULT_INTERNAL_IGNORE_PATTERNS2,
+      syncInternalFilesIgnorePatterns: s.syncInternalFilesIgnorePatterns ? `${DEFAULT_INTERNAL_IGNORE_PATTERNS},${s.syncInternalFilesIgnorePatterns}` : DEFAULT_INTERNAL_IGNORE_PATTERNS,
       syncInternalFilesTargetPatterns: (_b2 = s.syncInternalFilesTargetPatterns) != null ? _b2 : "",
       syncInternalFileOverwritePatterns: (_c = s.syncInternalFileOverwritePatterns) != null ? _c : "",
       watchInternalFileChanges: (_d = s.watchInternalFileChanges) != null ? _d : true,
@@ -34242,7 +34244,7 @@ var FridayHiddenFileSync = class {
           const storageMTimeActual = (_b2 = storageStat == null ? void 0 : storageStat.mtime) != null ? _b2 : 0;
           const storageMTime = storageMTimeActual === 0 ? this.getLastProcessedFileMTime(storageFilePath) : storageMTimeActual;
           const diff = compareMTime(storageMTime, dbMTime);
-          if (diff !== TARGET_IS_NEW3) {
+          if (diff !== TARGET_IS_NEW) {
             this.updateLastProcessedDatabase(storageFilePath, metaOnDB);
             if (storageStat) this.updateLastProcessedFile(storageFilePath, {
               mtime: storageStat.mtime,
@@ -35429,7 +35431,7 @@ var SimpleKeyValueDB = class {
     return `${this.prefix}-${key2}`;
   }
   async get(key2) {
-    const value = localStorage.getItem(this.getKey(key2));
+    const value = window.localStorage.getItem(this.getKey(key2));
     if (value === null) return void 0;
     try {
       return JSON.parse(value);
@@ -35438,15 +35440,15 @@ var SimpleKeyValueDB = class {
     }
   }
   async set(key2, value) {
-    localStorage.setItem(this.getKey(key2), JSON.stringify(value));
+    window.localStorage.setItem(this.getKey(key2), JSON.stringify(value));
   }
   async delete(key2) {
-    localStorage.removeItem(this.getKey(key2));
+    window.localStorage.removeItem(this.getKey(key2));
   }
   async keys() {
     const result = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key2 = localStorage.key(i);
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key2 = window.localStorage.key(i);
       if (key2 == null ? void 0 : key2.startsWith(this.prefix)) {
         result.push(key2.substring(this.prefix.length + 1));
       }
@@ -35455,13 +35457,13 @@ var SimpleKeyValueDB = class {
   }
   destroy() {
     const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key2 = localStorage.key(i);
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key2 = window.localStorage.key(i);
       if (key2 == null ? void 0 : key2.startsWith(this.prefix)) {
         keysToRemove.push(key2);
       }
     }
-    keysToRemove.forEach((key2) => localStorage.removeItem(key2));
+    keysToRemove.forEach((key2) => window.localStorage.removeItem(key2));
   }
 };
 var FridaySimpleStore = class {
@@ -35621,7 +35623,6 @@ var _FridaySyncCore = class _FridaySyncCore {
   get kvDB() {
     return this._kvDB;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get simpleStore() {
     return this._simpleStore;
   }
@@ -35775,7 +35776,7 @@ var _FridaySyncCore = class _FridaySyncCore {
         syncInternalFiles: (_e = config.syncInternalFiles) != null ? _e : true,
         syncInternalFilesBeforeReplication: (_f = config.syncInternalFilesBeforeReplication) != null ? _f : true,
         syncInternalFilesInterval: (_g = config.syncInternalFilesInterval) != null ? _g : 60,
-        syncInternalFilesIgnorePatterns: config.syncInternalFilesIgnorePatterns ? `${DEFAULT_INTERNAL_IGNORE_PATTERNS},${config.syncInternalFilesIgnorePatterns}` : DEFAULT_INTERNAL_IGNORE_PATTERNS,
+        syncInternalFilesIgnorePatterns: config.syncInternalFilesIgnorePatterns ? `${getDefaultInternalIgnorePatterns(this.app.vault.configDir).join(",")},${config.syncInternalFilesIgnorePatterns}` : getDefaultInternalIgnorePatterns(this.app.vault.configDir).join(","),
         syncInternalFilesTargetPatterns: (_h = config.syncInternalFilesTargetPatterns) != null ? _h : "",
         watchInternalFileChanges: (_i = config.watchInternalFileChanges) != null ? _i : true
       };
@@ -36496,7 +36497,7 @@ var _FridaySyncCore = class _FridaySyncCore {
           }
           const isText = isTextDocument(fullEntry);
           const existingFile = vault.getAbstractFileByPath(path2);
-          if (existingFile) {
+          if (existingFile instanceof import_obsidian4.TFile) {
             if (isText) {
               await vault.modify(existingFile, content);
             } else {
@@ -38087,7 +38088,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
             await this.plugin.refreshLicenseUsage();
             await this.plugin.refreshSubdomainInfo();
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.license_info_refreshed") || "License info updated");
-            this.display();
+            this.update();
           } catch (error) {
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.refresh_failed") || "Failed to refresh license info");
             console.error("Failed to refresh license info:", error);
@@ -38146,7 +38147,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
           try {
             await this.activateLicense(licenseKey);
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.license_activated_success"));
-            this.display();
+            this.update();
           } catch (error) {
             statusEl.setText(this.plugin.i18n.t("settings.license_activation_failed"));
             statusEl.addClass("friday-license-error");
@@ -38204,11 +38205,11 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
                 await this.activateLicense(licenseKey);
                 new import_obsidian7.Notice(this.plugin.i18n.t("settings.license_activated_success"));
                 trialEmailEl.value = "";
-                this.display();
+                this.update();
               } catch (activationError) {
                 console.error("Auto-activation failed:", activationError);
                 new import_obsidian7.Notice(this.plugin.i18n.t("settings.trial_request_success"));
-                this.display();
+                this.update();
               }
             } else {
               throw new Error(result.error || "Invalid trial response");
@@ -38260,7 +38261,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
           try {
             await this.plugin.initializeSyncService();
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_enabled_success") || "Sync enabled");
-            this.display();
+            this.update();
           } catch (error) {
             console.error("Failed to initialize sync service:", error);
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_enable_failed") || "Failed to enable sync");
@@ -38275,7 +38276,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
               await this.plugin.syncService.close();
             }
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_disabled_success") || "Sync disabled");
-            this.display();
+            this.update();
           } catch (error) {
             console.error("Failed to close sync service:", error);
           }
@@ -38352,8 +38353,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
             }
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_upload_success"));
             this.firstTimeSync = false;
-            this.display();
-          } catch (error) {
+            this.update();
+          } catch (e2) {
             new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_operation_failed"));
             button.setButtonText(this.plugin.i18n.t("settings.upload_local_to_cloud"));
             button.setDisabled(false);
@@ -38379,7 +38380,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
             if (this.plugin.syncService.isInitialized) {
               await this.plugin.syncService.fetchFromServer();
               new import_obsidian7.Notice(this.plugin.i18n.t("settings.sync_download_success"));
-              this.display();
+              this.update();
             } else {
               throw new Error("Sync service initialization failed");
             }
@@ -38521,10 +38522,10 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
    * Note: ignorePatterns is separate and only for user-defined patterns (folders, custom rules)
    */
   async updateSelectiveSyncSettings() {
-    var _a5, _b2, _c, _d, _e, _f, _g;
+    var _a5, _b2, _c, _d;
     const selectiveSync = this.plugin.settings.syncConfig.selectiveSync;
     if (!selectiveSync) return;
-    const configDir = (_c = (_b2 = (_a5 = this.plugin.app) == null ? void 0 : _a5.vault) == null ? void 0 : _b2.configDir) != null ? _c : ".obsidian";
+    const configDir = this.plugin.app.vault.configDir;
     const c = configDir.replace(/\./g, "\\.").replace(/\//g, "\\/");
     const defaultInternalPatterns = [
       `${c}\\/workspace`,
@@ -38537,18 +38538,18 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
       "plugins\\/mdfriday"
     ];
     let internalPatterns = [...defaultInternalPatterns];
-    if (!((_d = selectiveSync.syncThemes) != null ? _d : true)) {
+    if (!((_a5 = selectiveSync.syncThemes) != null ? _a5 : true)) {
       internalPatterns.push(`${c}\\/themes`);
     }
-    if (!((_e = selectiveSync.syncSnippets) != null ? _e : true)) {
+    if (!((_b2 = selectiveSync.syncSnippets) != null ? _b2 : true)) {
       internalPatterns.push(`${c}\\/snippets`);
     }
-    if (!((_f = selectiveSync.syncPlugins) != null ? _f : true)) {
+    if (!((_c = selectiveSync.syncPlugins) != null ? _c : true)) {
       internalPatterns.push(`${c}\\/plugins`);
     }
     this.plugin.settings.syncConfig.syncInternalFilesIgnorePatterns = internalPatterns.join(", ");
     await this.plugin.saveSettings();
-    if ((_g = this.plugin.syncService) == null ? void 0 : _g.isInitialized) {
+    if ((_d = this.plugin.syncService) == null ? void 0 : _d.isInitialized) {
       this.plugin.syncService.updateSelectiveSync({
         syncImages: selectiveSync.syncImages,
         syncAudio: selectiveSync.syncAudio,
@@ -38575,7 +38576,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
         }
       });
     }).addButton((button) => {
-      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setWarning();
+      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setDestructive();
       resetButton = button.buttonEl;
       resetButton.disabled = true;
       resetButton.addEventListener("click", () => {
@@ -38585,7 +38586,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
             resetButton.textContent = this.plugin.i18n.t("settings.sync_resetting");
             try {
               await this.performReset();
-            } catch (error) {
+            } catch (e2) {
               resetButton.disabled = false;
               resetButton.textContent = this.plugin.i18n.t("settings.reset_sync_button");
             }
@@ -38622,7 +38623,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
       await this.plugin.initializeSyncService();
       this.firstTimeSync = true;
       new import_obsidian7.Notice(this.plugin.i18n.t("settings.reset_sync_success"));
-      this.display();
+      this.update();
     } catch (error) {
       console.error("Reset failed:", error);
       new import_obsidian7.Notice(this.plugin.i18n.t("settings.reset_sync_failed", {
@@ -39658,14 +39659,14 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
   clearSyncLocalStorage() {
     try {
       const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key2 = localStorage.key(i);
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const key2 = window.localStorage.key(i);
         if (key2 && (key2.startsWith("friday-kv-") || key2.startsWith("friday-friday-sync-salt-"))) {
           keysToRemove.push(key2);
         }
       }
       keysToRemove.forEach((key2) => {
-        localStorage.removeItem(key2);
+        window.localStorage.removeItem(key2);
       });
     } catch (error) {
       console.warn("[MDFriday Sync] Error clearing sync localStorage:", error);
@@ -39773,7 +39774,7 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
    * Identical to the original Friday plugin implementation.
    */
   initializeDefaultIgnorePatterns() {
-    var _a5, _b2, _c, _d, _e, _f;
+    var _a5, _b2, _c;
     if (!this.settings.syncConfig.selectiveSync) {
       this.settings.syncConfig.selectiveSync = {
         syncImages: false,
@@ -39789,7 +39790,7 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
       this.settings.syncConfig.ignorePatterns = [];
     }
     const selectiveSync = this.settings.syncConfig.selectiveSync;
-    const configDir = (_c = (_b2 = (_a5 = this.app) == null ? void 0 : _a5.vault) == null ? void 0 : _b2.configDir) != null ? _c : ".obsidian";
+    const configDir = this.app.vault.configDir;
     const c = configDir.replace(/\./g, "\\.").replace(/\//g, "\\/");
     const defaultInternalPatterns = [
       `${c}\\/workspace`,
@@ -39802,13 +39803,13 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
       "plugins\\/mdfriday-sync"
     ];
     let internalPatterns = [...defaultInternalPatterns];
-    if (!((_d = selectiveSync.syncThemes) != null ? _d : true)) {
+    if (!((_a5 = selectiveSync.syncThemes) != null ? _a5 : true)) {
       internalPatterns.push(`${c}\\/themes`);
     }
-    if (!((_e = selectiveSync.syncSnippets) != null ? _e : true)) {
+    if (!((_b2 = selectiveSync.syncSnippets) != null ? _b2 : true)) {
       internalPatterns.push(`${c}\\/snippets`);
     }
-    if (!((_f = selectiveSync.syncPlugins) != null ? _f : true)) {
+    if (!((_c = selectiveSync.syncPlugins) != null ? _c : true)) {
       internalPatterns.push(`${c}\\/plugins`);
     }
     if (!this.settings.syncConfig.syncInternalFilesIgnorePatterns) {

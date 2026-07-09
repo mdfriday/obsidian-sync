@@ -17,13 +17,10 @@ import { Logger } from "@mdfriday/sync-core/core/common/logger";
 import { 
     LOG_LEVEL_INFO, 
     LOG_LEVEL_VERBOSE, 
-    LOG_LEVEL_NOTICE,
     LOG_LEVEL_DEBUG,
     type FilePath,
     type FilePathWithPrefix,
-    type DocumentID,
     type SavingEntry,
-    type LoadedEntry,
 } from "@mdfriday/sync-core/core/common/types";
 import { shouldBeIgnored } from "@mdfriday/sync-core/core/string_and_binary/path";
 import type { FridaySyncCore } from "./FridaySyncCore";
@@ -34,17 +31,13 @@ import {
     determineTypeFromBlob,
     isDocContentSame,
     getDocDataAsArray,
-    readAsBlob,
 } from "@mdfriday/sync-core/core/common/utils";
 import {
     isMarkedAsSameChanges,
     markChangesAreSame,
     unmarkChanges,
-    BASE_IS_NEW,
-    TARGET_IS_NEW,
     EVEN,
 } from "./utils/sameChangePairs";
-import type { MetaEntry } from "@mdfriday/sync-core/core/common/types";
 
 export type FileEventType = "CREATE" | "CHANGED" | "DELETE" | "RENAME";
 
@@ -587,9 +580,10 @@ export class FridayStorageEventManager {
      */
     private async storeFileToDB(event: FileEvent, force: boolean = false): Promise<boolean> {
         const path = event.path;
-        const file = event.file || this.plugin.app.vault.getAbstractFileByPath(path) as TFile;
-        
-        if (!file || !(file instanceof TFile)) {
+        const abstractFile = event.file || this.plugin.app.vault.getAbstractFileByPath(path);
+        const file = abstractFile instanceof TFile ? abstractFile : null;
+
+        if (!file) {
             Logger(`File not found for storage: ${path}`, LOG_LEVEL_VERBOSE);
             return false;
         }

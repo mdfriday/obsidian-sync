@@ -24,13 +24,6 @@ import type {
   ObsidianLicenseService,
   ObsidianGlobalConfigService,
   ObsidianWorkspaceService,
-  WorkspaceRepository,
-  FileSystemRepository,
-  WorkspaceMetadataData,
-  ProjectRegistry,
-  FolderScanResult,
-  FolderStructure,
-  SymlinkResult,
   RawDeviceEntry,
   RawIpEntry,
   ObsidianEnvironmentConfig,
@@ -283,7 +276,7 @@ function buildLicenseInfoFromStored(stored: StoredLicenseShape): ObsidianLicense
 class MobileAuthService implements ObsidianAuthService {
   constructor(private http: IdentityHttpClient, private vault: Vault, private pluginDir: string) {}
 
-  async getStatus(workspacePath: string): Promise<ObsidianAuthResult<ObsidianAuthStatus>> {
+  async getStatus(_workspacePath: string): Promise<ObsidianAuthResult<ObsidianAuthStatus>> {
     try {
       const ud = await loadUserData(this.vault, this.pluginDir);
       const isAuthenticated = !!(ud?.token && ud?.email);
@@ -304,7 +297,7 @@ class MobileAuthService implements ObsidianAuthService {
     }
   }
 
-  async getConfig(workspacePath: string): Promise<ObsidianAuthResult<ObsidianServerConfig>> {
+  async getConfig(_workspacePath: string): Promise<ObsidianAuthResult<ObsidianServerConfig>> {
     try {
       const ud = await loadUserData(this.vault, this.pluginDir);
       return { success: true, data: { apiUrl: ud?.serverConfig?.apiUrl, websiteUrl: ud?.serverConfig?.websiteUrl } };
@@ -411,7 +404,7 @@ class MobileLicenseService implements ObsidianLicenseService {
     }
   }
 
-  async getLicenseUsage(workspacePath: string): Promise<ObsidianLicenseResult<ObsidianLicenseUsage>> {
+  async getLicenseUsage(_workspacePath: string): Promise<ObsidianLicenseResult<ObsidianLicenseUsage>> {
     try {
       const ud = await loadUserData(this.vault, this.pluginDir);
       if (!ud?.token || !ud?.license?.key) throw new Error('Not authenticated');
@@ -446,7 +439,7 @@ class MobileLicenseService implements ObsidianLicenseService {
     }
   }
 
-  async hasActiveLicense(workspacePath: string): Promise<boolean> {
+  async hasActiveLicense(_workspacePath: string): Promise<boolean> {
     try {
       const ud = await loadUserData(this.vault, this.pluginDir);
       return !!(ud?.license) && Date.now() < (ud.license.expiresAt || 0);
@@ -461,7 +454,7 @@ class MobileLicenseService implements ObsidianLicenseService {
 class MobileWorkspaceService implements ObsidianWorkspaceService {
   constructor(private vault: Vault, private pluginDir: string) {}
 
-  async workspaceExists(workspacePath: string): Promise<ObsidianWorkspaceResult<boolean>> {
+  async workspaceExists(_workspacePath: string): Promise<ObsidianWorkspaceResult<boolean>> {
     try {
       const exists = await this.vault.adapter.exists(makeWorkspaceMarker(this.pluginDir));
       return { success: true, data: exists };
@@ -532,7 +525,7 @@ class MobileConfigService implements ObsidianGlobalConfigService {
     }
   }
 
-  async list(workspacePath: string): Promise<ObsidianConfigResult<ConfigListResult>> {
+  async list(_workspacePath: string): Promise<ObsidianConfigResult<ConfigListResult>> {
     try {
       return { success: true, data: { config: await this.load(), scope: 'global' } };
     } catch (e: unknown) {

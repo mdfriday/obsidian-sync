@@ -1,4 +1,4 @@
-import {FileSystemAdapter, Notice, Platform, Plugin} from 'obsidian';
+import {FileSystemAdapter, Platform, Plugin} from 'obsidian';
 import * as nodePath from 'path';
 import './styles/license-settings.css';
 import './styles/live-sync.css';
@@ -421,14 +421,14 @@ export default class MdfridaySyncPlugin extends Plugin {
 	private clearSyncLocalStorage(): void {
 		try {
 			const keysToRemove: string[] = [];
-			for (let i = 0; i < localStorage.length; i++) {
-				const key = localStorage.key(i);
+			for (let i = 0; i < window.localStorage.length; i++) {
+				const key = window.localStorage.key(i);
 				if (key && (key.startsWith('friday-kv-') || key.startsWith('friday-friday-sync-salt-'))) {
 					keysToRemove.push(key);
 				}
 			}
 			keysToRemove.forEach(key => {
-				localStorage.removeItem(key);
+				window.localStorage.removeItem(key);
 			});
 		} catch (error) {
 			console.warn('[MDFriday Sync] Error clearing sync localStorage:', error);
@@ -575,7 +575,7 @@ export default class MdfridaySyncPlugin extends Plugin {
 
 		// Build internal ignore patterns using the vault's actual config directory
 		const selectiveSync = this.settings.syncConfig.selectiveSync;
-		const configDir = this.app?.vault?.configDir ?? '.obsidian';
+		const configDir = this.app.vault.configDir;
 		const c = configDir.replace(/\./g, '\\.').replace(/\//g, '\\/');
 		const defaultInternalPatterns = [
 			`${c}\\/workspace`,

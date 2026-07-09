@@ -116,7 +116,7 @@ export class I18nService implements II18nService {
 	/**
 	 * Translation function with parameter interpolation support
 	 */
-	t: TranslationFunction = (key: string, params?: Record<string, any>): string => {
+	t: TranslationFunction = (key: string, params?: Record<string, unknown>): string => {
 		if (!this.ready) {
 			console.warn('I18n service not ready, returning key:', key);
 			return key;
@@ -163,7 +163,7 @@ export class I18nService implements II18nService {
 	/**
 	 * Get translation for a specific language (useful for language switching preview)
 	 */
-	getTranslationForLanguage(key: string, language: LanguageCode, params?: Record<string, any>): string {
+	getTranslationForLanguage(key: string, language: LanguageCode, params?: Record<string, unknown>): string {
 		const translations = this.translations[language];
 		if (!translations) {
 			return key;
