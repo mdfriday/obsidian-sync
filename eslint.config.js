@@ -28,19 +28,6 @@ export default defineConfig([
   ...obsidianmd.configs.recommended,
 
 
-  // ── Desktop-only foundry module ───────────────────────────────────────────
-  // foundry/index.ts reads/writes plugin workspace config files via Node.js `fs`.
-  // The workspace lives inside the vault folder (at .obsidian/plugins/…/workspace/).
-  // The entire file is dynamically imported only inside Platform.isDesktop in main.ts,
-  // so it is never evaluated on mobile.
-  // Inline eslint-disable is blocked by eslint-comments/no-restricted-disable;
-  // config-level override is the only permitted suppression method.
-  {
-    files: ["src/foundry/index.ts"],
-    rules: {
-      "obsidianmd/no-nodejs-modules": "off",
-    },
-  },
 
   // ── TypeScript parser + project-specific overrides ────────────────────────
   {

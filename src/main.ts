@@ -1,5 +1,4 @@
 import {FileSystemAdapter, Platform, Plugin} from 'obsidian';
-import * as nodePath from 'path-browserify';
 import './styles/license-settings.css';
 import './styles/live-sync.css';
 import {I18nService} from "./i18n";
@@ -95,14 +94,13 @@ export default class MdfridaySyncPlugin extends Plugin {
 		await this.initCore();
 
 		// Platform-specific initialization
-		if (Platform.isDesktop) {
-			const adapter = this.app.vault.adapter;
-			if (adapter instanceof FileSystemAdapter) {
-				const basePath = adapter.getBasePath();
-				this.vaultBasePath = basePath;
-				this.absWorkspacePath = nodePath.join(basePath, this.pluginDir, 'workspace');
-			}
-			await this.initDesktopFeatures();
+                if (Platform.isDesktop) {
+                        const adapter = this.app.vault.adapter;
+                        if (adapter instanceof FileSystemAdapter) {
+                                this.vaultBasePath = adapter.getBasePath();
+                        }
+                        this.absWorkspacePath = joinVaultPath(this.pluginDir, 'workspace');
+                        await this.initDesktopFeatures();
 		} else {
 			this.absWorkspacePath = joinVaultPath(this.pluginDir, 'workspace');
 			const adapter = this.app.vault.adapter;
@@ -151,27 +149,27 @@ export default class MdfridaySyncPlugin extends Plugin {
 				createObsidianGlobalConfigService,
 			} = await import('./foundry/index');
 
-			const workspaceService = createObsidianWorkspaceService();
+                        const workspaceService = createObsidianWorkspaceService(this.app.vault, this.pluginDir);
 
-			const relativeWorkspacePath = joinVaultPath(this.pluginDir, 'workspace');
-			if (!await this.app.vault.adapter.exists(relativeWorkspacePath)) {
-				await this.app.vault.adapter.mkdir(relativeWorkspacePath);
-			}
+                        const relativeWorkspacePath = joinVaultPath(this.pluginDir, 'workspace');
+                        if (!await this.app.vault.adapter.exists(relativeWorkspacePath)) {
+                                await this.app.vault.adapter.mkdir(relativeWorkspacePath);
+                        }
 
-			const existsResult = await workspaceService.workspaceExists(this.absWorkspacePath);
-			if (existsResult.success && !existsResult.data) {
-				const initResult = await workspaceService.initWorkspace(this.absWorkspacePath);
-				if (!initResult.success) {
-					console.error('[MDFriday Sync] Failed to initialize workspace:', initResult.error);
-				}
-			} else if (!existsResult.success) {
-				console.error('[MDFriday Sync] Failed to check workspace existence:', existsResult.error);
-			}
+                        const existsResult = await workspaceService.workspaceExists(this.absWorkspacePath);
+                        if (existsResult.success && !existsResult.data) {
+                                const initResult = await workspaceService.initWorkspace(this.absWorkspacePath);
+                                if (!initResult.success) {
+                                        console.error('[MDFriday Sync] Failed to initialize workspace:', initResult.error);
+                                }
+                        } else if (!existsResult.success) {
+                                console.error('[MDFriday Sync] Failed to check workspace existence:', existsResult.error);
+                        }
 
-			const identityHttpClient = createObsidianIdentityHttpClient();
-			this.foundryAuthService    = createObsidianAuthService(identityHttpClient);
-			this.foundryLicenseService = createObsidianLicenseService(identityHttpClient);
-			this.foundryGlobalConfigService = createObsidianGlobalConfigService();
+                        const identityHttpClient = createObsidianIdentityHttpClient();
+                        this.foundryAuthService    = createObsidianAuthService(identityHttpClient, this.app.vault, this.pluginDir);
+                        this.foundryLicenseService = createObsidianLicenseService(identityHttpClient, this.app.vault, this.pluginDir);
+                        this.foundryGlobalConfigService = createObsidianGlobalConfigService(this.app.vault, this.pluginDir);
 
 			if (this.foundryLicenseService && this.foundryAuthService && this.foundryGlobalConfigService) {
 				this.licenseServiceManager = new LicenseServiceManager(

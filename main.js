@@ -47,413 +47,6 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 var __privateMethod = (obj, member, method) => (__accessCheck(obj, member, "access private method"), method);
 
-// node_modules/path-browserify/index.js
-var require_path_browserify = __commonJS({
-  "node_modules/path-browserify/index.js"(exports, module2) {
-    "use strict";
-    function assertPath(path2) {
-      if (typeof path2 !== "string") {
-        throw new TypeError("Path must be a string. Received " + JSON.stringify(path2));
-      }
-    }
-    function normalizeStringPosix(path2, allowAboveRoot) {
-      var res2 = "";
-      var lastSegmentLength = 0;
-      var lastSlash = -1;
-      var dots = 0;
-      var code;
-      for (var i = 0; i <= path2.length; ++i) {
-        if (i < path2.length)
-          code = path2.charCodeAt(i);
-        else if (code === 47)
-          break;
-        else
-          code = 47;
-        if (code === 47) {
-          if (lastSlash === i - 1 || dots === 1) {
-          } else if (lastSlash !== i - 1 && dots === 2) {
-            if (res2.length < 2 || lastSegmentLength !== 2 || res2.charCodeAt(res2.length - 1) !== 46 || res2.charCodeAt(res2.length - 2) !== 46) {
-              if (res2.length > 2) {
-                var lastSlashIndex = res2.lastIndexOf("/");
-                if (lastSlashIndex !== res2.length - 1) {
-                  if (lastSlashIndex === -1) {
-                    res2 = "";
-                    lastSegmentLength = 0;
-                  } else {
-                    res2 = res2.slice(0, lastSlashIndex);
-                    lastSegmentLength = res2.length - 1 - res2.lastIndexOf("/");
-                  }
-                  lastSlash = i;
-                  dots = 0;
-                  continue;
-                }
-              } else if (res2.length === 2 || res2.length === 1) {
-                res2 = "";
-                lastSegmentLength = 0;
-                lastSlash = i;
-                dots = 0;
-                continue;
-              }
-            }
-            if (allowAboveRoot) {
-              if (res2.length > 0)
-                res2 += "/..";
-              else
-                res2 = "..";
-              lastSegmentLength = 2;
-            }
-          } else {
-            if (res2.length > 0)
-              res2 += "/" + path2.slice(lastSlash + 1, i);
-            else
-              res2 = path2.slice(lastSlash + 1, i);
-            lastSegmentLength = i - lastSlash - 1;
-          }
-          lastSlash = i;
-          dots = 0;
-        } else if (code === 46 && dots !== -1) {
-          ++dots;
-        } else {
-          dots = -1;
-        }
-      }
-      return res2;
-    }
-    function _format(sep2, pathObject) {
-      var dir = pathObject.dir || pathObject.root;
-      var base = pathObject.base || (pathObject.name || "") + (pathObject.ext || "");
-      if (!dir) {
-        return base;
-      }
-      if (dir === pathObject.root) {
-        return dir + base;
-      }
-      return dir + sep2 + base;
-    }
-    var posix = {
-      // path.resolve([from ...], to)
-      resolve: function resolve() {
-        var resolvedPath = "";
-        var resolvedAbsolute = false;
-        var cwd;
-        for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-          var path2;
-          if (i >= 0)
-            path2 = arguments[i];
-          else {
-            if (cwd === void 0)
-              cwd = process.cwd();
-            path2 = cwd;
-          }
-          assertPath(path2);
-          if (path2.length === 0) {
-            continue;
-          }
-          resolvedPath = path2 + "/" + resolvedPath;
-          resolvedAbsolute = path2.charCodeAt(0) === 47;
-        }
-        resolvedPath = normalizeStringPosix(resolvedPath, !resolvedAbsolute);
-        if (resolvedAbsolute) {
-          if (resolvedPath.length > 0)
-            return "/" + resolvedPath;
-          else
-            return "/";
-        } else if (resolvedPath.length > 0) {
-          return resolvedPath;
-        } else {
-          return ".";
-        }
-      },
-      normalize: function normalize2(path2) {
-        assertPath(path2);
-        if (path2.length === 0) return ".";
-        var isAbsolute = path2.charCodeAt(0) === 47;
-        var trailingSeparator = path2.charCodeAt(path2.length - 1) === 47;
-        path2 = normalizeStringPosix(path2, !isAbsolute);
-        if (path2.length === 0 && !isAbsolute) path2 = ".";
-        if (path2.length > 0 && trailingSeparator) path2 += "/";
-        if (isAbsolute) return "/" + path2;
-        return path2;
-      },
-      isAbsolute: function isAbsolute(path2) {
-        assertPath(path2);
-        return path2.length > 0 && path2.charCodeAt(0) === 47;
-      },
-      join: function join3() {
-        if (arguments.length === 0)
-          return ".";
-        var joined;
-        for (var i = 0; i < arguments.length; ++i) {
-          var arg = arguments[i];
-          assertPath(arg);
-          if (arg.length > 0) {
-            if (joined === void 0)
-              joined = arg;
-            else
-              joined += "/" + arg;
-          }
-        }
-        if (joined === void 0)
-          return ".";
-        return posix.normalize(joined);
-      },
-      relative: function relative(from, to) {
-        assertPath(from);
-        assertPath(to);
-        if (from === to) return "";
-        from = posix.resolve(from);
-        to = posix.resolve(to);
-        if (from === to) return "";
-        var fromStart = 1;
-        for (; fromStart < from.length; ++fromStart) {
-          if (from.charCodeAt(fromStart) !== 47)
-            break;
-        }
-        var fromEnd = from.length;
-        var fromLen = fromEnd - fromStart;
-        var toStart = 1;
-        for (; toStart < to.length; ++toStart) {
-          if (to.charCodeAt(toStart) !== 47)
-            break;
-        }
-        var toEnd = to.length;
-        var toLen = toEnd - toStart;
-        var length = fromLen < toLen ? fromLen : toLen;
-        var lastCommonSep = -1;
-        var i = 0;
-        for (; i <= length; ++i) {
-          if (i === length) {
-            if (toLen > length) {
-              if (to.charCodeAt(toStart + i) === 47) {
-                return to.slice(toStart + i + 1);
-              } else if (i === 0) {
-                return to.slice(toStart + i);
-              }
-            } else if (fromLen > length) {
-              if (from.charCodeAt(fromStart + i) === 47) {
-                lastCommonSep = i;
-              } else if (i === 0) {
-                lastCommonSep = 0;
-              }
-            }
-            break;
-          }
-          var fromCode = from.charCodeAt(fromStart + i);
-          var toCode = to.charCodeAt(toStart + i);
-          if (fromCode !== toCode)
-            break;
-          else if (fromCode === 47)
-            lastCommonSep = i;
-        }
-        var out = "";
-        for (i = fromStart + lastCommonSep + 1; i <= fromEnd; ++i) {
-          if (i === fromEnd || from.charCodeAt(i) === 47) {
-            if (out.length === 0)
-              out += "..";
-            else
-              out += "/..";
-          }
-        }
-        if (out.length > 0)
-          return out + to.slice(toStart + lastCommonSep);
-        else {
-          toStart += lastCommonSep;
-          if (to.charCodeAt(toStart) === 47)
-            ++toStart;
-          return to.slice(toStart);
-        }
-      },
-      _makeLong: function _makeLong(path2) {
-        return path2;
-      },
-      dirname: function dirname2(path2) {
-        assertPath(path2);
-        if (path2.length === 0) return ".";
-        var code = path2.charCodeAt(0);
-        var hasRoot = code === 47;
-        var end = -1;
-        var matchedSlash = true;
-        for (var i = path2.length - 1; i >= 1; --i) {
-          code = path2.charCodeAt(i);
-          if (code === 47) {
-            if (!matchedSlash) {
-              end = i;
-              break;
-            }
-          } else {
-            matchedSlash = false;
-          }
-        }
-        if (end === -1) return hasRoot ? "/" : ".";
-        if (hasRoot && end === 1) return "//";
-        return path2.slice(0, end);
-      },
-      basename: function basename(path2, ext2) {
-        if (ext2 !== void 0 && typeof ext2 !== "string") throw new TypeError('"ext" argument must be a string');
-        assertPath(path2);
-        var start = 0;
-        var end = -1;
-        var matchedSlash = true;
-        var i;
-        if (ext2 !== void 0 && ext2.length > 0 && ext2.length <= path2.length) {
-          if (ext2.length === path2.length && ext2 === path2) return "";
-          var extIdx = ext2.length - 1;
-          var firstNonSlashEnd = -1;
-          for (i = path2.length - 1; i >= 0; --i) {
-            var code = path2.charCodeAt(i);
-            if (code === 47) {
-              if (!matchedSlash) {
-                start = i + 1;
-                break;
-              }
-            } else {
-              if (firstNonSlashEnd === -1) {
-                matchedSlash = false;
-                firstNonSlashEnd = i + 1;
-              }
-              if (extIdx >= 0) {
-                if (code === ext2.charCodeAt(extIdx)) {
-                  if (--extIdx === -1) {
-                    end = i;
-                  }
-                } else {
-                  extIdx = -1;
-                  end = firstNonSlashEnd;
-                }
-              }
-            }
-          }
-          if (start === end) end = firstNonSlashEnd;
-          else if (end === -1) end = path2.length;
-          return path2.slice(start, end);
-        } else {
-          for (i = path2.length - 1; i >= 0; --i) {
-            if (path2.charCodeAt(i) === 47) {
-              if (!matchedSlash) {
-                start = i + 1;
-                break;
-              }
-            } else if (end === -1) {
-              matchedSlash = false;
-              end = i + 1;
-            }
-          }
-          if (end === -1) return "";
-          return path2.slice(start, end);
-        }
-      },
-      extname: function extname(path2) {
-        assertPath(path2);
-        var startDot = -1;
-        var startPart = 0;
-        var end = -1;
-        var matchedSlash = true;
-        var preDotState = 0;
-        for (var i = path2.length - 1; i >= 0; --i) {
-          var code = path2.charCodeAt(i);
-          if (code === 47) {
-            if (!matchedSlash) {
-              startPart = i + 1;
-              break;
-            }
-            continue;
-          }
-          if (end === -1) {
-            matchedSlash = false;
-            end = i + 1;
-          }
-          if (code === 46) {
-            if (startDot === -1)
-              startDot = i;
-            else if (preDotState !== 1)
-              preDotState = 1;
-          } else if (startDot !== -1) {
-            preDotState = -1;
-          }
-        }
-        if (startDot === -1 || end === -1 || // We saw a non-dot character immediately before the dot
-        preDotState === 0 || // The (right-most) trimmed path component is exactly '..'
-        preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
-          return "";
-        }
-        return path2.slice(startDot, end);
-      },
-      format: function format(pathObject) {
-        if (pathObject === null || typeof pathObject !== "object") {
-          throw new TypeError('The "pathObject" argument must be of type Object. Received type ' + typeof pathObject);
-        }
-        return _format("/", pathObject);
-      },
-      parse: function parse(path2) {
-        assertPath(path2);
-        var ret = { root: "", dir: "", base: "", ext: "", name: "" };
-        if (path2.length === 0) return ret;
-        var code = path2.charCodeAt(0);
-        var isAbsolute = code === 47;
-        var start;
-        if (isAbsolute) {
-          ret.root = "/";
-          start = 1;
-        } else {
-          start = 0;
-        }
-        var startDot = -1;
-        var startPart = 0;
-        var end = -1;
-        var matchedSlash = true;
-        var i = path2.length - 1;
-        var preDotState = 0;
-        for (; i >= start; --i) {
-          code = path2.charCodeAt(i);
-          if (code === 47) {
-            if (!matchedSlash) {
-              startPart = i + 1;
-              break;
-            }
-            continue;
-          }
-          if (end === -1) {
-            matchedSlash = false;
-            end = i + 1;
-          }
-          if (code === 46) {
-            if (startDot === -1) startDot = i;
-            else if (preDotState !== 1) preDotState = 1;
-          } else if (startDot !== -1) {
-            preDotState = -1;
-          }
-        }
-        if (startDot === -1 || end === -1 || // We saw a non-dot character immediately before the dot
-        preDotState === 0 || // The (right-most) trimmed path component is exactly '..'
-        preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
-          if (end !== -1) {
-            if (startPart === 0 && isAbsolute) ret.base = ret.name = path2.slice(1, end);
-            else ret.base = ret.name = path2.slice(startPart, end);
-          }
-        } else {
-          if (startPart === 0 && isAbsolute) {
-            ret.name = path2.slice(1, startDot);
-            ret.base = path2.slice(1, end);
-          } else {
-            ret.name = path2.slice(startPart, startDot);
-            ret.base = path2.slice(startPart, end);
-          }
-          ret.ext = path2.slice(startDot, end);
-        }
-        if (startPart > 0) ret.dir = path2.slice(0, startPart - 1);
-        else if (isAbsolute) ret.dir = "/";
-        return ret;
-      },
-      sep: "/",
-      delimiter: ":",
-      win32: null,
-      posix: null
-    };
-    posix.posix = posix;
-    module2.exports = posix;
-  }
-});
-
 // node_modules/diff-match-patch/index.js
 var require_diff_match_patch = __commonJS({
   "node_modules/diff-match-patch/index.js"(exports, module2) {
@@ -3167,37 +2760,44 @@ function licenseToPassword(key2) {
   if (typeof btoa !== "undefined") return btoa(part);
   return Buffer.from(part).toString("base64");
 }
-async function readJsonFile(filePath) {
+function vaultPath(...parts) {
+  return parts.join("/").replace(/\/+/g, "/");
+}
+async function vaultReadJson(vault, path2) {
   try {
-    const raw = fs.readFileSync(filePath, "utf8");
+    if (!await vault.adapter.exists(path2)) return null;
+    const raw = await vault.adapter.read(path2);
     return JSON.parse(raw);
   } catch (e2) {
     return null;
   }
 }
-async function writeJsonFile(filePath, data) {
-  fs.mkdirSync(nodePath.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
-}
-function fileExists(filePath) {
-  try {
-    fs.accessSync(filePath);
-    return true;
-  } catch (e2) {
-    return false;
+async function vaultWriteJson(vault, path2, data) {
+  const parts = path2.split("/");
+  parts.pop();
+  const dir = parts.join("/");
+  if (dir && !await vault.adapter.exists(dir)) {
+    await vault.adapter.mkdir(dir);
   }
+  await vault.adapter.write(path2, JSON.stringify(data, null, 2));
 }
-function userDataPath(workspacePath) {
-  return nodePath.join(workspacePath, MDFRIDAY_DIR, USER_DATA_FILE);
+function makeUserDataPath(pluginDir) {
+  return vaultPath(pluginDir, "workspace", MDFRIDAY_DIR, USER_DATA_FILE);
 }
-async function loadUserData(workspacePath) {
-  return readJsonFile(userDataPath(workspacePath));
+function makeConfigPath(pluginDir) {
+  return vaultPath(pluginDir, "workspace", MDFRIDAY_DIR, CONFIG_FILE);
 }
-async function saveUserData(workspacePath, patch) {
-  const existing = await loadUserData(workspacePath) || {};
+function makeWorkspaceMarker(pluginDir) {
+  return vaultPath(pluginDir, "workspace", MDFRIDAY_DIR, WORKSPACE_FILE);
+}
+async function loadUserData(vault, pluginDir) {
+  return vaultReadJson(vault, makeUserDataPath(pluginDir));
+}
+async function saveUserData(vault, pluginDir, patch) {
+  const existing = await loadUserData(vault, pluginDir) || {};
   const merged = { ...existing, ...patch };
   Object.keys(merged).forEach((k) => merged[k] === void 0 && delete merged[k]);
-  await writeJsonFile(userDataPath(workspacePath), merged);
+  await vaultWriteJson(vault, makeUserDataPath(pluginDir), merged);
 }
 function getApiUrl(userData) {
   var _a5;
@@ -3324,37 +2924,37 @@ function getNested(obj, key2) {
   }
   return cur;
 }
-function createObsidianWorkspaceService() {
-  return new LightweightWorkspaceService();
+function createObsidianWorkspaceService(vault, pluginDir) {
+  return new LightweightWorkspaceService(vault, pluginDir);
 }
-function createObsidianAuthService(httpClient) {
-  return new LightweightAuthService(httpClient);
+function createObsidianAuthService(httpClient, vault, pluginDir) {
+  return new LightweightAuthService(httpClient, vault, pluginDir);
 }
-function createObsidianLicenseService(httpClient) {
-  return new LightweightLicenseService(httpClient);
+function createObsidianLicenseService(httpClient, vault, pluginDir) {
+  return new LightweightLicenseService(httpClient, vault, pluginDir);
 }
-function createObsidianGlobalConfigService() {
-  return new LightweightGlobalConfigService();
+function createObsidianGlobalConfigService(vault, pluginDir) {
+  return new LightweightGlobalConfigService(vault, pluginDir);
 }
-var import_obsidian10, fs, nodePath, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
+var import_obsidian10, MDFRIDAY_DIR, USER_DATA_FILE, WORKSPACE_FILE, CONFIG_FILE, DEFAULT_API_URL, LightweightAuthService, LightweightLicenseService, LightweightWorkspaceService, LightweightGlobalConfigService;
 var init_foundry = __esm({
   "src/foundry/index.ts"() {
     import_obsidian10 = require("obsidian");
-    fs = __toESM(require("fs"), 1);
-    nodePath = __toESM(require_path_browserify(), 1);
     MDFRIDAY_DIR = ".mdfriday";
     USER_DATA_FILE = "user-data.json";
     WORKSPACE_FILE = "workspace.json";
     CONFIG_FILE = "config.json";
     DEFAULT_API_URL = "https://app.mdfriday.com";
     LightweightAuthService = class {
-      constructor(http) {
+      constructor(http, vault, pluginDir) {
         this.http = http;
+        this.vault = vault;
+        this.pluginDir = pluginDir;
       }
       async getStatus(workspacePath) {
         var _a5, _b2;
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           const isAuthenticated = !!((ud == null ? void 0 : ud.token) && (ud == null ? void 0 : ud.email));
           const sc = ud == null ? void 0 : ud.syncConfig;
           const status = {
@@ -3382,7 +2982,7 @@ var init_foundry = __esm({
       async getConfig(workspacePath) {
         var _a5, _b2;
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           return { success: true, data: { apiUrl: (_a5 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _a5.apiUrl, websiteUrl: (_b2 = ud == null ? void 0 : ud.serverConfig) == null ? void 0 : _b2.websiteUrl } };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -3390,9 +2990,9 @@ var init_foundry = __esm({
       }
       async updateConfig(workspacePath, config) {
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           const serverConfig = { ...(ud == null ? void 0 : ud.serverConfig) || {}, ...config };
-          await saveUserData(workspacePath, { serverConfig });
+          await saveUserData(this.vault, this.pluginDir, { serverConfig });
           return { success: true, data: serverConfig };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -3400,13 +3000,15 @@ var init_foundry = __esm({
       }
     };
     LightweightLicenseService = class {
-      constructor(http) {
+      constructor(http, vault, pluginDir) {
         this.http = http;
+        this.vault = vault;
+        this.pluginDir = pluginDir;
       }
       async requestTrial(workspacePath, email) {
         var _a5, _b2, _c;
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           const url = `${getApiUrl(ud)}/api/license/trial`;
           const res2 = await this.http.postMultipart(url, { email });
           if (res2.status !== 200 && res2.status !== 201) throw new Error("Trial request failed");
@@ -3419,7 +3021,7 @@ var init_foundry = __esm({
       }
       async loginWithLicense(workspacePath, licenseKey) {
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           const apiUrl = getApiUrl(ud);
           const email = licenseToEmail(licenseKey);
           const password = licenseToPassword(licenseKey);
@@ -3427,7 +3029,7 @@ var init_foundry = __esm({
           if (res2.status !== 201) throw new Error(`Login failed: ${res2.status}`);
           const token = unwrapFirst(res2.data);
           if (!token) throw new Error("No token in login response");
-          await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
+          await saveUserData(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
           return { success: true, data: {} };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -3436,7 +3038,7 @@ var init_foundry = __esm({
       async activateLicense(workspacePath, licenseKey) {
         var _a5, _b2, _c, _d;
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           const token = ud == null ? void 0 : ud.token;
           if (!token) throw new Error("Not authenticated \u2014 call loginWithLicense first");
           const apiUrl = getApiUrl(ud);
@@ -3472,7 +3074,7 @@ var init_foundry = __esm({
             userDir,
             status: info3.sync.status
           } : ud == null ? void 0 : ud.syncConfig;
-          await saveUserData(workspacePath, { license: licenseToStore, syncConfig: syncToStore });
+          await saveUserData(this.vault, this.pluginDir, { license: licenseToStore, syncConfig: syncToStore });
           return { success: true, data: info3 };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -3481,7 +3083,7 @@ var init_foundry = __esm({
       async getLicenseInfo(workspacePath, options) {
         var _a5, _b2, _c, _d, _e, _f, _g;
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           if (!(ud == null ? void 0 : ud.license)) return { success: true, message: "No active license" };
           if ((options == null ? void 0 : options.refresh) && ud.token) {
             const apiUrl = getApiUrl(ud);
@@ -3497,7 +3099,7 @@ var init_foundry = __esm({
               const userDir = String((_g = (_f = (_c = ud.syncConfig) == null ? void 0 : _c.userDir) != null ? _f : (_e = (_d = ud.license) == null ? void 0 : _d.user) == null ? void 0 : _e.userDir) != null ? _g : "");
               const info3 = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || "", user_dir: userDir } }, userDir);
               const updated = { ...ud.license, ...{ key: raw.license_key || licenseKey, plan: info3.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info3.features, isExpired: info3.isExpired } };
-              await saveUserData(workspacePath, { license: updated });
+              await saveUserData(this.vault, this.pluginDir, { license: updated });
               return { success: true, data: info3 };
             }
           }
@@ -3509,7 +3111,7 @@ var init_foundry = __esm({
       async getLicenseUsage(workspacePath) {
         var _a5, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           const token = ud == null ? void 0 : ud.token;
           if (!token) throw new Error("Not authenticated");
           const licenseKey = (_a5 = ud == null ? void 0 : ud.license) == null ? void 0 : _a5.key;
@@ -3545,7 +3147,7 @@ var init_foundry = __esm({
         var _a5;
         if (!force) return { success: false, error: "Set force=true to confirm reset" };
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           const token = ud == null ? void 0 : ud.token;
           if (!token) throw new Error("Not authenticated");
           const licenseKey = (_a5 = ud == null ? void 0 : ud.license) == null ? void 0 : _a5.key;
@@ -3564,7 +3166,7 @@ var init_foundry = __esm({
       }
       async hasActiveLicense(workspacePath) {
         try {
-          const ud = await loadUserData(workspacePath);
+          const ud = await loadUserData(this.vault, this.pluginDir);
           if (!(ud == null ? void 0 : ud.license)) return false;
           const expiresAt = ud.license.expiresAt || 0;
           return Date.now() < expiresAt;
@@ -3574,18 +3176,19 @@ var init_foundry = __esm({
       }
     };
     LightweightWorkspaceService = class {
-      async workspaceExists(workspacePath) {
+      constructor(vault, pluginDir) {
+        this.vault = vault;
+        this.pluginDir = pluginDir;
+      }
+      async workspaceExists(_workspacePath) {
         try {
-          const marker = nodePath.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
-          return { success: true, data: fileExists(marker) };
+          return { success: true, data: await this.vault.adapter.exists(makeWorkspaceMarker(this.pluginDir)) };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
-      async initWorkspace(workspacePath) {
+      async initWorkspace(_workspacePath) {
         try {
-          const dir = nodePath.join(workspacePath, MDFRIDAY_DIR);
-          const marker = nodePath.join(dir, WORKSPACE_FILE);
           const metadata = {
             id: `ws-${Date.now()}`,
             name: "workspace",
@@ -3594,17 +3197,17 @@ var init_foundry = __esm({
             projectsDir: "projects",
             version: "1.0.0"
           };
-          await writeJsonFile(marker, metadata);
-          const configPath = nodePath.join(dir, CONFIG_FILE);
-          if (!fileExists(configPath)) {
-            await writeJsonFile(configPath, {});
+          await vaultWriteJson(this.vault, makeWorkspaceMarker(this.pluginDir), metadata);
+          const cfgPath = makeConfigPath(this.pluginDir);
+          if (!await this.vault.adapter.exists(cfgPath)) {
+            await vaultWriteJson(this.vault, cfgPath, {});
           }
           return {
             success: true,
             data: {
               id: metadata.id,
               name: metadata.name,
-              path: workspacePath,
+              path: this.pluginDir,
               createdAt: metadata.createdAt,
               modulesDir: metadata.modulesDir,
               projectsDir: metadata.projectsDir,
@@ -3618,15 +3221,16 @@ var init_foundry = __esm({
       }
     };
     LightweightGlobalConfigService = class {
-      configPath(workspacePath) {
-        return nodePath.join(workspacePath, MDFRIDAY_DIR, CONFIG_FILE);
+      constructor(vault, pluginDir) {
+        this.vault = vault;
+        this.pluginDir = pluginDir;
       }
-      async load(workspacePath) {
-        return await readJsonFile(this.configPath(workspacePath)) || {};
+      async load() {
+        return await vaultReadJson(this.vault, makeConfigPath(this.pluginDir)) || {};
       }
-      async get(workspacePath, key2) {
+      async get(_workspacePath, key2) {
         try {
-          const cfg = await this.load(workspacePath);
+          const cfg = await this.load();
           const value = getNested(cfg, key2);
           if (value === void 0) return { success: false, error: `Key not found: ${key2}` };
           return { success: true, data: { key: key2, value } };
@@ -3634,19 +3238,19 @@ var init_foundry = __esm({
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
-      async set(workspacePath, key2, value) {
+      async set(_workspacePath, key2, value) {
         try {
-          const cfg = await this.load(workspacePath);
+          const cfg = await this.load();
           setNested(cfg, key2, value);
-          await writeJsonFile(this.configPath(workspacePath), cfg);
+          await vaultWriteJson(this.vault, makeConfigPath(this.pluginDir), cfg);
           return { success: true, data: { key: key2, value } };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
         }
       }
-      async list(workspacePath) {
+      async list(_workspacePath) {
         try {
-          const config = await this.load(workspacePath);
+          const config = await this.load();
           return { success: true, data: { config, scope: "global" } };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -4132,10 +3736,10 @@ function unwrapFirst2(responseData) {
   var _a5;
   return (_a5 = responseData == null ? void 0 : responseData.data) == null ? void 0 : _a5[0];
 }
-function vaultPath(...parts) {
+function vaultPath2(...parts) {
   return parts.join("/").replace(/\/+/g, "/");
 }
-async function vaultReadJson(vault, path2) {
+async function vaultReadJson2(vault, path2) {
   try {
     if (!await vault.adapter.exists(path2)) return null;
     const raw = await vault.adapter.read(path2);
@@ -4144,7 +3748,7 @@ async function vaultReadJson(vault, path2) {
     return null;
   }
 }
-async function vaultWriteJson(vault, path2, data) {
+async function vaultWriteJson2(vault, path2, data) {
   const parts = path2.split("/");
   parts.pop();
   const dir = parts.join("/");
@@ -4153,23 +3757,23 @@ async function vaultWriteJson(vault, path2, data) {
   }
   await vault.adapter.write(path2, JSON.stringify(data, null, 2));
 }
-function makeUserDataPath(pluginDir) {
-  return vaultPath(pluginDir, "workspace", MDFRIDAY_DIR3, USER_DATA_FILE2);
+function makeUserDataPath2(pluginDir) {
+  return vaultPath2(pluginDir, "workspace", MDFRIDAY_DIR3, USER_DATA_FILE2);
 }
-function makeConfigPath(pluginDir) {
-  return vaultPath(pluginDir, "workspace", MDFRIDAY_DIR3, CONFIG_FILE2);
+function makeConfigPath2(pluginDir) {
+  return vaultPath2(pluginDir, "workspace", MDFRIDAY_DIR3, CONFIG_FILE2);
 }
-function makeWorkspaceMarker(pluginDir) {
-  return vaultPath(pluginDir, "workspace", MDFRIDAY_DIR3, WORKSPACE_FILE3);
+function makeWorkspaceMarker2(pluginDir) {
+  return vaultPath2(pluginDir, "workspace", MDFRIDAY_DIR3, WORKSPACE_FILE3);
 }
 async function loadUserData2(vault, pluginDir) {
-  return vaultReadJson(vault, makeUserDataPath(pluginDir));
+  return vaultReadJson2(vault, makeUserDataPath2(pluginDir));
 }
 async function saveUserData2(vault, pluginDir, patch) {
   const existing = await loadUserData2(vault, pluginDir) || {};
   const merged = { ...existing, ...patch };
   Object.keys(merged).forEach((k) => merged[k] === void 0 && delete merged[k]);
-  await vaultWriteJson(vault, makeUserDataPath(pluginDir), merged);
+  await vaultWriteJson2(vault, makeUserDataPath2(pluginDir), merged);
 }
 function getApiUrl2(ud) {
   var _a5;
@@ -4512,7 +4116,7 @@ var init_mobile = __esm({
       }
       async workspaceExists(_workspacePath) {
         try {
-          const exists = await this.vault.adapter.exists(makeWorkspaceMarker(this.pluginDir));
+          const exists = await this.vault.adapter.exists(makeWorkspaceMarker2(this.pluginDir));
           return { success: true, data: exists };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -4521,9 +4125,9 @@ var init_mobile = __esm({
       async initWorkspace(workspacePath) {
         try {
           const metadata = { id: `ws-${Date.now()}`, name: "workspace", createdAt: (/* @__PURE__ */ new Date()).toISOString(), modulesDir: "modules", projectsDir: "projects", version: "1.0.0" };
-          await vaultWriteJson(this.vault, makeWorkspaceMarker(this.pluginDir), metadata);
-          const cfgPath = makeConfigPath(this.pluginDir);
-          if (!await this.vault.adapter.exists(cfgPath)) await vaultWriteJson(this.vault, cfgPath, {});
+          await vaultWriteJson2(this.vault, makeWorkspaceMarker2(this.pluginDir), metadata);
+          const cfgPath = makeConfigPath2(this.pluginDir);
+          if (!await this.vault.adapter.exists(cfgPath)) await vaultWriteJson2(this.vault, cfgPath, {});
           return { success: true, data: { id: metadata.id, name: metadata.name, path: workspacePath, createdAt: metadata.createdAt, modulesDir: metadata.modulesDir, projectsDir: metadata.projectsDir, projectCount: 0, projects: [] } };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -4536,10 +4140,10 @@ var init_mobile = __esm({
         this.pluginDir = pluginDir;
       }
       cfgPath() {
-        return makeConfigPath(this.pluginDir);
+        return makeConfigPath2(this.pluginDir);
       }
       async load() {
-        return await vaultReadJson(this.vault, this.cfgPath()) || {};
+        return await vaultReadJson2(this.vault, this.cfgPath()) || {};
       }
       async get(workspacePath, key2) {
         try {
@@ -4555,7 +4159,7 @@ var init_mobile = __esm({
         try {
           const cfg = await this.load();
           setNested2(cfg, key2, value);
-          await vaultWriteJson(this.vault, this.cfgPath(), cfg);
+          await vaultWriteJson2(this.vault, this.cfgPath(), cfg);
           return { success: true, data: { key: key2, value } };
         } catch (e2) {
           return { success: false, error: e2 instanceof Error ? e2.message : String(e2) };
@@ -4582,7 +4186,6 @@ __export(main_exports, {
 });
 module.exports = __toCommonJS(main_exports);
 var import_obsidian12 = require("obsidian");
-var nodePath2 = __toESM(require_path_browserify(), 1);
 
 // src/i18n/utils.ts
 var AVAILABLE_LANGUAGES = [
@@ -39390,10 +38993,9 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
     if (import_obsidian12.Platform.isDesktop) {
       const adapter = this.app.vault.adapter;
       if (adapter instanceof import_obsidian12.FileSystemAdapter) {
-        const basePath = adapter.getBasePath();
-        this.vaultBasePath = basePath;
-        this.absWorkspacePath = nodePath2.join(basePath, this.pluginDir, "workspace");
+        this.vaultBasePath = adapter.getBasePath();
       }
+      this.absWorkspacePath = joinVaultPath(this.pluginDir, "workspace");
       await this.initDesktopFeatures();
     } else {
       this.absWorkspacePath = joinVaultPath(this.pluginDir, "workspace");
@@ -39435,7 +39037,7 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
         createObsidianLicenseService: createObsidianLicenseService3,
         createObsidianGlobalConfigService: createObsidianGlobalConfigService3
       } = await Promise.resolve().then(() => (init_foundry(), foundry_exports));
-      const workspaceService = createObsidianWorkspaceService3();
+      const workspaceService = createObsidianWorkspaceService3(this.app.vault, this.pluginDir);
       const relativeWorkspacePath = joinVaultPath(this.pluginDir, "workspace");
       if (!await this.app.vault.adapter.exists(relativeWorkspacePath)) {
         await this.app.vault.adapter.mkdir(relativeWorkspacePath);
@@ -39450,9 +39052,9 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
         console.error("[MDFriday Sync] Failed to check workspace existence:", existsResult.error);
       }
       const identityHttpClient = createObsidianIdentityHttpClient();
-      this.foundryAuthService = createObsidianAuthService3(identityHttpClient);
-      this.foundryLicenseService = createObsidianLicenseService3(identityHttpClient);
-      this.foundryGlobalConfigService = createObsidianGlobalConfigService3();
+      this.foundryAuthService = createObsidianAuthService3(identityHttpClient, this.app.vault, this.pluginDir);
+      this.foundryLicenseService = createObsidianLicenseService3(identityHttpClient, this.app.vault, this.pluginDir);
+      this.foundryGlobalConfigService = createObsidianGlobalConfigService3(this.app.vault, this.pluginDir);
       if (this.foundryLicenseService && this.foundryAuthService && this.foundryGlobalConfigService) {
         this.licenseServiceManager = new LicenseServiceManager(
           this.foundryLicenseService,

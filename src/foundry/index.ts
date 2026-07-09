@@ -1,27 +1,17 @@
 /**
  * Lightweight Foundry Desktop Services
  *
- * Replaces @mdfriday/foundry for the sync-only plugin on Desktop (Node.js).
- * Uses Node.js `fs`/`path` for workspace config file I/O.
+ * Replaces @mdfriday/foundry for the sync-only plugin on Desktop.
+ * Uses Obsidian's vault.adapter for file I/O — same pattern as mobile.ts.
  *
- * Data layout inside workspacePath:
- *   .mdfriday/workspace.json   – workspace init marker
- *   .mdfriday/user-data.json   – auth + license + sync config
- *   .mdfriday/config.json      – global plugin config
- *
- * DESKTOP-ONLY MODULE — this file is loaded exclusively via a dynamic
- * `await import('./foundry/index')` call that is guarded by `Platform.isDesktop`
- * in main.ts. It is never evaluated on mobile.
- *
- * `fs` is used here to read/write plugin workspace config files that live inside
- * the vault folder (at .obsidian/plugins/mdfriday-sync/workspace/).
- * The obsidianmd/no-nodejs-modules rule is suppressed via a config-level override
- * in eslint.config.js (inline disable is blocked by no-restricted-disable).
+ * Data layout (vault-relative paths):
+ *   {pluginDir}/workspace/.mdfriday/workspace.json   – workspace init marker
+ *   {pluginDir}/workspace/.mdfriday/user-data.json   – auth + license + sync config
+ *   {pluginDir}/workspace/.mdfriday/config.json      – global plugin config
  */
 
 import { Platform } from 'obsidian';
-import * as fs from 'fs';
-import * as nodePath from 'path-browserify';
+import type { Vault } from 'obsidian';
 import type {
   IdentityHttpClient,
   ObsidianAuthResult,
@@ -96,26 +86,47 @@ function licenseToPassword(key: string): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Node.js file helpers  (fs / path are external — not bundled)
+// Vault adapter helpers  (mirrors mobile.ts — no Node.js fs)
 // ─────────────────────────────────────────────────────────────────────────────
 
+function vaultPath(...parts: string[]): string {
+  return parts.join('/').replace(/\/+/g, '/');
+}
 
-async function readJsonFile<T>(filePath: string): Promise<T | null> {
+async function vaultReadJson<T>(vault: Vault, path: string): Promise<T | null> {
   try {
-    const raw = fs.readFileSync(filePath, 'utf8');
+    if (!await vault.adapter.exists(path)) return null;
+    const raw = await vault.adapter.read(path);
     return JSON.parse(raw) as T;
   } catch {
     return null;
   }
 }
 
-async function writeJsonFile(filePath: string, data: unknown): Promise<void> {
-  fs.mkdirSync(nodePath.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+async function vaultWriteJson(vault: Vault, path: string, data: unknown): Promise<void> {
+  const parts = path.split('/');
+  parts.pop();
+  const dir = parts.join('/');
+  if (dir && !await vault.adapter.exists(dir)) {
+    await vault.adapter.mkdir(dir);
+  }
+  await vault.adapter.write(path, JSON.stringify(data, null, 2));
 }
 
-function fileExists(filePath: string): boolean {
-  try { fs.accessSync(filePath); return true; } catch { return false; }
+// ─────────────────────────────────────────────────────────────────────────────
+// Path helpers (vault-relative, mirrors mobile.ts)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function makeUserDataPath(pluginDir: string): string {
+  return vaultPath(pluginDir, 'workspace', MDFRIDAY_DIR, USER_DATA_FILE);
+}
+
+function makeConfigPath(pluginDir: string): string {
+  return vaultPath(pluginDir, 'workspace', MDFRIDAY_DIR, CONFIG_FILE);
+}
+
+function makeWorkspaceMarker(pluginDir: string): string {
+  return vaultPath(pluginDir, 'workspace', MDFRIDAY_DIR, WORKSPACE_FILE);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -140,20 +151,16 @@ interface SyncConfigShape {
   [key: string]: unknown;
 }
 
-function userDataPath(workspacePath: string): string {
-  return nodePath.join(workspacePath, MDFRIDAY_DIR, USER_DATA_FILE);
+async function loadUserData(vault: Vault, pluginDir: string): Promise<UserData | null> {
+  return vaultReadJson<UserData>(vault, makeUserDataPath(pluginDir));
 }
 
-async function loadUserData(workspacePath: string): Promise<UserData | null> {
-  return readJsonFile<UserData>(userDataPath(workspacePath));
-}
-
-async function saveUserData(workspacePath: string, patch: Partial<UserData>): Promise<void> {
-  const existing = (await loadUserData(workspacePath)) || {};
+async function saveUserData(vault: Vault, pluginDir: string, patch: Partial<UserData>): Promise<void> {
+  const existing = (await loadUserData(vault, pluginDir)) || {};
   const merged: UserData = { ...existing, ...patch };
   // Remove undefined values
   Object.keys(merged).forEach(k => (merged as Record<string, unknown>)[k] === undefined && delete (merged as Record<string, unknown>)[k]);
-  await writeJsonFile(userDataPath(workspacePath), merged);
+  await vaultWriteJson(vault, makeUserDataPath(pluginDir), merged);
 }
 
 function getApiUrl(userData: UserData | null): string {
@@ -339,11 +346,11 @@ function buildLicenseInfoFromStored(stored: StoredLicenseShape): ObsidianLicense
 // ─────────────────────────────────────────────────────────────────────────────
 
 class LightweightAuthService implements ObsidianAuthService {
-  constructor(private http: IdentityHttpClient) {}
+  constructor(private http: IdentityHttpClient, private vault: Vault, private pluginDir: string) {}
 
   async getStatus(workspacePath: string): Promise<ObsidianAuthResult<ObsidianAuthStatus>> {
     try {
-      const ud = await loadUserData(workspacePath);
+      const ud = await loadUserData(this.vault, this.pluginDir);
       const isAuthenticated = !!(ud?.token && ud?.email);
       const sc = ud?.syncConfig;
       const status: ObsidianAuthStatus = {
@@ -371,7 +378,7 @@ class LightweightAuthService implements ObsidianAuthService {
 
   async getConfig(workspacePath: string): Promise<ObsidianAuthResult<ObsidianServerConfig>> {
     try {
-      const ud = await loadUserData(workspacePath);
+      const ud = await loadUserData(this.vault, this.pluginDir);
       return { success: true, data: { apiUrl: ud?.serverConfig?.apiUrl, websiteUrl: ud?.serverConfig?.websiteUrl } };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
@@ -380,9 +387,9 @@ class LightweightAuthService implements ObsidianAuthService {
 
   async updateConfig(workspacePath: string, config: ObsidianServerConfig): Promise<ObsidianAuthResult<ObsidianServerConfig>> {
     try {
-      const ud = await loadUserData(workspacePath);
+      const ud = await loadUserData(this.vault, this.pluginDir);
       const serverConfig = { ...(ud?.serverConfig || {}), ...config };
-      await saveUserData(workspacePath, { serverConfig });
+      await saveUserData(this.vault, this.pluginDir, { serverConfig });
       return { success: true, data: serverConfig };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
@@ -395,11 +402,11 @@ class LightweightAuthService implements ObsidianAuthService {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class LightweightLicenseService implements ObsidianLicenseService {
-  constructor(private http: IdentityHttpClient) {}
+  constructor(private http: IdentityHttpClient, private vault: Vault, private pluginDir: string) {}
 
   async requestTrial(workspacePath: string, email: string): Promise<ObsidianLicenseResult<{ email: string; licenseKey: string; password: string; validityDays: number }>> {
     try {
-      const ud  = await loadUserData(workspacePath);
+      const ud  = await loadUserData(this.vault, this.pluginDir);
       const url = `${getApiUrl(ud)}/api/license/trial`;
       const res = await this.http.postMultipart(url, { email });
       if (res.status !== 200 && res.status !== 201) throw new Error('Trial request failed');
@@ -413,7 +420,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
 
   async loginWithLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<object>> {
     try {
-      const ud       = await loadUserData(workspacePath);
+      const ud       = await loadUserData(this.vault, this.pluginDir);
       const apiUrl   = getApiUrl(ud);
       const email    = licenseToEmail(licenseKey);
       const password = licenseToPassword(licenseKey);
@@ -424,7 +431,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       const token = unwrapFirst<RawTokenResponse>(res.data);
       if (!token) throw new Error('No token in login response');
 
-      await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
+      await saveUserData(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
       return { success: true, data: {} };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
@@ -433,7 +440,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
 
   async activateLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<ObsidianLicenseInfo>> {
     try {
-      const ud    = await loadUserData(workspacePath);
+      const ud    = await loadUserData(this.vault, this.pluginDir);
       const token = ud?.token;
       if (!token) throw new Error('Not authenticated — call loginWithLicense first');
 
@@ -476,7 +483,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
         status:     info.sync.status,
       } : ud?.syncConfig;
 
-      await saveUserData(workspacePath, { license: licenseToStore, syncConfig: syncToStore });
+      await saveUserData(this.vault, this.pluginDir, { license: licenseToStore, syncConfig: syncToStore });
       return { success: true, data: info };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
@@ -485,7 +492,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
 
   async getLicenseInfo(workspacePath: string, options?: { refresh?: boolean }): Promise<ObsidianLicenseResult<ObsidianLicenseInfo>> {
     try {
-      const ud = await loadUserData(workspacePath);
+      const ud = await loadUserData(this.vault, this.pluginDir);
       if (!ud?.license) return { success: true, message: 'No active license' };
 
       if (options?.refresh && ud.token) {
@@ -504,7 +511,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
           const info = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || '', user_dir: userDir } }, userDir);
           // update stored license
           const updated = { ...ud.license, ...{ key: raw.license_key || licenseKey, plan: info.plan, expiresAt: raw.expires_at || ud.license.expiresAt, features: info.features, isExpired: info.isExpired } };
-          await saveUserData(workspacePath, { license: updated });
+          await saveUserData(this.vault, this.pluginDir, { license: updated });
           return { success: true, data: info };
         }
       }
@@ -517,7 +524,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
 
   async getLicenseUsage(workspacePath: string): Promise<ObsidianLicenseResult<ObsidianLicenseUsage>> {
     try {
-      const ud    = await loadUserData(workspacePath);
+      const ud    = await loadUserData(this.vault, this.pluginDir);
       const token = ud?.token;
       if (!token) throw new Error('Not authenticated');
       const licenseKey = ud?.license?.key;
@@ -553,7 +560,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
   async resetUsage(workspacePath: string, force: boolean): Promise<ObsidianLicenseResult<void>> {
     if (!force) return { success: false, error: 'Set force=true to confirm reset' };
     try {
-      const ud    = await loadUserData(workspacePath);
+      const ud    = await loadUserData(this.vault, this.pluginDir);
       const token = ud?.token;
       if (!token) throw new Error('Not authenticated');
       const licenseKey = ud?.license?.key;
@@ -573,7 +580,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
 
   async hasActiveLicense(workspacePath: string): Promise<boolean> {
     try {
-      const ud = await loadUserData(workspacePath);
+      const ud = await loadUserData(this.vault, this.pluginDir);
       if (!ud?.license) return false;
       const expiresAt = ud.license.expiresAt || 0;
       return Date.now() < expiresAt;
@@ -588,20 +595,18 @@ class LightweightLicenseService implements ObsidianLicenseService {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class LightweightWorkspaceService implements ObsidianWorkspaceService {
-  async workspaceExists(workspacePath: string): Promise<ObsidianWorkspaceResult<boolean>> {
+  constructor(private vault: Vault, private pluginDir: string) {}
+
+  async workspaceExists(_workspacePath: string): Promise<ObsidianWorkspaceResult<boolean>> {
     try {
-      const marker = nodePath.join(workspacePath, MDFRIDAY_DIR, WORKSPACE_FILE);
-      return { success: true, data: fileExists(marker) };
+      return { success: true, data: await this.vault.adapter.exists(makeWorkspaceMarker(this.pluginDir)) };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
-  async initWorkspace(workspacePath: string): Promise<ObsidianWorkspaceResult<ObsidianWorkspaceInfo>> {
+  async initWorkspace(_workspacePath: string): Promise<ObsidianWorkspaceResult<ObsidianWorkspaceInfo>> {
     try {
-      const dir    = nodePath.join(workspacePath, MDFRIDAY_DIR);
-      const marker = nodePath.join(dir, WORKSPACE_FILE);
-
       const metadata = {
         id:         `ws-${Date.now()}`,
         name:       'workspace',
@@ -610,12 +615,12 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
         projectsDir:'projects',
         version:    '1.0.0',
       };
-      await writeJsonFile(marker, metadata);
+      await vaultWriteJson(this.vault, makeWorkspaceMarker(this.pluginDir), metadata);
 
       // ensure config.json exists
-      const configPath = nodePath.join(dir, CONFIG_FILE);
-      if (!fileExists(configPath)) {
-        await writeJsonFile(configPath, {});
+      const cfgPath = makeConfigPath(this.pluginDir);
+      if (!await this.vault.adapter.exists(cfgPath)) {
+        await vaultWriteJson(this.vault, cfgPath, {});
       }
 
       return {
@@ -623,7 +628,7 @@ class LightweightWorkspaceService implements ObsidianWorkspaceService {
         data: {
           id:           metadata.id,
           name:         metadata.name,
-          path:         workspacePath,
+          path:         this.pluginDir,
           createdAt:    metadata.createdAt,
           modulesDir:   metadata.modulesDir,
           projectsDir:  metadata.projectsDir,
@@ -662,17 +667,15 @@ function getNested(obj: Record<string, unknown>, key: string): unknown {
 }
 
 class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
-  private configPath(workspacePath: string): string {
-    return nodePath.join(workspacePath, MDFRIDAY_DIR, CONFIG_FILE);
+  constructor(private vault: Vault, private pluginDir: string) {}
+
+  private async load(): Promise<Record<string, unknown>> {
+    return (await vaultReadJson<Record<string, unknown>>(this.vault, makeConfigPath(this.pluginDir))) || {};
   }
 
-  private async load(workspacePath: string): Promise<Record<string, unknown>> {
-    return (await readJsonFile<Record<string, unknown>>(this.configPath(workspacePath))) || {};
-  }
-
-  async get(workspacePath: string, key: string): Promise<ObsidianConfigResult<ConfigGetResult>> {
+  async get(_workspacePath: string, key: string): Promise<ObsidianConfigResult<ConfigGetResult>> {
     try {
-      const cfg   = await this.load(workspacePath);
+      const cfg   = await this.load();
       const value = getNested(cfg, key);
       if (value === undefined) return { success: false, error: `Key not found: ${key}` };
       return { success: true, data: { key, value } };
@@ -681,20 +684,20 @@ class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
     }
   }
 
-  async set(workspacePath: string, key: string, value: unknown): Promise<ObsidianConfigResult<ConfigGetResult>> {
+  async set(_workspacePath: string, key: string, value: unknown): Promise<ObsidianConfigResult<ConfigGetResult>> {
     try {
-      const cfg = await this.load(workspacePath);
+      const cfg = await this.load();
       setNested(cfg, key, value);
-      await writeJsonFile(this.configPath(workspacePath), cfg);
+      await vaultWriteJson(this.vault, makeConfigPath(this.pluginDir), cfg);
       return { success: true, data: { key, value } };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
-  async list(workspacePath: string): Promise<ObsidianConfigResult<ConfigListResult>> {
+  async list(_workspacePath: string): Promise<ObsidianConfigResult<ConfigListResult>> {
     try {
-      const config = await this.load(workspacePath);
+      const config = await this.load();
       return { success: true, data: { config, scope: 'global' } };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
@@ -706,20 +709,20 @@ class LightweightGlobalConfigService implements ObsidianGlobalConfigService {
 // Factory functions  (mirror @mdfriday/foundry Desktop exports)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function createObsidianWorkspaceService(): ObsidianWorkspaceService {
-  return new LightweightWorkspaceService();
+export function createObsidianWorkspaceService(vault: Vault, pluginDir: string): ObsidianWorkspaceService {
+  return new LightweightWorkspaceService(vault, pluginDir);
 }
 
-export function createObsidianAuthService(httpClient: IdentityHttpClient): ObsidianAuthService {
-  return new LightweightAuthService(httpClient);
+export function createObsidianAuthService(httpClient: IdentityHttpClient, vault: Vault, pluginDir: string): ObsidianAuthService {
+  return new LightweightAuthService(httpClient, vault, pluginDir);
 }
 
-export function createObsidianLicenseService(httpClient: IdentityHttpClient): ObsidianLicenseService {
-  return new LightweightLicenseService(httpClient);
+export function createObsidianLicenseService(httpClient: IdentityHttpClient, vault: Vault, pluginDir: string): ObsidianLicenseService {
+  return new LightweightLicenseService(httpClient, vault, pluginDir);
 }
 
-export function createObsidianGlobalConfigService(): ObsidianGlobalConfigService {
-  return new LightweightGlobalConfigService();
+export function createObsidianGlobalConfigService(vault: Vault, pluginDir: string): ObsidianGlobalConfigService {
+  return new LightweightGlobalConfigService(vault, pluginDir);
 }
 
 // Re-export all types
