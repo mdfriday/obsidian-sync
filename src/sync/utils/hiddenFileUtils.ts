@@ -148,7 +148,7 @@ export function getComparingMTime(
     }
     
     if ("stat" in doc && doc.stat) return doc.stat.mtime ?? 0;
-    if ("mtime" in doc) return (doc as { mtime?: number }).mtime ?? 0;
+    if ("mtime" in doc) return (doc).mtime ?? 0;
 
     return 0;
 }

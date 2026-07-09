@@ -243,7 +243,7 @@ export class SyncStatusDisplay {
             maxPushSeq: 0,
             lastSyncPullSeq: 0,
             lastSyncPushSeq: 0,
-            syncStatus: "NOT_CONNECTED" as DatabaseConnectingStatus,
+            syncStatus: "NOT_CONNECTED",
         });
         
         const replicationStatLabel = computed(() => {

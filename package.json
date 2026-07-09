@@ -1,6 +1,6 @@
 {
   "name": "obsidian-sync",
-  "version": "26.7.9",
+  "version": "26.7.10",
   "description": "MDFriday Sync — CouchDB-based vault synchronization for Obsidian with end-to-end encryption. Supports Desktop and Mobile.",
   "main": "main.js",
   "type": "module",
@@ -46,6 +46,7 @@
     "eslint": "^10.6.0",
     "eslint-plugin-obsidianmd": "^0.4.1",
     "events": "^3.3.0",
+    "globals": "^17.7.0",
     "obsidian": "^1.8.7",
     "pouchdb-adapter-http": "^9.0.0",
     "pouchdb-adapter-idb": "^9.0.0",

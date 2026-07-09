@@ -2,7 +2,7 @@
  * Lightweight Foundry Desktop Services
  *
  * Replaces @mdfriday/foundry for the sync-only plugin on Desktop (Node.js).
- * Uses Node.js `fs`/`path` directly — both are marked external in esbuild.
+ * Uses Node.js `fs`/`path` for workspace config file I/O.
  *
  * Data layout inside workspacePath:
  *   .mdfriday/workspace.json   – workspace init marker
@@ -11,9 +11,12 @@
  *
  * DESKTOP-ONLY MODULE — this file is loaded exclusively via a dynamic
  * `await import('./foundry/index')` call that is guarded by `Platform.isDesktop`
- * in main.ts. It is never evaluated on mobile. Node.js built-ins (`fs`) are
- * therefore safe here. `path` is imported from path-browserify for cross-platform
- * compatibility even though this file is desktop-only.
+ * in main.ts. It is never evaluated on mobile.
+ *
+ * `fs` is used here to read/write plugin workspace config files that live inside
+ * the vault folder (at .obsidian/plugins/mdfriday-sync/workspace/).
+ * The obsidianmd/no-nodejs-modules rule is suppressed via a config-level override
+ * in eslint.config.js (inline disable is blocked by no-restricted-disable).
  */
 
 import { Platform } from 'obsidian';
@@ -408,7 +411,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
     }
   }
 
-  async loginWithLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<{}>> {
+  async loginWithLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<object>> {
     try {
       const ud       = await loadUserData(workspacePath);
       const apiUrl   = getApiUrl(ud);
@@ -422,7 +425,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       if (!token) throw new Error('No token in login response');
 
       await saveUserData(workspacePath, { email, token, serverConfig: { apiUrl } });
-      return { success: true, data: {} as object };
+      return { success: true, data: {} };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
@@ -445,7 +448,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
       );
       if (res.status !== 200 && res.status !== 201) throw new Error(`Activation failed: ${res.status}`);
 
-      const raw: ActivationApiResponse = (unwrapFirst<ActivationApiResponse>(res.data) ?? (res.data as ActivationApiResponse));
+      const raw: ActivationApiResponse = (unwrapFirst<ActivationApiResponse>(res.data) ?? (res.data));
       if (!raw?.success) throw new Error('License activation unsuccessful');
 
       const userDir = raw.user?.user_dir || '';
@@ -496,7 +499,7 @@ class LightweightLicenseService implements ObsidianLicenseService {
           { 'Authorization': `Bearer ${token}`, 'Cache-Control': 'no-cache' }
         );
         if (res.status === 200 && (res.data as ApiEnvelope<ActivationApiResponse>)?.data?.[0]) {
-          const raw = unwrapFirst<ActivationApiResponse>(res.data) as ActivationApiResponse;
+          const raw = unwrapFirst<ActivationApiResponse>(res.data);
           const userDir = String(ud.syncConfig?.userDir ?? ud.license?.user?.userDir ?? '');
           const info = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email || '', user_dir: userDir } }, userDir);
           // update stored license

@@ -466,7 +466,7 @@ export class FridayStorageEventManager {
         
         try {
             while (this.eventQueue.length > 0) {
-                const event = this.eventQueue.shift()!;
+                const event = this.eventQueue.shift();
                 await this.processEvent(event);
             }
         } finally {
@@ -590,7 +590,7 @@ export class FridayStorageEventManager {
         
         try {
             // Create document ID (matching livesync's pattern)
-            const id = await this.core.path2id(path as FilePathWithPrefix);
+            const id = await this.core.path2id(path);
             
             // Read file content
             const isText = this.isTextFile(file);
@@ -609,7 +609,7 @@ export class FridayStorageEventManager {
             if (!force) {
 				try {
 					// Try to get existing entry from database
-					const existingEntry = await localDB.getDBEntry(path as FilePathWithPrefix, undefined, false, true, false);
+					const existingEntry = await localDB.getDBEntry(path, undefined, false, true, false);
 
 					if (existingEntry && !existingEntry.deleted && !existingEntry._deleted) {
 						// Entry exists, check if we need to update
@@ -725,7 +725,7 @@ export class FridayStorageEventManager {
         }
         
         try {
-            const result = await localDB.deleteDBEntry(path as FilePathWithPrefix);
+            const result = await localDB.deleteDBEntry(path);
             
             if (result) {
                 // Clear caches for deleted file

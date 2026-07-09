@@ -92,7 +92,7 @@ class FridayAPIService extends ServiceBase implements APIService {
                 const result = await requestUrl({
                     url: request.url,
                     method: request.method,
-                    headers: request.headers as Record<string, string>,
+                    headers: request.headers,
                     body: request.body,
                 });
                 // Wrap requestUrl result as a Fetch-API-compatible Response
@@ -102,7 +102,7 @@ class FridayAPIService extends ServiceBase implements APIService {
                 });
                 return { response };
             },
-        } as unknown as FetchHttpHandler;
+        };
     }
 
     addLog(message: unknown, level: LOG_LEVEL, key: string): void {
@@ -382,7 +382,7 @@ class FridayReplicationService extends ServiceBase implements ReplicationService
             const storageEventManager = this.core.storageEventManager;
             
             // Check if document is deleted first
-            const isDeleted = doc._deleted === true || ("deleted" in doc && (doc as MetaEntry & { deleted?: boolean }).deleted === true);
+            const isDeleted = doc._deleted === true || ("deleted" in doc && (doc).deleted === true);
 
             // Mark file as being processed to prevent sync loop
             // (When we write the file, vault will emit 'modify' event, 
@@ -985,7 +985,7 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
 
                         const requestPromise = requestUrl({
                             url: reqUrl,
-                            method: (opts?.method as string) || "GET",
+                            method: (opts?.method) || "GET",
                             headers: headersRecord,
                             body: opts?.body as string | ArrayBuffer | undefined,
                         });

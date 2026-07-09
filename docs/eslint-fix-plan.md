@@ -14,6 +14,7 @@
 | 初始状态 | 首次引入 eslint-plugin-obsidianmd | 453 警告，0 错误 |
 | rm warning 1–5（commits 42d6fa2–94f661c） | 按计划批量修复代码质量问题 | **0 警告，0 错误** |
 | 官方审查合规修复（2026-07-09 第二轮） | 修复 eslint.config.js 中规避官方规则的配置问题 | **0 警告，0 错误** ✅ |
+| 官方 review 反馈修复（2026-07-09 第三轮） | 处理 Obsidian 官方 review 工具返回的 warning/recommendation | **0 警告，0 错误** ✅ |
 
 ---
 
@@ -29,11 +30,13 @@
 | `@typescript-eslint/no-deprecated` | 12 | 0 | ✅ |
 | `@typescript-eslint/no-explicit-any` | 10 | 0 | ✅ |
 | `obsidianmd/settings-tab/prefer-update-over-display` | 9 | 0 | ✅ |
+| `@typescript-eslint/no-unnecessary-type-assertion` | 30 | 0 | ✅ |
 | `obsidianmd/hardcoded-config-path` | 7 | 0 | ✅ |
 | `@typescript-eslint/no-unsafe-call` | 7 | 0 | ✅ |
 | `obsidianmd/no-tfile-tfolder-cast` | 5 | 0 | ✅ |
 | `@typescript-eslint/no-unsafe-return` | 5 | 0 | ✅ |
 | `@typescript-eslint/no-unsafe-argument` | 5 | 0 | ✅ |
+| `@typescript-eslint/no-empty-object-type` | 3 | 0 | ✅ |
 | `obsidianmd/ui/sentence-case` | 1 | 0 | ✅ |
 | `obsidianmd/settings-tab/prefer-setting-definitions` | 1 | 1 | ⏳ 见下文 |
 
@@ -60,7 +63,7 @@
 
 ### Step 5 — `no-restricted-globals` (localStorage)（16 处）→ ✅
 
-`src/sync/FridayServiceHub.ts` 中 `localStorage` 改为 `App#saveLocalStorage / loadLocalStorage`，实现 vault 级别数据隔离。
+`src/sync/FridayServiceHub.ts` 中主要的 `localStorage` 读写改为 `App#saveLocalStorage / loadLocalStorage`。
 
 ### Step 6 — `no-unused-vars`（319 处）→ ✅
 
@@ -88,66 +91,134 @@
 
 ## 第二轮修复详情（官方审查合规，2026-07-09）
 
-代码警告已全部清零后，发现 `eslint.config.js` 本身存在三处规避官方规则的配置，会在 Obsidian 官方插件审查时被识别。本轮修复重新启用了被关闭的规则，并以正确方式处理例外情况。
+### Fix A — `obsidianmd/no-nodejs-modules` 全局关闭 → 改为精准例外 → ✅
 
-### Fix A — `obsidianmd/no-nodejs-modules` 全局关闭 → 改为精准例外
+删除全局 `"obsidianmd/no-nodejs-modules": "off"`；`src/main.ts` 和 `src/foundry/index.ts` 中 `path` → `path-browserify`；为 `src/foundry/index.ts` 添加配置级文件级例外（inline disable 被 `eslint-comments/no-restricted-disable` 阻止）。
 
-**问题：** 原配置以注释 `"Node.js http/https intentionally used in LLM streaming client"` 为由全局关闭了 `no-nodejs-modules`。实际验证后，`http.ts` 已改用 Obsidian 的 `requestUrl`；真正需要 Node.js 原生模块的仅 `src/foundry/index.ts`（`fs` 模块）。
+### Fix B — `hardcoded-config-path` 通过忽略 locale 目录隐藏 → 改为修复字符串 → ✅
 
-**修复：**
+删除 locale 目录的全局 ignore；直接修改三处描述字符串，去掉硬编码的 `.obsidian`。
 
-1. `src/main.ts`：`import 'path'` → `import 'path-browserify'`（直接引用 polyfill，无需 esbuild alias）
-2. `src/foundry/index.ts`：同上，`path` → `path-browserify`；保留 `import * as fs from 'fs'`，添加 JSDoc 说明
-3. `eslint.config.js`：删除全局 `"obsidianmd/no-nodejs-modules": "off"`；新增**配置级文件级例外**（inline `eslint-disable` 被插件内置的 `eslint-comments/no-restricted-disable` 规则阻止，必须用配置级）：
+### Fix C — `@typescript-eslint/ban-ts-comment` 全局关闭 → 改为 warn → ✅
 
-```javascript
-// eslint.config.js — 新增块
-{
-  files: ["src/foundry/index.ts"],
-  rules: {
-    // Desktop-only module; dynamically imported behind Platform.isDesktop in main.ts.
-    // fs is intentional here; path is already switched to path-browserify.
-    "obsidianmd/no-nodejs-modules": "off",
-  },
-},
-```
-
-**架构说明：** `foundry/index.ts` 完全通过 `await import('./foundry/index')` 动态加载，调用点在 `main.ts` 的 `if (Platform.isDesktop)` 块内，移动端永远不会执行此模块。
+所有 `@ts-ignore` 改为 `@ts-expect-error`（附说明文字），或删除不必要注释。
 
 ---
 
-### Fix B — `hardcoded-config-path` 通过忽略 locale 目录隐藏 → 改为修复字符串
+## 第三轮修复详情（官方 review 反馈，2026-07-09）
 
-**问题：** 原配置将 `src/i18n/locales/**` 整体排除在 ESLint 检查之外，以规避 locale 描述字符串中出现 `.obsidian` 触发的 `hardcoded-config-path` 警告（6 处）。
+Obsidian 官方 review 工具返回若干 Warning 和 Recommendation，原因是我们的 `eslint.config.js` 通过全局 `"off"` 关闭了两条本应启用的规则，且 review 工具使用独立的静态扫描器（不受我们的 ESLint 配置影响）。
 
-**修复：** 删除 locale 目录的全局 ignore，直接修改三处描述字符串。同时具备更好的 UX：Obsidian 允许用户自定义 configDir，固定写 `.obsidian` 会让描述与实际不符。
+### 为什么 ESLint 没有检测到这些问题？
+
+| review 反馈 | 根本原因 |
+|-------------|----------|
+| `{}` 空对象类型警告 | `@typescript-eslint/no-empty-object-type` 在 eslint.config.js 中设为 `"off"` |
+| 不必要的类型断言警告 | `@typescript-eslint/no-unnecessary-type-assertion` 在 eslint.config.js 中设为 `"off"` |
+| `fs` 模块直接引用 | review 工具为独立静态扫描器，不受我们的 `no-nodejs-modules` 配置级例外影响 |
+| `globals` 依赖缺失 | `globals` 包在 eslint.config.js 中使用，但未列入 `package.json` devDependencies |
+| localStorage 使用 | review 工具扫描行为模式，我们之前的 `no-restricted-globals` 修复覆盖了显式 `localStorage`，但 `window.localStorage` 用于 key 枚举的用法仍保留 |
+
+---
+
+### Fix D — `globals` 补充到 devDependencies → ✅
+
+```bash
+npm install --save-dev globals
+```
+
+`eslint.config.js` 中 `import globals from "globals"` 需要此包，但之前未显式声明。
+
+---
+
+### Fix E — `@typescript-eslint/no-empty-object-type` 重新启用并修复 → ✅（3 处）
+
+从 `eslint.config.js` 删除 `"@typescript-eslint/no-empty-object-type": "off"`；修复三处 `{}` 类型：
 
 | 文件 | 修改前 | 修改后 |
 |------|--------|--------|
-| `en.ts` | `from .obsidian/themes folder` | `from the vault's themes folder` |
-| `en.ts` | `from .obsidian/snippets folder` | `from the vault's snippets folder` |
-| `en.ts` | `from .obsidian/plugins folder` | `from the vault's plugins folder` |
-| `zh-cn.ts` | `同步 .obsidian/themes 文件夹…` | `同步保险库主题文件夹…` |
-| `zh-cn.ts` | `同步 .obsidian/snippets 文件夹…` | `同步保险库代码片段文件夹…` |
-| `zh-cn.ts` | `同步 .obsidian/plugins 文件夹…` | `同步保险库插件文件夹…` |
+| `src/foundry/index.ts:411` | `ObsidianLicenseResult<{}>` | `ObsidianLicenseResult<object>` |
+| `src/foundry/mobile.ts:341` | `ObsidianLicenseResult<{}>` | `ObsidianLicenseResult<object>` |
+| `src/i18n/types.ts:361` | `commands: {}` | `commands: Record<string, string>` |
 
-> 注意：`eslint-comments/no-restricted-disable` 同样阻止对 `obsidianmd/hardcoded-config-path` 使用 inline disable，因此必须修复字符串本身，无法绕过。
+> `{}` 表示"任意非 null 值"（包括数字、字符串等），`object` 才表示"任意对象类型"，`Record<string, string>` 是对 commands 的正确描述。
 
 ---
 
-### Fix C — `@typescript-eslint/ban-ts-comment` 全局关闭 → 改为 warn
+### Fix F — `@typescript-eslint/no-unnecessary-type-assertion` 重新启用并自动修复 → ✅（30 处）
 
-**问题：** 原配置直接关闭了 `ban-ts-comment`，允许随意使用 `@ts-ignore`（比 `@ts-expect-error` 更宽松，也不会在被抑制的错误消失后发出告警）。
+从 `eslint.config.js` 删除 `"@typescript-eslint/no-unnecessary-type-assertion": "off"`；运行自动修复：
 
-**修复：** 改为 `"warn"`，配合以下三处具体修改：
+```bash
+npx eslint src/ --rule '{"@typescript-eslint/no-unnecessary-type-assertion": "warn"}' --fix
+```
 
-| 文件 | 位置 | 修改 |
-|------|------|------|
-| `src/main.ts` | `clearSyncDatabase()` | `vault.getName()` 已有公开类型，直接删除多余注释 |
-| `src/sync/FridaySyncCore.ts` | `getVaultName()` | 同上，删除不必要注释 |
-| `src/sync/FridayStorageEventManager.ts` | raw event 注册 | `@ts-ignore` → `@ts-expect-error`，并移至正确行（直接在 `vault.on("raw", ...)` 前一行） |
+受影响文件（共 30 处自动移除多余 `as` 断言）：
+`foundry/index.ts`, `foundry/mobile.ts`, `sync/FridayServiceHub.ts`, `sync/FridayStorageEventManager.ts`, `sync/FridaySyncCore.ts`, `sync/SyncStatusDisplay.ts`, `sync/adapters/ObsidianHttpClient.ts`, `sync/utils/hiddenFileUtils.ts`, `utils/common.ts`
 
-> `@ts-expect-error` 比 `@ts-ignore` 更精确：当被抑制的错误消失时，TypeScript 会发出 TS2578，避免僵尸注释积累。
+修复后，`sync/FridaySyncCore.ts` 中 `DatabaseConnectingStatus` import 因不再使用而同步删除。
+
+---
+
+### Fix G — `SimpleKeyValueDB` 迁移至 Obsidian Vault-scoped Storage API → ✅
+
+**问题：** `FridaySyncCore.ts` 中 `SimpleKeyValueDB` 使用 `window.localStorage.getItem/setItem/removeItem` 直接读写，触发官方 review 的 localStorage 使用提示。
+
+**修复：**
+- `get()` → `app.loadLocalStorage(key)`
+- `set()` → `app.saveLocalStorage(key, value)`
+- `delete()` → `app.saveLocalStorage(key, undefined)`
+- `destroy()` 中删除操作 → `app.saveLocalStorage(key, undefined)`
+- 构造函数新增 `app: App` 参数；`FridaySyncCore` 将 `plugin.app` 传入
+
+```typescript
+// 修复前
+class SimpleKeyValueDB {
+    constructor(prefix: string) { ... }
+    async get<T>(key: string): Promise<T | undefined> {
+        const value = window.localStorage.getItem(this.getKey(key));
+        return JSON.parse(value) as T;
+    }
+    async set<T>(key: string, value: T): Promise<void> {
+        window.localStorage.setItem(this.getKey(key), JSON.stringify(value));
+    }
+}
+
+// 修复后
+class SimpleKeyValueDB {
+    constructor(prefix: string, app: App) { ... }
+    async get<T>(key: string): Promise<T | undefined> {
+        return this.app.loadLocalStorage(this.getKey(key)) as T | undefined;
+    }
+    async set<T>(key: string, value: T): Promise<void> {
+        this.app.saveLocalStorage(this.getKey(key), value);
+    }
+}
+```
+
+**遗留：** `keys()` 和部分 `keys` 枚举（`FridayServiceHub.ts`、`main.ts`）仍使用 `window.localStorage`，原因是 Obsidian 的 `app.loadLocalStorage` API 没有枚举/列举所有 key 的能力。这是 API 层面的限制，已在代码注释中说明。
+
+---
+
+### Fix H — `fs` 模块：review 工具扫描说明
+
+**情况：** review 工具的 "Direct Filesystem Access" 警告来自独立静态扫描器，与 ESLint 配置无关。`foundry/index.ts` 使用 `fs` 读写位于 vault 内部（`.obsidian/plugins/mdfriday-sync/workspace/`）的插件配置文件，这是桌面端 workspace 管理的必要操作。
+
+**ESLint 层面的处理：**
+- `obsidianmd/no-nodejs-modules` 规则在 `foundry/index.ts` 的配置级例外中保持关闭（inline disable 被 `no-restricted-disable` 阻止）
+- `foundry/index.ts` 整文件通过 `Platform.isDesktop` guard 动态加载，移动端永远不执行
+
+**提交说明建议（向 Obsidian review 解释）：**
+> `fs` is used exclusively in `src/foundry/index.ts`, a desktop-only module that is dynamically imported only inside `if (Platform.isDesktop)` in main.ts. It reads/writes plugin workspace config files stored inside the vault folder at `.obsidian/plugins/mdfriday-sync/workspace/`. This module is never loaded on mobile.
+
+---
+
+### Fix I — Vault Enumeration：review 工具扫描说明
+
+**情况：** `vault.getFiles()` 和 `vault.getAbstractFileByPath()` 是同步插件的核心功能，用于比对本地文件列表与远程 CouchDB 数据库，是 vault 双向同步不可缺少的操作。
+
+**提交说明建议：**
+> `vault.getFiles()` is used to enumerate vault files for sync comparison against the remote CouchDB database. This is core to the plugin's purpose as a full-vault sync tool and cannot be avoided.
 
 ---
 
@@ -157,9 +228,22 @@
 
 **影响文件：** `src/setting.ts`（`MdfridaySyncSettingTab` 类）  
 **规则状态：** `eslint.config.js` 中保持 `"off"`（当前唯一仍关闭的 Obsidian 官方规则）  
-**背景：** `manifest.json` 的 `minAppVersion` 为 `1.13.0`，理论上应实现 `getSettingDefinitions()` 以支持 Obsidian 1.13+ 设置搜索。  
+**背景：** `manifest.json` 的 `minAppVersion` 为 `1.13.0`，应实现 `getSettingDefinitions()` 以支持 Obsidian 1.13+ 设置搜索。  
 **影响：** 用户无法在 Obsidian 设置搜索中找到本插件的设置项，功能本身不受影响。  
-**优先级：** 较大重构，建议单独排期。参考 [Obsidian 1.13 设置 API 文档](https://docs.obsidian.md)。
+**优先级：** 较大重构，建议单独排期。
+
+### ⏳ localStorage key 枚举（待观察）
+
+以下位置仍使用 `window.localStorage` 进行 key 枚举（只读），原因是 Obsidian `app.loadLocalStorage` 没有提供枚举所有 key 的 API：
+
+| 位置 | 用途 |
+|------|------|
+| `src/sync/FridaySyncCore.ts` — `SimpleKeyValueDB.keys()` | 列举 checkpoint key |
+| `src/sync/FridaySyncCore.ts` — `SimpleKeyValueDB.destroy()` 枚举部分 | 清理 key 列表 |
+| `src/sync/FridayServiceHub.ts:199` | store key 枚举 |
+| `src/main.ts` — `clearSyncLocalStorage()` | 清理同步相关 key |
+
+如 Obsidian 未来提供 key 枚举 API，可进一步消除这些用法。
 
 ---
 
@@ -170,8 +254,7 @@
   no-console                                  全代码使用 console.* 记录调试日志
   @typescript-eslint/require-await            async 用于满足接口约定，不一定有 await
   @typescript-eslint/no-base-to-string        catch 块中 String(e) 是刻意格式化
-  @typescript-eslint/no-empty-object-type     {} 返回类型用于历史兼容
-  @typescript-eslint/no-unnecessary-type-assertion  低优先级清理
+  @typescript-eslint/ban-ts-comment           允许 @ts-expect-error（需附说明文字）
   no-undef                                    TypeScript 已处理，对 .ts 文件冗余
   @typescript-eslint/restrict-template-expressions  Logger() 传入 unknown 值
   no-void                                     刻意用 void 丢弃 promise
@@ -181,11 +264,12 @@
   @typescript-eslint/no-unsafe-* 系列
   @typescript-eslint/no-floating-promises
   @typescript-eslint/no-unused-vars / no-unused-vars
-  @typescript-eslint/ban-ts-comment           允许 @ts-expect-error（需附说明文字）
 
 文件级配置例外（非 inline disable）：
   src/foundry/index.ts → obsidianmd/no-nodejs-modules: off
-    整文件仅在 Platform.isDesktop 下动态加载，fs 使用合法
+    整文件仅在 Platform.isDesktop 下动态加载；
+    fs 用于读写位于 vault 内部的插件配置文件；
+    inline disable 被 eslint-comments/no-restricted-disable 阻止。
 
 关闭待重构（有 docs 跟踪）：
   obsidianmd/settings-tab/prefer-setting-definitions  见上方遗留事项（Step 13）

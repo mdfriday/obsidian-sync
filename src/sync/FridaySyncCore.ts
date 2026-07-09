@@ -5,7 +5,7 @@
  * to enable full CouchDB synchronization functionality.
  */
 
-import {Plugin, TFile, requestUrl} from "obsidian";
+import {App, Plugin, TFile, requestUrl} from "obsidian";
 import {reactiveSource, type ReactiveSource} from "octagonal-wheels/dataobject/reactive";
 
 // Obsidian adapters — wrap platform APIs for sync-core features
@@ -18,8 +18,7 @@ import type { FileProgressCallback } from "./types/FileProgressEvents";
 
 // Import core types
 import {
-	type DatabaseConnectingStatus,
-	DEFAULT_SETTINGS,
+        DEFAULT_SETTINGS,
 	type DocumentID,
 	E2EEAlgorithms,
 	type EntryDoc,
@@ -103,13 +102,18 @@ interface AllDocsRowWithError {
 }
 
 /**
- * Simple KeyValue Database implementation using localStorage
+ * Simple KeyValue Database using Obsidian's vault-scoped storage API.
+ * Uses app.saveLocalStorage/loadLocalStorage for reads and writes (vault-isolated).
+ * Falls back to window.localStorage enumeration only for keys() — Obsidian provides
+ * no enumeration API for vault-scoped storage.
  */
 class SimpleKeyValueDB implements KeyValueDatabase {
     private prefix: string;
+    private app: App;
 
-    constructor(prefix: string) {
+    constructor(prefix: string, app: App) {
         this.prefix = prefix;
+        this.app = app;
     }
 
     private getKey(key: string): string {
@@ -117,43 +121,44 @@ class SimpleKeyValueDB implements KeyValueDatabase {
     }
 
     async get<T>(key: string): Promise<T | undefined> {
-        const value = window.localStorage.getItem(this.getKey(key));
-        if (value === null) return undefined;
-        try {
-            return JSON.parse(value) as T;
-        } catch {
-            return undefined;
-        }
+        return this.app.loadLocalStorage(this.getKey(key)) as T | undefined;
     }
 
     async set<T>(key: string, value: T): Promise<void> {
-        window.localStorage.setItem(this.getKey(key), JSON.stringify(value));
+        this.app.saveLocalStorage(this.getKey(key), value);
     }
 
     async delete(key: string): Promise<void> {
-        window.localStorage.removeItem(this.getKey(key));
+        this.app.saveLocalStorage(this.getKey(key), undefined);
     }
 
     async keys(): Promise<string[]> {
+        // Obsidian's app.loadLocalStorage has no enumeration API.
+        // window.localStorage is used read-only here solely for key listing.
         const result: string[] = [];
+        const keyPattern = this.getKey('');
         for (let i = 0; i < window.localStorage.length; i++) {
             const key = window.localStorage.key(i);
-            if (key?.startsWith(this.prefix)) {
-                result.push(key.substring(this.prefix.length + 1));
+            if (key?.startsWith(keyPattern)) {
+                result.push(key.substring(keyPattern.length));
             }
         }
         return result;
     }
 
     destroy(): void {
+        // Enumerate then delete — window.localStorage used only for key listing.
         const keysToRemove: string[] = [];
+        const keyPattern = this.getKey('');
         for (let i = 0; i < window.localStorage.length; i++) {
             const key = window.localStorage.key(i);
-            if (key?.startsWith(this.prefix)) {
+            if (key?.startsWith(keyPattern)) {
                 keysToRemove.push(key);
             }
         }
-        keysToRemove.forEach(key => window.localStorage.removeItem(key));
+        keysToRemove.forEach(key => {
+            this.app.saveLocalStorage(key, undefined);
+        });
     }
 }
 
@@ -163,8 +168,8 @@ class SimpleKeyValueDB implements KeyValueDatabase {
 class FridaySimpleStore<T> implements SimpleStore<T> {
     private db: SimpleKeyValueDB;
 
-    constructor(name: string) {
-        this.db = new SimpleKeyValueDB(`friday-store-${name}`);
+    constructor(name: string, app: App) {
+        this.db = new SimpleKeyValueDB(`friday-store-${name}`, app);
     }
 
     async get(key: string): Promise<T | undefined> {
@@ -222,7 +227,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         maxPushSeq: 0,
         lastSyncPullSeq: 0,
         lastSyncPushSeq: 0,
-        syncStatus: "NOT_CONNECTED" as DatabaseConnectingStatus,
+        syncStatus: "NOT_CONNECTED",
     });
     
     // Additional reactive counters for status display
@@ -295,9 +300,9 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         this.plugin = plugin;
         this._settings = { ...DEFAULT_SETTINGS };
         this._services = new FridayServiceHub(this);
-        this._kvDB = new SimpleKeyValueDB("friday-kv");
-        this._simpleStore = new FridaySimpleStore("checkpoint");
-        
+        this._kvDB = new SimpleKeyValueDB("friday-kv", plugin.app);
+        this._simpleStore = new FridaySimpleStore("checkpoint", plugin.app);
+
         // ✨ Set up file progress callback
         // Forward file progress events from core to FileProgressTracker
         this.onFileProgress = (event) => {
@@ -500,7 +505,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
         this._status = status;
         this.replicationStat.value = {
             ...this.replicationStat.value,
-            syncStatus: status as DatabaseConnectingStatus,
+            syncStatus: status,
         };
         if (this.statusCallback) {
             this.statusCallback(status, message);
@@ -587,14 +592,14 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
             };
 
             // Initialize managers
-            const getDB = () => this._localDatabase!.localDatabase;
+            const getDB = () => this._localDatabase.localDatabase;
             const getSettings = () => this._settings;
             
             this._managers = new LiveSyncManagers({
                 get database() {
                     return getDB();
                 },
-                getActiveReplicator: () => this._replicator!,
+                getActiveReplicator: () => this._replicator,
                 id2path: (id: DocumentID, entry?: EntryHasPath, stripPrefix?: boolean): FilePathWithPrefix => this.id2path(id, entry, stripPrefix),
                 path2id: (filename: FilePathWithPrefix | FilePath, prefix?: string): Promise<DocumentID> => this.path2id(filename, prefix),
                 get settings() {
@@ -1425,7 +1430,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                 if ((doc as DocWithMeta).type === "nodeinfo") continue;
                 if ((doc as DocWithMeta).type === "leaf") continue;
 
-                const docPath = (doc as DocWithMeta).path as string | undefined;
+                const docPath = (doc as DocWithMeta).path;
                 const isInternalFile = isInternalMetadata(doc._id) ||
                     (docPath && isInternalMetadata(docPath));
                 
@@ -1478,7 +1483,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
 
                 // Check if this is an internal file (i: prefix) - delegate to HiddenFileSync
                 // This matches livesync's architecture where internal files are processed separately
-                const docPath = (doc as DocWithMeta).path as string | undefined;
+                const docPath = (doc as DocWithMeta).path;
                 const isInternalFile = isInternalMetadata(doc._id) ||
                     (docPath && isInternalMetadata(docPath));
                 

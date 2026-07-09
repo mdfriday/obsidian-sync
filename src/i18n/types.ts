@@ -357,8 +357,8 @@ export interface TranslationNamespace {
 		quick_share: string;
 	};
 
-	// Commands
-	commands: {};
+        // Commands
+        commands: Record<string, string>;
 
 	// Theme selection
 	theme: {

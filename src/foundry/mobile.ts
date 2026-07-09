@@ -338,7 +338,7 @@ class MobileLicenseService implements ObsidianLicenseService {
     }
   }
 
-  async loginWithLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<{}>> {
+  async loginWithLicense(workspacePath: string, licenseKey: string): Promise<ObsidianLicenseResult<object>> {
     try {
       const ud     = await loadUserData(this.vault, this.pluginDir);
       const apiUrl = getApiUrl(ud);
@@ -349,7 +349,7 @@ class MobileLicenseService implements ObsidianLicenseService {
       const token = unwrapFirst<string>(res.data);
       if (!token) throw new Error('No token in login response');
       await saveUserData(this.vault, this.pluginDir, { email, token, serverConfig: { apiUrl } });
-      return { success: true, data: {} as object };
+      return { success: true, data: {} };
     } catch (e: unknown) {
       return { success: false, error: e instanceof Error ? e.message : String(e) };
     }
@@ -369,7 +369,7 @@ class MobileLicenseService implements ObsidianLicenseService {
         { 'Authorization': `Bearer ${token}` }
       );
       if (res.status !== 200 && res.status !== 201) throw new Error(`Activation failed: ${res.status}`);
-      const raw: ActivationApiResponse = (unwrapFirst<ActivationApiResponse>(res.data) ?? (res.data as ActivationApiResponse));
+      const raw: ActivationApiResponse = (unwrapFirst<ActivationApiResponse>(res.data) ?? (res.data));
       if (!raw?.success) throw new Error('License activation unsuccessful');
       const userDir = raw.user?.user_dir ?? '';
       const info    = buildLicenseInfoFromActivation(raw, userDir);
@@ -392,7 +392,7 @@ class MobileLicenseService implements ObsidianLicenseService {
           { 'Authorization': `Bearer ${ud.token}`, 'Cache-Control': 'no-cache' }
         );
         if (res.status === 200 && (res.data as ApiEnvelope<ActivationApiResponse>)?.data?.[0]) {
-          const raw  = unwrapFirst<ActivationApiResponse>(res.data) as ActivationApiResponse;
+          const raw  = unwrapFirst<ActivationApiResponse>(res.data);
           const info = buildLicenseInfoFromActivation({ ...raw, user: { email: ud.email ?? '', user_dir: String(ud.syncConfig?.userDir ?? '') } }, String(ud.syncConfig?.userDir ?? ''));
           await saveUserData(this.vault, this.pluginDir, { license: { ...ud.license, plan: info.plan, expiresAt: raw.expires_at ?? ud.license.expiresAt, features: info.features } });
           return { success: true, data: info };
@@ -551,7 +551,7 @@ export { ObsidianMobileWorkspaceRepository, ObsidianMobileFileSystemRepository }
 
 function extractVaultAndDir(config: MobileServiceConfig): { vault: Vault; pluginDir: string } {
   // ObsidianMobileWorkspaceRepository exposes getVault()/getPluginDir()
-  const repo = config?.persistence?.workspace as unknown as { getVault?(): Vault; getPluginDir?(): string };
+  const repo = config?.persistence?.workspace;
   if (repo?.getVault && repo?.getPluginDir) {
     return { vault: repo.getVault(), pluginDir: repo.getPluginDir() };
   }
@@ -559,22 +559,22 @@ function extractVaultAndDir(config: MobileServiceConfig): { vault: Vault; plugin
 }
 
 export function createObsidianWorkspaceService(config: ObsidianEnvironmentConfig): ObsidianWorkspaceService {
-  const { vault, pluginDir } = extractVaultAndDir(config as unknown as MobileServiceConfig);
+  const { vault, pluginDir } = extractVaultAndDir(config as unknown);
   return new MobileWorkspaceService(vault, pluginDir);
 }
 
 export function createObsidianAuthService(httpClient: IdentityHttpClient, config: ObsidianEnvironmentConfig): ObsidianAuthService {
-  const { vault, pluginDir } = extractVaultAndDir(config as unknown as MobileServiceConfig);
+  const { vault, pluginDir } = extractVaultAndDir(config as unknown);
   return new MobileAuthService(httpClient, vault, pluginDir);
 }
 
 export function createObsidianLicenseService(httpClient: IdentityHttpClient, config: ObsidianEnvironmentConfig): ObsidianLicenseService {
-  const { vault, pluginDir } = extractVaultAndDir(config as unknown as MobileServiceConfig);
+  const { vault, pluginDir } = extractVaultAndDir(config as unknown);
   return new MobileLicenseService(httpClient, vault, pluginDir);
 }
 
 export function createObsidianGlobalConfigService(config: ObsidianEnvironmentConfig): ObsidianGlobalConfigService {
-  const { vault, pluginDir } = extractVaultAndDir(config as unknown as MobileServiceConfig);
+  const { vault, pluginDir } = extractVaultAndDir(config as unknown);
   return new MobileConfigService(vault, pluginDir);
 }
 

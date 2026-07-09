@@ -35422,51 +35422,50 @@ var ServerConnectivityChecker = class {
 
 // src/sync/FridaySyncCore.ts
 var SimpleKeyValueDB = class {
-  constructor(prefix) {
+  constructor(prefix, app) {
     this.prefix = prefix;
+    this.app = app;
   }
   getKey(key2) {
     return `${this.prefix}-${key2}`;
   }
   async get(key2) {
-    const value = window.localStorage.getItem(this.getKey(key2));
-    if (value === null) return void 0;
-    try {
-      return JSON.parse(value);
-    } catch (e2) {
-      return void 0;
-    }
+    return this.app.loadLocalStorage(this.getKey(key2));
   }
   async set(key2, value) {
-    window.localStorage.setItem(this.getKey(key2), JSON.stringify(value));
+    this.app.saveLocalStorage(this.getKey(key2), value);
   }
   async delete(key2) {
-    window.localStorage.removeItem(this.getKey(key2));
+    this.app.saveLocalStorage(this.getKey(key2), void 0);
   }
   async keys() {
     const result = [];
+    const keyPattern = this.getKey("");
     for (let i = 0; i < window.localStorage.length; i++) {
       const key2 = window.localStorage.key(i);
-      if (key2 == null ? void 0 : key2.startsWith(this.prefix)) {
-        result.push(key2.substring(this.prefix.length + 1));
+      if (key2 == null ? void 0 : key2.startsWith(keyPattern)) {
+        result.push(key2.substring(keyPattern.length));
       }
     }
     return result;
   }
   destroy() {
     const keysToRemove = [];
+    const keyPattern = this.getKey("");
     for (let i = 0; i < window.localStorage.length; i++) {
       const key2 = window.localStorage.key(i);
-      if (key2 == null ? void 0 : key2.startsWith(this.prefix)) {
+      if (key2 == null ? void 0 : key2.startsWith(keyPattern)) {
         keysToRemove.push(key2);
       }
     }
-    keysToRemove.forEach((key2) => window.localStorage.removeItem(key2));
+    keysToRemove.forEach((key2) => {
+      this.app.saveLocalStorage(key2, void 0);
+    });
   }
 };
 var FridaySimpleStore = class {
-  constructor(name) {
-    this.db = new SimpleKeyValueDB(`friday-store-${name}`);
+  constructor(name, app) {
+    this.db = new SimpleKeyValueDB(`friday-store-${name}`, app);
   }
   async get(key2) {
     return this.db.get(key2);
@@ -35557,8 +35556,8 @@ var _FridaySyncCore = class _FridaySyncCore {
     this.plugin = plugin2;
     this._settings = { ...DEFAULT_SETTINGS };
     this._services = new FridayServiceHub(this);
-    this._kvDB = new SimpleKeyValueDB("friday-kv");
-    this._simpleStore = new FridaySimpleStore("checkpoint");
+    this._kvDB = new SimpleKeyValueDB("friday-kv", plugin2.app);
+    this._simpleStore = new FridaySimpleStore("checkpoint", plugin2.app);
     this.onFileProgress = (event) => {
       var _a5;
       const tracker = (_a5 = this._statusDisplay) == null ? void 0 : _a5.getFileProgressTracker();

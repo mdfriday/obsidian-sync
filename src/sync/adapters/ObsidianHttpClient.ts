@@ -11,13 +11,13 @@ export class ObsidianHttpClient implements IHttpClient {
     async request(
         params: Parameters<IHttpClient['request']>[0]
     ): ReturnType<IHttpClient['request']> {
-        const result = await requestUrl(params as Parameters<typeof requestUrl>[0]);
+        const result = await requestUrl(params);
         return {
             status: result.status,
             text: result.text,
             json: result.json,
             arrayBuffer: result.arrayBuffer,
-            headers: result.headers as Record<string, string>,
+            headers: result.headers,
         };
     }
 }

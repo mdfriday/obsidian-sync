@@ -27,13 +27,14 @@ export default defineConfig([
   // Obsidian-specific rules, Microsoft SDL, eslint-plugin-import …
   ...obsidianmd.configs.recommended,
 
+
   // ── Desktop-only foundry module ───────────────────────────────────────────
-  // foundry/index.ts is a Node.js-only module dynamically imported exclusively
-  // inside an `if (Platform.isDesktop)` guard in main.ts. It is never evaluated
-  // on mobile. The `fs` built-in is intentional here; `path` is imported from
-  // path-browserify for cross-platform hygiene. The per-file override below
-  // (config-level, not an inline eslint-disable comment) is required because
-  // eslint-comments/no-restricted-disable prevents suppressing this rule inline.
+  // foundry/index.ts reads/writes plugin workspace config files via Node.js `fs`.
+  // The workspace lives inside the vault folder (at .obsidian/plugins/…/workspace/).
+  // The entire file is dynamically imported only inside Platform.isDesktop in main.ts,
+  // so it is never evaluated on mobile.
+  // Inline eslint-disable is blocked by eslint-comments/no-restricted-disable;
+  // config-level override is the only permitted suppression method.
   {
     files: ["src/foundry/index.ts"],
     rules: {
@@ -82,13 +83,9 @@ export default defineConfig([
       "@typescript-eslint/require-await":                 "off",
       // String(e) in catch blocks is intentional error formatting
       "@typescript-eslint/no-base-to-string":             "off",
-      // {} return type used for legacy compatibility
-      "@typescript-eslint/no-empty-object-type":          "off",
       // @ts-expect-error (with description) is used for untyped Obsidian internal APIs.
       // Warn level allows @ts-expect-error with a description; @ts-ignore is still flagged.
       "@typescript-eslint/ban-ts-comment":                "warn",
-      // Low-priority cleanup items
-      "@typescript-eslint/no-unnecessary-type-assertion": "off",
       // TypeScript handles undefined references - no-undef is redundant for .ts files
       "no-undef":                                         "off",
       // getSettingDefinitions() refactor is tracked in docs/eslint-fix-plan.md (Step 13)
