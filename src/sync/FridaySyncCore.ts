@@ -2121,7 +2121,6 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
     // ==================== Helper Methods ====================
 
     private getVaultName(): string {
-        // @ts-ignore - accessing internal Obsidian API
         return this.plugin.app.vault.getName() || "friday-vault";
     }
 

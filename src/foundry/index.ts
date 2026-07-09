@@ -8,11 +8,17 @@
  *   .mdfriday/workspace.json   – workspace init marker
  *   .mdfriday/user-data.json   – auth + license + sync config
  *   .mdfriday/config.json      – global plugin config
+ *
+ * DESKTOP-ONLY MODULE — this file is loaded exclusively via a dynamic
+ * `await import('./foundry/index')` call that is guarded by `Platform.isDesktop`
+ * in main.ts. It is never evaluated on mobile. Node.js built-ins (`fs`) are
+ * therefore safe here. `path` is imported from path-browserify for cross-platform
+ * compatibility even though this file is desktop-only.
  */
 
 import { Platform } from 'obsidian';
 import * as fs from 'fs';
-import * as nodePath from 'path';
+import * as nodePath from 'path-browserify';
 import type {
   IdentityHttpClient,
   ObsidianAuthResult,

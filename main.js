@@ -3348,8 +3348,8 @@ var init_foundry = __esm({
     CONFIG_FILE = "config.json";
     DEFAULT_API_URL = "https://app.mdfriday.com";
     LightweightAuthService = class {
-      constructor(http2) {
-        this.http = http2;
+      constructor(http) {
+        this.http = http;
       }
       async getStatus(workspacePath) {
         var _a5, _b2;
@@ -3400,8 +3400,8 @@ var init_foundry = __esm({
       }
     };
     LightweightLicenseService = class {
-      constructor(http2) {
-        this.http = http2;
+      constructor(http) {
+        this.http = http;
       }
       async requestTrial(workspacePath, email) {
         var _a5, _b2, _c;
@@ -4323,8 +4323,8 @@ var init_mobile = __esm({
     CONFIG_FILE2 = "config.json";
     DEFAULT_API_URL2 = "https://app.mdfriday.com";
     MobileAuthService = class {
-      constructor(http2, vault, pluginDir) {
-        this.http = http2;
+      constructor(http, vault, pluginDir) {
+        this.http = http;
         this.vault = vault;
         this.pluginDir = pluginDir;
       }
@@ -4377,8 +4377,8 @@ var init_mobile = __esm({
       }
     };
     MobileLicenseService = class {
-      constructor(http2, vault, pluginDir) {
-        this.http = http2;
+      constructor(http, vault, pluginDir) {
+        this.http = http;
         this.vault = vault;
         this.pluginDir = pluginDir;
       }
@@ -4629,14 +4629,15 @@ var AVAILABLE_LANGUAGES = [
 ];
 var DEFAULT_LANGUAGE = "en";
 function detectLanguage(app) {
-  var _a5, _b2, _c, _d, _e;
+  var _a5, _b2;
   try {
-    let obsidianLang = (_b2 = (_a5 = app.vault) == null ? void 0 : _a5.config) == null ? void 0 : _b2.lang;
-    if (!obsidianLang) {
-      obsidianLang = (_d = (_c = app.vault) == null ? void 0 : _c.config) == null ? void 0 : _d.language;
-    }
-    if (!obsidianLang && typeof window !== "undefined" && window.moment) {
-      obsidianLang = window.moment.locale();
+    const vaultConfig = app.vault.config;
+    let obsidianLang = (_a5 = vaultConfig == null ? void 0 : vaultConfig.lang) != null ? _a5 : vaultConfig == null ? void 0 : vaultConfig.language;
+    if (!obsidianLang && typeof window !== "undefined") {
+      const windowWithMoment = window;
+      if (windowWithMoment.moment) {
+        obsidianLang = windowWithMoment.moment.locale();
+      }
     }
     if (!obsidianLang && document.documentElement.lang) {
       obsidianLang = document.documentElement.lang;
@@ -4651,7 +4652,7 @@ function detectLanguage(app) {
     console.warn("Failed to get Obsidian language setting:", error);
   }
   try {
-    const browserLang = navigator.language || ((_e = navigator.languages) == null ? void 0 : _e[0]);
+    const browserLang = navigator.language || ((_b2 = navigator.languages) == null ? void 0 : _b2[0]);
     if (browserLang) {
       const normalized = normalizeLanguageCode(browserLang);
       if (normalized && isValidLanguageCode(normalized)) {
@@ -4845,11 +4846,11 @@ var en = {
     sync_pdf: "Sync PDF",
     sync_pdf_desc: "Sync PDF files.",
     sync_themes: "Sync Themes",
-    sync_themes_desc: "Sync Obsidian themes from .obsidian/themes folder.",
+    sync_themes_desc: "Sync Obsidian theme files from the vault's themes folder.",
     sync_snippets: "Sync Snippets",
-    sync_snippets_desc: "Sync CSS snippets from .obsidian/snippets folder.",
+    sync_snippets_desc: "Sync CSS snippet files from the vault's snippets folder.",
     sync_plugins: "Sync Plugins",
-    sync_plugins_desc: "Sync Obsidian plugins from .obsidian/plugins folder.",
+    sync_plugins_desc: "Sync Obsidian plugin files from the vault's plugins folder.",
     ignore_patterns: "Ignore Patterns",
     ignore_patterns_desc: "Files and folders matching these patterns will not be synced. Use gitignore format.",
     ignore_patterns_placeholder: "e.g. images/, *.tmp",
@@ -5405,11 +5406,11 @@ var zhCn = {
     sync_pdf: "\u540C\u6B65 PDF",
     sync_pdf_desc: "\u540C\u6B65 PDF \u6587\u4EF6\u3002",
     sync_themes: "\u540C\u6B65\u4E3B\u9898",
-    sync_themes_desc: "\u540C\u6B65 .obsidian/themes \u6587\u4EF6\u5939\u4E2D\u7684 Obsidian \u4E3B\u9898\u3002",
+    sync_themes_desc: "\u540C\u6B65\u4FDD\u9669\u5E93\u4E3B\u9898\u6587\u4EF6\u5939\u4E2D\u7684 Obsidian \u4E3B\u9898\u6587\u4EF6\u3002",
     sync_snippets: "\u540C\u6B65\u4EE3\u7801\u7247\u6BB5",
-    sync_snippets_desc: "\u540C\u6B65 .obsidian/snippets \u6587\u4EF6\u5939\u4E2D\u7684 CSS \u4EE3\u7801\u7247\u6BB5\u3002",
+    sync_snippets_desc: "\u540C\u6B65\u4FDD\u9669\u5E93\u4EE3\u7801\u7247\u6BB5\u6587\u4EF6\u5939\u4E2D\u7684 CSS \u6587\u4EF6\u3002",
     sync_plugins: "\u540C\u6B65\u63D2\u4EF6",
-    sync_plugins_desc: "\u540C\u6B65 .obsidian/plugins \u6587\u4EF6\u5939\u4E2D\u7684 Obsidian \u63D2\u4EF6\u3002",
+    sync_plugins_desc: "\u540C\u6B65\u4FDD\u9669\u5E93\u63D2\u4EF6\u6587\u4EF6\u5939\u4E2D\u7684 Obsidian \u63D2\u4EF6\u6587\u4EF6\u3002",
     ignore_patterns: "\u5FFD\u7565\u89C4\u5219",
     ignore_patterns_desc: "\u5339\u914D\u8FD9\u4E9B\u89C4\u5219\u7684\u6587\u4EF6\u548C\u6587\u4EF6\u5939\u5C06\u4E0D\u4F1A\u88AB\u540C\u6B65\u3002\u4F7F\u7528 gitignore \u683C\u5F0F\u3002",
     ignore_patterns_placeholder: "\u4F8B\u5982 images/, *.tmp",
@@ -20207,10 +20208,6 @@ var FridayStorageEventManager = class {
       Logger("Storage event manager already watching", LOG_LEVEL_VERBOSE);
       return;
     }
-    this.watchVaultCreate = this.watchVaultCreate.bind(this);
-    this.watchVaultChange = this.watchVaultChange.bind(this);
-    this.watchVaultDelete = this.watchVaultDelete.bind(this);
-    this.watchVaultRename = this.watchVaultRename.bind(this);
     this.plugin.registerEvent(
       this.plugin.app.vault.on("create", (f3) => this.watchVaultCreate(f3))
     );
@@ -20224,7 +20221,8 @@ var FridayStorageEventManager = class {
       this.plugin.app.vault.on("rename", (f3, old) => this.watchVaultRename(f3, old))
     );
     this.plugin.registerEvent(
-      this.plugin.app.vault.on("raw", this.watchVaultRawEvents.bind(this))
+      // @ts-expect-error - Internal Obsidian API ("raw" event not in public types)
+      this.plugin.app.vault.on("raw", (path2) => this.watchVaultRawEvents(path2))
     );
     this._isWatching = true;
     Logger("Storage event manager started watching vault", LOG_LEVEL_INFO);
@@ -31932,7 +31930,7 @@ var FridayReplicationService = class extends ServiceBase {
     [this.processVirtualDocument, this.handleProcessVirtualDocuments] = this._first("processVirtualDocuments");
     [this.onBeforeReplicate, this.handleBeforeReplicate] = this._firstFailure("beforeReplicate");
     [this.checkConnectionFailure, this.handleCheckConnectionFailure] = this._first("connectionHasFailure");
-    this.handleProcessSynchroniseResult(this.defaultProcessSynchroniseResult.bind(this));
+    this.handleProcessSynchroniseResult((doc) => this.defaultProcessSynchroniseResult(doc));
   }
   // ==================== Document Processing (Aligned with LiveSync) ====================
   // Note: Following LiveSync's approach - no custom conflict resolution
@@ -35279,14 +35277,14 @@ var FridayOfflineTracker = class {
 
 // node_modules/@mdfriday/sync-core/src/features/ServerConnectivity/index.ts
 var ServerConnectivityChecker = class {
-  constructor(http2) {
+  constructor(http) {
     __publicField(this, "http");
     __publicField(this, "_lastCheckTime", 0);
     __publicField(this, "_lastStatus", "UNKNOWN");
     __publicField(this, "_checkCooldown", 5e3);
     // 5 seconds
     __publicField(this, "_lastError");
-    this.http = http2;
+    this.http = http;
   }
   /**
    * Current server status based on last check
@@ -35787,8 +35785,8 @@ var _FridaySyncCore = class _FridaySyncCore {
           return getDB();
         },
         getActiveReplicator: () => this._replicator,
-        id2path: this.id2path.bind(this),
-        path2id: this.path2id.bind(this),
+        id2path: (id, entry, stripPrefix) => this.id2path(id, entry, stripPrefix),
+        path2id: (filename, prefix) => this.path2id(filename, prefix),
         get settings() {
           return getSettings();
         }
@@ -37090,7 +37088,7 @@ var SyncService = class {
     this.config = config;
     try {
       if (!config.couchDB_URI || !config.couchDB_DBNAME) {
-        new import_obsidian5.Notice("Sync: CouchDB URI and database name are required");
+        new import_obsidian5.Notice("Sync: CouchDB uri and database name are required");
         return false;
       }
       this.core = new FridaySyncCore(this.plugin);
@@ -37523,7 +37521,8 @@ var SyncStatusDisplay = class {
     if (import_obsidian6.Platform.isMobile) {
       return true;
     }
-    return (_b2 = (_a5 = this.plugin.settings) == null ? void 0 : _a5.showEditorStatusDisplay) != null ? _b2 : false;
+    const pluginWithSettings = this.plugin;
+    return (_b2 = (_a5 = pluginWithSettings.settings) == null ? void 0 : _a5.showEditorStatusDisplay) != null ? _b2 : false;
   }
   /**
    * Get file progress tracker (for FridaySyncCore to use)
@@ -37800,7 +37799,7 @@ var SyncStatusDisplay = class {
     var _a5;
     if (!key2) key2 = message;
     if (key2 in this.notifies) {
-      const isShown = (_a5 = this.notifies[key2].notice.noticeEl) == null ? void 0 : _a5.isShown();
+      const isShown = (_a5 = this.notifies[key2].notice.messageEl) == null ? void 0 : _a5.isShown();
       if (!isShown) {
         this.notifies[key2].notice = new import_obsidian6.Notice(message, 0);
       }
@@ -39766,7 +39765,8 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
   async refreshSubdomainInfo() {
   }
   async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS2, await this.loadData());
+    const savedData = await this.loadData();
+    this.settings = Object.assign({}, DEFAULT_SETTINGS2, savedData);
     this.initializeDefaultIgnorePatterns();
   }
   /**

@@ -1,5 +1,5 @@
 import {FileSystemAdapter, Platform, Plugin} from 'obsidian';
-import * as nodePath from 'path';
+import * as nodePath from 'path-browserify';
 import './styles/license-settings.css';
 import './styles/live-sync.css';
 import {I18nService} from "./i18n";
@@ -381,9 +381,8 @@ export default class MdfridaySyncPlugin extends Plugin {
 	 * Identical to the original Friday plugin implementation.
 	 */
 	async clearSyncDatabase(): Promise<void> {
-		try {
-			// @ts-ignore - accessing internal Obsidian API
-			const vaultName = this.app.vault.getName() || "friday-vault";
+                try {
+                        const vaultName = this.app.vault.getName() || "friday-vault";
 
 			const SuffixDatabaseName = "-livesync-v2";
 			const indexedDBName = `_pouch_${vaultName}${SuffixDatabaseName}`;

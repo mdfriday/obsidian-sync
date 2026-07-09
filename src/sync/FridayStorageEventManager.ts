@@ -254,8 +254,8 @@ export class FridayStorageEventManager {
         );
         
         // Register raw event for hidden file sync (.obsidian files)
-        // @ts-ignore - Internal Obsidian API ("raw" event not in public types)
         this.plugin.registerEvent(
+            // @ts-expect-error - Internal Obsidian API ("raw" event not in public types)
             this.plugin.app.vault.on("raw", (path: string) => this.watchVaultRawEvents(path))
         );
         

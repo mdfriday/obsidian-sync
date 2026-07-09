@@ -16,7 +16,9 @@ export default defineConfig([
       "main.js",
       "**/*.test.ts",
       "src/sync/lib/**",
-      "src/i18n/locales/**",   // locale files contain .obsidian as display text
+      // NOTE: src/i18n/locales/ is intentionally NOT ignored here.
+      // The three description strings that previously mentioned `.obsidian` have
+      // been rewritten to avoid hardcoded config paths (correct per the rule).
     ],
   },
 
@@ -24,6 +26,20 @@ export default defineConfig([
   // Bundles: @eslint/js, typescript-eslint recommended-type-checked,
   // Obsidian-specific rules, Microsoft SDL, eslint-plugin-import …
   ...obsidianmd.configs.recommended,
+
+  // ── Desktop-only foundry module ───────────────────────────────────────────
+  // foundry/index.ts is a Node.js-only module dynamically imported exclusively
+  // inside an `if (Platform.isDesktop)` guard in main.ts. It is never evaluated
+  // on mobile. The `fs` built-in is intentional here; `path` is imported from
+  // path-browserify for cross-platform hygiene. The per-file override below
+  // (config-level, not an inline eslint-disable comment) is required because
+  // eslint-comments/no-restricted-disable prevents suppressing this rule inline.
+  {
+    files: ["src/foundry/index.ts"],
+    rules: {
+      "obsidianmd/no-nodejs-modules": "off",
+    },
+  },
 
   // ── TypeScript parser + project-specific overrides ────────────────────────
   {
@@ -68,14 +84,13 @@ export default defineConfig([
       "@typescript-eslint/no-base-to-string":             "off",
       // {} return type used for legacy compatibility
       "@typescript-eslint/no-empty-object-type":          "off",
-      // @ts-ignore used for untyped Obsidian internal APIs
-      "@typescript-eslint/ban-ts-comment":                "off",
+      // @ts-expect-error (with description) is used for untyped Obsidian internal APIs.
+      // Warn level allows @ts-expect-error with a description; @ts-ignore is still flagged.
+      "@typescript-eslint/ban-ts-comment":                "warn",
       // Low-priority cleanup items
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
       // TypeScript handles undefined references - no-undef is redundant for .ts files
       "no-undef":                                         "off",
-      // Node.js http/https intentionally used in LLM streaming client
-      "obsidianmd/no-nodejs-modules":                     "off",
       // getSettingDefinitions() refactor is tracked in docs/eslint-fix-plan.md (Step 13)
       "obsidianmd/settings-tab/prefer-setting-definitions": "off",
       // Logger() passes unknown values into template literals
