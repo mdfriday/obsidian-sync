@@ -1,8 +1,8 @@
 {
 	"id": "mdfriday-sync",
 	"name": "MDFriday Sync",
-	"version": "26.7.12",
-	"minAppVersion": "1.13.0",
+	"version": "26.7.13",
+	"minAppVersion": "1.8.7",
 	"description": "Sync your vault across devices using CouchDB — with end-to-end encryption, selective sync, and live sync. Desktop & Mobile.",
 	"author": "sunwei",
 	"authorUrl": "https://mdfriday.com",

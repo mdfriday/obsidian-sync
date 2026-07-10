@@ -38184,7 +38184,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
         }
       });
     }).addButton((button) => {
-      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setDestructive();
+      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setWarning();
       resetButton = button.buttonEl;
       resetButton.disabled = true;
       resetButton.addEventListener("click", () => {

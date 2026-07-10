@@ -213,6 +213,20 @@ No vault content is ever sent to `mdfriday.com`. The plugin only retrieves Couch
 
 The plugin uses `btoa()` in two places to encode CouchDB credentials as a standard **HTTP Basic Authentication** header (`Authorization: Basic <base64(user:pass)>`). This is the standard mechanism defined in [RFC 7617](https://datatracker.ietf.org/doc/html/rfc7617). The encoded credentials are sent only to the user-configured CouchDB server. `btoa` is not used to hide API keys, URLs, or code payloads.
 
+### Why the plugin uses native `fetch` instead of Obsidian's `requestUrl`
+
+Obsidian recommends `requestUrl` for network requests. This plugin follows that recommendation everywhere **except** the internal PouchDB CouchDB replication adapter, where native `fetch` is the only viable option for the following technical reasons:
+
+| Requirement | `requestUrl` | native `fetch` |
+|---|---|---|
+| `AbortSignal` support (request cancellation) | ❌ Not supported — `RequestUrlParam` has no `signal` field | ✅ Supported |
+| Streaming response (resolve on headers, not full body) | ❌ Buffers entire body before resolving | ✅ Streams response |
+| Honour PouchDB's internal cancel signal | ❌ Cannot — `opts.signal` is ignored | ✅ Combined via `AbortSignal.any()` |
+
+PouchDB's CouchDB HTTP adapter requires `AbortSignal` to cancel in-flight `_changes` long-poll requests when the user stops sync. Without `AbortSignal`, requests cannot be cleanly cancelled — they would continue running in the background, leaking resources. The full-buffering behaviour of `requestUrl` also causes timeout failures for large bulk replication responses (`_bulk_get`, `_bulk_docs`) on cold start, because the response body is not available to PouchDB until the entire download completes.
+
+All other network calls in the plugin (license API, CouchDB connection test, file publish) use `requestUrl` as recommended.
+
 ---
 
 ## Acknowledgements
