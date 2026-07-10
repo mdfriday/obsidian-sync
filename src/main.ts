@@ -343,9 +343,16 @@ export default class MdfridaySyncPlugin extends Plugin {
 			// Initialize status display
 			this.syncStatusDisplay = new SyncStatusDisplay(this);
 
-			// Initialize if sync is enabled
-			if (this.settings.syncEnabled && this.settings.syncConfig) {
-				const initialized = await this.syncService.initialize(this.settings.syncConfig);
+		// Initialize if sync is enabled
+		if (this.settings.syncEnabled && this.settings.syncConfig) {
+			// Ensure encryptionPassphrase is always reflected in syncConfig.passphrase.
+			// Object.assign() in loadSettings() does a shallow merge, so syncConfig saved
+			// without a passphrase field (older versions) would lose it. Sync it here
+			// so FridaySyncCore never warns "No passphrase configured".
+			if (this.settings.encryptionPassphrase && !this.settings.syncConfig.passphrase) {
+				this.settings.syncConfig.passphrase = this.settings.encryptionPassphrase;
+			}
+			const initialized = await this.syncService.initialize(this.settings.syncConfig);
 
 				// Connect status display to sync core after initialization
 				if (initialized && this.syncService.syncCore && this.syncStatusDisplay) {

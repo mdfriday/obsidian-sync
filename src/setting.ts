@@ -19,6 +19,15 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 	}
 
 	/**
+	 * Re-render the settings tab.
+	 * `PluginSettingTab` only exposes `display()`, so `update()` is a thin wrapper
+	 * that calls `display()` — keeping all existing `this.update()` call-sites working.
+	 */
+	update(): void {
+		this.display();
+	}
+
+	/**
 	 * Format storage size for display
 	 * @param sizeMB Size in MB
 	 * @returns Formatted string (e.g. "6.16 MB", "1.5 GB")
@@ -907,8 +916,8 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 			.addButton((button) => {
 				button
 					.setButtonText(this.plugin.i18n.t('settings.reset_sync_button'))
-					.setDestructive();
-				
+					.setWarning();
+
 				// Store reference and set initial disabled state after setting up the button
 				resetButton = button.buttonEl;
 				resetButton.disabled = true;
@@ -1069,11 +1078,16 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 					liveSync: true
 				};
 
-				// Generate encryption passphrase if not exists (only for first time)
-				if (!this.plugin.settings.encryptionPassphrase && isFirstTime) {
-					this.plugin.settings.encryptionPassphrase = generateEncryptionPassphrase();
-					this.plugin.settings.syncConfig.passphrase = this.plugin.settings.encryptionPassphrase;
-				}
+			// Generate encryption passphrase if not exists (only for first time)
+			if (!this.plugin.settings.encryptionPassphrase && isFirstTime) {
+				this.plugin.settings.encryptionPassphrase = generateEncryptionPassphrase();
+				this.plugin.settings.syncConfig.passphrase = this.plugin.settings.encryptionPassphrase;
+			} else if (this.plugin.settings.encryptionPassphrase) {
+				// Always sync existing passphrase into syncConfig so it is never lost
+				// (e.g. when re-activating on a new device where syncConfig was just rebuilt
+				// without a passphrase, or when an older settings file didn't include it).
+				this.plugin.settings.syncConfig.passphrase = this.plugin.settings.encryptionPassphrase;
+			}
 			}
 
 			// Step 6: Save settings

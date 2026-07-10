@@ -37593,6 +37593,14 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
     this.plugin = plugin2;
   }
   /**
+   * Re-render the settings tab.
+   * `PluginSettingTab` only exposes `display()`, so `update()` is a thin wrapper
+   * that calls `display()` — keeping all existing `this.update()` call-sites working.
+   */
+  update() {
+    this.display();
+  }
+  /**
    * Format storage size for display
    * @param sizeMB Size in MB
    * @returns Formatted string (e.g. "6.16 MB", "1.5 GB")
@@ -38177,7 +38185,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
         }
       });
     }).addButton((button) => {
-      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setDestructive();
+      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setWarning();
       resetButton = button.buttonEl;
       resetButton.disabled = true;
       resetButton.addEventListener("click", () => {
@@ -38297,6 +38305,8 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
         };
         if (!this.plugin.settings.encryptionPassphrase && isFirstTime) {
           this.plugin.settings.encryptionPassphrase = generateEncryptionPassphrase();
+          this.plugin.settings.syncConfig.passphrase = this.plugin.settings.encryptionPassphrase;
+        } else if (this.plugin.settings.encryptionPassphrase) {
           this.plugin.settings.syncConfig.passphrase = this.plugin.settings.encryptionPassphrase;
         }
       }
@@ -39204,6 +39214,9 @@ var MdfridaySyncPlugin = class extends import_obsidian12.Plugin {
       this.syncService = new SyncService(this);
       this.syncStatusDisplay = new SyncStatusDisplay(this);
       if (this.settings.syncEnabled && this.settings.syncConfig) {
+        if (this.settings.encryptionPassphrase && !this.settings.syncConfig.passphrase) {
+          this.settings.syncConfig.passphrase = this.settings.encryptionPassphrase;
+        }
         const initialized = await this.syncService.initialize(this.settings.syncConfig);
         if (initialized && this.syncService.syncCore && this.syncStatusDisplay) {
           this.syncStatusDisplay.setCore(this.syncService.syncCore);
