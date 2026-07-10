@@ -248,8 +248,8 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
     private _logCallback?: (message: string, level: number, key?: string) => void;
     
     // Status display for progress tracking and UI updates
-    private _statusDisplay: SyncStatusDisplay | null = null;q
-    
+    private _statusDisplay: SyncStatusDisplay | null = null;
+
     // Storage event manager for watching file changes
     private _storageEventManager: FridayStorageEventManager | null = null;
     
@@ -2176,6 +2176,9 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
             const uri = this._settings.couchDB_URI.replace(/\/$/, "");
             const dbUrl = `${uri}/${this._settings.couchDB_DBNAME}`;
             
+            // btoa encodes "username:password" as a standard HTTP Basic Auth header.
+            // Credentials come from the user's own settings and are sent only to the
+            // user-configured CouchDB server. This is not obfuscation.
             const credentials = btoa(`${this._settings.couchDB_USER}:${this._settings.couchDB_PASSWORD}`);
             
             const response = await requestUrl({
@@ -2185,6 +2188,7 @@ export class FridaySyncCore implements LiveSyncLocalDBEnv, LiveSyncCouchDBReplic
                     "Authorization": `Basic ${credentials}`,
                     "Content-Type": "application/json",
                 },
+                throw: false,
             });
 
             if (response.status >= 200 && response.status < 300) {

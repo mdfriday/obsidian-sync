@@ -94,6 +94,7 @@ class FridayAPIService extends ServiceBase implements APIService {
                     method: request.method,
                     headers: request.headers,
                     body: request.body,
+                    throw: false,
                 });
                 // Wrap requestUrl result as a Fetch-API-compatible Response
                 const response = new Response(result.arrayBuffer, {
@@ -966,50 +967,65 @@ class FridayRemoteService extends ServiceBase implements RemoteService {
                     
                     // Add authentication
                     if ("username" in auth && auth.username && auth.password) {
+                        // btoa encodes "username:password" as a standard HTTP Basic Auth header.
+                        // This is not obfuscation — credentials come directly from the user's
+                        // settings and are sent only to the user-configured CouchDB server.
                         const credentials = btoa(`${auth.username}:${auth.password}`);
                         headers.append("Authorization", `Basic ${credentials}`);
                     }
                     
-                    // Determine the request URL string
+                    // Determine the request URL string (for _changes detection only)
                     const reqUrl = typeof url === 'string' ? url : url.url;
 
-                    // _changes long-poll/continuous requests must NOT have a client-side timeout:
-                    //   - CouchDB holds the connection open for the heartbeat interval (default 30s)
-                    //   - Adding a 30s client timeout races with the 30s heartbeat → intermittent errors
-                    //   - livesync original: no client timeout on requestUrl, heartbeat drives the cycle
+                    // _changes long-poll must NOT have a client-side timeout:
+                    //   - CouchDB heartbeat=30s keeps connection open; AbortController(30s) races
+                    //     with the heartbeat → intermittent AbortError on cold start
+                    //   - pouchdb-adapter-http intentionally sets requestTimeout = heartbeat + 5000ms
                     const isChanges = reqUrl.includes('/_changes');
 
+                    // Use native fetch (same as obsidian-friday-plugin original implementation).
+                    // requestUrl routes through Electron IPC which has cold-start latency;
+                    // native fetch uses Chromium's network stack, already warm at plugin load.
+                    // CouchDB server has CORS enabled, so fetch works on all platforms.
+                    const DEFAULT_HTTP_TIMEOUT = 30000;
+                    const timeoutController = new AbortController();
+                    const timeoutId = isChanges
+                        ? undefined
+                        : window.setTimeout(() => timeoutController.abort(), DEFAULT_HTTP_TIMEOUT);
+
+                    // Combine PouchDB's own AbortSignal (opts.signal) with our timeout signal
+                    // using AbortSignal.any(). The original plugin replaced opts.signal entirely,
+                    // which prevented PouchDB from cancelling its own _changes requests. This fixes
+                    // that bug while preserving the 30s timeout for regular requests.
+                    const signals: AbortSignal[] = [];
+                    if (opts?.signal) signals.push(opts.signal);
+                    if (!isChanges) signals.push(timeoutController.signal);
+                    const combinedSignal = signals.length === 1
+                        ? signals[0]
+                        : signals.length > 1
+                            ? AbortSignal.any(signals)
+                            : undefined;
+
                     try {
-                        const headersRecord: Record<string, string> = {};
-                        headers.forEach((value, key) => { headersRecord[key] = value; });
-
-                        const requestPromise = requestUrl({
-                            url: reqUrl,
-                            method: (opts?.method) || "GET",
-                            headers: headersRecord,
-                            body: opts?.body as string | ArrayBuffer | undefined,
+                        // native fetch is required here: Obsidian's requestUrl does not expose
+                        // AbortSignal support (RequestUrlParam has no signal field), making it
+                        // impossible to cancel in-flight requests via timeout or PouchDB's own
+                        // controller. fetch is the only Web API with AbortSignal + streaming.
+                        const response = await fetch(url, {
+                            ...opts,
+                            headers,
+                            ...(combinedSignal ? { signal: combinedSignal } : {}),
                         });
-
-                        // Only apply timeout to regular (non-streaming) requests
-                        const result = isChanges
-                            ? await requestPromise
-                            : await Promise.race([
-                                requestPromise,
-                                new Promise<never>((_, reject) =>
-                                    window.setTimeout(
-                                        () => reject(new Error("Request timeout after 30000ms")),
-                                        30000
-                                    )
-                                ),
-                            ]);
-
-                        // Wrap requestUrl result as Fetch-API-compatible Response for PouchDB
-                        return new Response(result.arrayBuffer, {
-                            status: result.status,
-                            headers: result.headers,
-                        });
+                        if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+                        return response;
                     } catch (ex: unknown) {
-                        console.error("[Friday Sync] Request error:", ex);
+                        if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+                        const err = ex as { name?: string };
+                        if (err.name === 'AbortError' && !isChanges) {
+                            console.error("[Friday Sync] Request timeout after", DEFAULT_HTTP_TIMEOUT, "ms:", reqUrl);
+                            throw new Error(`Request timeout after ${DEFAULT_HTTP_TIMEOUT}ms`);
+                        }
+                        console.error("[Friday Sync] Fetch error:", ex);
                         throw ex;
                     }
                 },

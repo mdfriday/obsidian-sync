@@ -916,7 +916,7 @@ export class MdfridaySyncSettingTab extends PluginSettingTab {
 			.addButton((button) => {
 				button
 					.setButtonText(this.plugin.i18n.t('settings.reset_sync_button'))
-					.setWarning();
+					.setDestructive();
 
 				// Store reference and set initial disabled state after setting up the button
 				resetButton = button.buttonEl;

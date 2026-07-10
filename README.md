@@ -181,6 +181,40 @@ Use it, fork it, self-host it — no restrictions.
 
 ---
 
+## Network Requests & Data Privacy
+
+This section discloses all external network requests made by the plugin, as required by the Obsidian plugin review process.
+
+### External domains contacted
+
+| Domain | Purpose | When | Required |
+|---|---|---|---|
+| `app.mdfriday.com` | License activation, authentication, usage tracking | Only when using MDFriday managed backend (Option A) | Only if using managed backend |
+| User-configured CouchDB server | Vault synchronisation (all sync operations) | Whenever sync is active | Yes, for sync to work |
+
+**If you self-host** (Option B with your own CouchDB or hugoverse), **no requests are made to `mdfriday.com`**. The plugin only contacts the CouchDB server you configure.
+
+### Requests to `app.mdfriday.com` (managed backend only)
+
+The following 6 API calls are made to `app.mdfriday.com` only when using the MDFriday managed backend:
+
+| Call | Endpoint | Trigger |
+|---|---|---|
+| 1 | `POST /api/login` | User clicks "Activate License" in settings |
+| 2 | `POST /api/license/trial` | User requests a free trial |
+| 3 | `POST /api/license/activate` | License key is entered and activated |
+| 4 | `GET /api/license/info` | Plugin startup (validates license, retrieves CouchDB credentials) |
+| 5 | `GET /api/license/usage` | Settings page opened (displays storage usage) |
+| 6 | `POST /api/license/usage/reset` | User resets usage counter in settings |
+
+No vault content is ever sent to `mdfriday.com`. The plugin only retrieves CouchDB connection credentials from the license server and performs all vault sync directly with CouchDB.
+
+### Runtime Base64 encoding (`btoa`)
+
+The plugin uses `btoa()` in two places to encode CouchDB credentials as a standard **HTTP Basic Authentication** header (`Authorization: Basic <base64(user:pass)>`). This is the standard mechanism defined in [RFC 7617](https://datatracker.ietf.org/doc/html/rfc7617). The encoded credentials are sent only to the user-configured CouchDB server. `btoa` is not used to hide API keys, URLs, or code payloads.
+
+---
+
 ## Acknowledgements
 
 — [LiveSync](https://github.com/vrtmrz/obsidian-livesync) – multi-device synchronization

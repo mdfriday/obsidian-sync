@@ -81,6 +81,36 @@ export default defineConfig([
       "@typescript-eslint/restrict-template-expressions": "off",
       // void used to discard promises intentionally
       "no-void":                                          "off",
+      // update() wraps display() by design — the rule fires inside the wrapper itself,
+      // not at external call sites, so it's a false positive for this pattern.
+      "obsidianmd/settings-tab/prefer-update-over-display": "off",
+      // @typescript-eslint/no-deprecated is kept as a warn globally; specific instances
+      // (e.g. setDestructive migration) are tracked in docs/eslint-fix-plan.md.
+      "@typescript-eslint/no-deprecated":                 "warn",
+    },
+  },
+
+  // ── Settings tab: display() inside update() is intentional ───────────────
+  // update() is a backward-compatibility wrapper that calls display(). The
+  // no-deprecated warning fires on the internal call, which is a false positive
+  // for this design pattern. Tracked for proper refactor in eslint-fix-plan.md.
+  {
+    files: ["src/setting.ts"],
+    rules: {
+      "@typescript-eslint/no-deprecated": "off",
+    },
+  },
+
+  // ── PouchDB CouchDB adapter: native fetch required ────────────────────────
+  // Obsidian's requestUrl (RequestUrlParam) has no AbortSignal field, making it
+  // impossible to cancel requests via timeout or PouchDB's internal controller.
+  // Native fetch is the only Web API that supports both AbortSignal and streaming
+  // responses, both of which are required for correct PouchDB CouchDB replication.
+  // CouchDB server has CORS enabled, so fetch works on all platforms.
+  {
+    files: ["src/sync/FridayServiceHub.ts"],
+    rules: {
+      "no-restricted-globals": "off",
     },
   },
 ]);

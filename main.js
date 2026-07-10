@@ -31393,7 +31393,8 @@ var FridayAPIService = class extends ServiceBase {
           url: request.url,
           method: request.method,
           headers: request.headers,
-          body: request.body
+          body: request.body,
+          throw: false
         });
         const response = new Response(result.arrayBuffer, {
           status: result.status,
@@ -31973,32 +31974,29 @@ var FridayRemoteService = class extends ServiceBase {
           }
           const reqUrl = typeof url === "string" ? url : url.url;
           const isChanges = reqUrl.includes("/_changes");
+          const DEFAULT_HTTP_TIMEOUT = 3e4;
+          const timeoutController = new AbortController();
+          const timeoutId = isChanges ? void 0 : window.setTimeout(() => timeoutController.abort(), DEFAULT_HTTP_TIMEOUT);
+          const signals = [];
+          if (opts == null ? void 0 : opts.signal) signals.push(opts.signal);
+          if (!isChanges) signals.push(timeoutController.signal);
+          const combinedSignal = signals.length === 1 ? signals[0] : signals.length > 1 ? AbortSignal.any(signals) : void 0;
           try {
-            const headersRecord = {};
-            headers.forEach((value, key2) => {
-              headersRecord[key2] = value;
+            const response = await fetch(url, {
+              ...opts,
+              headers,
+              ...combinedSignal ? { signal: combinedSignal } : {}
             });
-            const requestPromise = (0, import_obsidian3.requestUrl)({
-              url: reqUrl,
-              method: (opts == null ? void 0 : opts.method) || "GET",
-              headers: headersRecord,
-              body: opts == null ? void 0 : opts.body
-            });
-            const result = isChanges ? await requestPromise : await Promise.race([
-              requestPromise,
-              new Promise(
-                (_, reject) => window.setTimeout(
-                  () => reject(new Error("Request timeout after 30000ms")),
-                  3e4
-                )
-              )
-            ]);
-            return new Response(result.arrayBuffer, {
-              status: result.status,
-              headers: result.headers
-            });
+            if (timeoutId !== void 0) window.clearTimeout(timeoutId);
+            return response;
           } catch (ex) {
-            console.error("[Friday Sync] Request error:", ex);
+            if (timeoutId !== void 0) window.clearTimeout(timeoutId);
+            const err2 = ex;
+            if (err2.name === "AbortError" && !isChanges) {
+              console.error("[Friday Sync] Request timeout after", DEFAULT_HTTP_TIMEOUT, "ms:", reqUrl);
+              throw new Error(`Request timeout after ${DEFAULT_HTTP_TIMEOUT}ms`);
+            }
+            console.error("[Friday Sync] Fetch error:", ex);
             throw ex;
           }
         }
@@ -36542,7 +36540,8 @@ var _FridaySyncCore = class _FridaySyncCore {
         headers: {
           "Authorization": `Basic ${credentials}`,
           "Content-Type": "application/json"
-        }
+        },
+        throw: false
       });
       if (response.status >= 200 && response.status < 300) {
         const data = response.json;
@@ -38185,7 +38184,7 @@ var MdfridaySyncSettingTab = class extends import_obsidian7.PluginSettingTab {
         }
       });
     }).addButton((button) => {
-      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setWarning();
+      button.setButtonText(this.plugin.i18n.t("settings.reset_sync_button")).setDestructive();
       resetButton = button.buttonEl;
       resetButton.disabled = true;
       resetButton.addEventListener("click", () => {
